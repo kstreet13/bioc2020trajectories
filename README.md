@@ -41,8 +41,10 @@ The workshop will start with an introduction to the problem and the dataset usin
 | Activity                     | Time |
 |------------------------------|------|
 | Introduction                     | 15m  |
-| Hands-on lab session          | 40m  |
-| Wrap-up and conclusions          | 5m  |
+| Data Integration and Trajectory Inference   | 10m  |
+| Differential Progression                    | 15m  |
+| Differential Expression          | 15m  |
+| Wrap-up and Conclusions          | 5m  |
 
 
 # Workshop goals and objectives
