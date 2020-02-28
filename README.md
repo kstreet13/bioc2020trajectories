@@ -1,6 +1,6 @@
-# Trajectory inference and differential expression over multiple conditions in scRNA-seq
+# Trajectory inference and differential expression between conditions in scRNA-seq
 
-# Instructor(s) name(s) and contact information
+# Instructors
 
  - Kelly Street (kstreet@ds.dfci.harvard.edu)
  - Koen Van den Berge (koenvdberge@berkeley.edu)
@@ -51,20 +51,6 @@ The workshop will start with an introduction to the problem and the dataset usin
 
 Participants will learn how to reason about trajectories in single-cell RNA-seq data and how they may be used for interpretation of complex scRNA-seq datasets.
 
-
-List "big picture" student-centered workshop goals and learning
-objectives. Learning goals and objectives are related, but not the
-same thing. These goals and objectives will help some people to decide
-whether to attend the conference for training purposes, so please make
-these as precise and accurate as possible.
-
-*Learning goals* are high-level descriptions of what
-participants will learn and be able to do after the workshop is
-over. *Learning objectives*, on the other hand, describe in very
-specific and measurable terms specific skills or knowledge
-attained. The [Bloom's Taxonomy](#bloom) may be a useful framework
-for defining and describing your goals and objectives, although there
-are others.
 
 ## Learning goals
 
