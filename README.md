@@ -1,4 +1,4 @@
-# Trajectory inference and differential expression between conditions in scRNA-seq
+# Trajectory inference across conditions: differential expression and differential progression
 
 # Instructors
 
@@ -26,11 +26,13 @@ Software:
 Background reading:
 
 * The textbook "Orchestrating Single-Cell Analysis with Bioconductor" is a great reference for single-cell analysis using Bioconductor packages.
+* [Slingshot paper](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-018-4772-0)
+* [tradeSeq paper](https://www.biorxiv.org/content/10.1101/623397v1)
 
 
 ## Workshop Participation
 
-The workshop will start with an introduction to the problem and the dataset using presentation slides. Following this, we will have a lab session on how one may tackle the problem of handling multiple conditions in trajectory inference and in downstream differential expression analysis.
+The workshop will start with an introduction to the problem and the dataset using presentation slides. Following this, we will have a lab session on how one may tackle the problem of handling multiple conditions in trajectory inference and in downstream analysis involving differential progression and differential expression.
 
 ## _R_ / _Bioconductor_ packages used
 
@@ -56,9 +58,9 @@ Participants will learn how to reason about trajectories in single-cell RNA-seq 
 ## Learning goals
 
 
-* Reason about dynamic biological systems
-* Grasp the complexity of analyzing large scRNA-seq datasets with the goal of extracting relevant biological information 
-* Understand the concepts of differential progression and differential expression along a trajectory path
+* Reason about dynamic biological systems.
+* Grasp the complexity of analyzing large scRNA-seq datasets with the goal of extracting relevant biological information.
+* Understand the concepts of differential progression and differential expression along a trajectory path.
 
 ## Learning objectives
 
@@ -67,5 +69,5 @@ Participants will learn how to reason about trajectories in single-cell RNA-seq 
 * Import and explore large scRNA-seq datasets.
 * Understand the challenges of trajectory inference.
 * Compose analysis pipeline that allows interpretation of complex scRNA-seq datasets.
-* Assess the added complexity of handling multiple conditions in these dynamic studies and how it influences the analysis pipeline.
+* Assess the added complexity of handling multiple conditions in these dynamic systems and how it influences the analysis pipeline.
 * Discuss how the analysis pipeline can incorporate this change and evaluate it.
