@@ -13,6 +13,7 @@ Many methods have been suggested for trajectory inference. However, in this sett
 
 In this workshop, we will explore methods for comparing multiple conditions in a trajectory inference analysis. We start by integrating datasets from multiple conditions into a single trajectory. By comparing the conditions along the trajectory's path, we can detect large-scale changes, indicative of differential progression. We also demonstrate how to detect subtler changes by finding genes that exhibit different behaviors between these conditions along a differentiation path.
 
+[This vignette](https://bioconductor.org/packages/release/bioc/vignettes/slingshot/inst/doc/conditionsVignette.html) provides a more complete problem description and proposes a few analytical approaches, which will serve as the basis of our workshop.
 
 ## Pre-requisites
 
