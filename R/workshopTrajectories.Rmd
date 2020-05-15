@@ -1,0 +1,93 @@
+---
+title: 'BioC2020 Workshop on trajectory inference across conditions: differential
+  expression and differential progression'
+author: "Kelly Street, Koen Van den Berge, Hector Roux de Bezieux"
+date: "5/15/2020"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(SingleCellExperiment)
+library(Seurat)
+library(slingshot)
+library(tradeSeq)
+library(Matrix)
+```
+
+
+# Download dataset
+
+```{r downloadData}
+dataDir <- getwd()
+dataFile <- paste0(dataDir,"/GSE114687_pseudospace_cds.rds.gz")
+download.file(url = "ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE114nnn/GSE114687/suppl/GSE114687_pseudospace_cds.rds.gz",
+              destfile = dataFile)
+con <- gzcon(gzfile(dataFile))
+cds <- readRDS(con)
+```
+
+```{r filtering}
+sce <- SingleCellExperiment(assays=list(counts=exprs(cds)), colData = pData(cds),
+							reducedDims = SimpleList(tSNE.orig=cbind(pData(cds)$TSNE.1,pData(cds)$TSNE.2)))
+filt <- apply(counts(sce), 1, function(x){
+	sum(x >= 2) >= 15
+})
+sce <- sce[which(filt), ]
+```
+
+
+# Integration and trajectory inference
+
+```{r}
+########################
+### Split by condition and convert to Seurat
+########################
+require(Matrix)
+assays(sce)$logcounts <- log1p(assays(sce)$counts)
+sceMock <- sce[ ,sce$treatment_id=='Mock']
+sceTGFB <- sce[ ,sce$treatment_id=='TGFB']
+require(Seurat)
+soMock <- as.Seurat(sceMock)
+soTGFB <- as.Seurat(sceTGFB)
+
+########################
+### Normalize
+########################
+soMock <- SCTransform(soMock)
+soTGFB <- SCTransform(soTGFB)
+
+########################
+### Integrate
+########################
+dtlist <- list(Mock = soMock, TGFB = soTGFB)
+intfts <- SelectIntegrationFeatures(object.list = dtlist, nfeatures = nrow(sce)) # maxes out at 4080 (why?)
+dtlist <- PrepSCTIntegration(object.list = dtlist,
+							 anchor.features = intfts)
+anchors <- FindIntegrationAnchors(object.list = dtlist, normalization.method = "SCT",
+								  anchor.features = intfts)
+integrated <- IntegrateData(anchorset = anchors, normalization.method = "SCT")
+integrated <- RunPCA(integrated)
+integrated <- RunUMAP(integrated, dims = 1:50)
+
+########################
+### Back to SCE for slingshot
+########################
+sce <- as.SingleCellExperiment(integrated)
+
+sce <- slingshot(sce, reducedDim = 'UMAP', clusterLabels = 'spatial_id', start.clus = 'inner',
+				 approx_points = 150)
+```
+
+
+# Differential progression
+
+
+# Differential expression
+

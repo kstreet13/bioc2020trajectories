@@ -4,6 +4,8 @@
 
 # Session Data files
 .RData
+.rds
+*.rds.gz
 
 # RStudio files
 .Rproj.user/
