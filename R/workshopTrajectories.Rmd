@@ -9,6 +9,11 @@ output:
     toc_float: true
 ---
 
+To discuss:
+ 
+ - we should probably select a subset of genes to work with such that everything runs relatively fast. But this might influence the integration.
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -17,8 +22,10 @@ knitr::opts_chunk$set(echo = TRUE)
 library(SingleCellExperiment)
 library(Seurat)
 library(slingshot)
+#  devtools::install_github("statOmics/tradeSeq", ref="conditions")
 library(tradeSeq)
 library(Matrix)
+library(UpSetR)
 ```
 
 
@@ -45,23 +52,21 @@ sce <- sce[which(filt), ]
 
 # Integration and trajectory inference
 
-```{r}
+```{r integrationTI}
 ########################
 ### Split by condition and convert to Seurat
 ########################
-require(Matrix)
 assays(sce)$logcounts <- log1p(assays(sce)$counts)
 sceMock <- sce[ ,sce$treatment_id=='Mock']
 sceTGFB <- sce[ ,sce$treatment_id=='TGFB']
-require(Seurat)
 soMock <- as.Seurat(sceMock)
 soTGFB <- as.Seurat(sceTGFB)
 
 ########################
 ### Normalize
 ########################
-soMock <- SCTransform(soMock)
-soTGFB <- SCTransform(soTGFB)
+soMock <- SCTransform(soMock, verbose = FALSE)
+soTGFB <- SCTransform(soTGFB, verbose = FALSE)
 
 ########################
 ### Integrate
@@ -90,4 +95,173 @@ sce <- slingshot(sce, reducedDim = 'UMAP', clusterLabels = 'spatial_id', start.c
 
 
 # Differential expression
+
+## Fit GAM
+
+```{r}
+## load results for now 
+sds <- readRDS("../data/SCEslingshot.rds")
+sce <- readRDS("../data/sce_conditions_4knots.rds")
+# set gene short names which are easier to work with
+names(sce) <- featureData(cds)$gene_short_name[which(filt)]
+```
+
+
+## Assess DE along pseudotime (or pseudospace)
+
+Note that the axis represented by the trajectory in this dataset is actually the migration of cells from the epithelium to the mesenchyme and therefore could also be looked at as a space dimension, although it is likely to be correlated with chronological time, too.
+
+To assess significant changes in gene expression as a function of pseudotime within each lineage, we use the `associationTest`, which tests whether the estimated smoothers are significantly varying as a function of pseudotime within each lineage. The `lineages=TRUE` argument specifies that we would like the results for each lineage separately, asides from the default global test, which tests for significant associations across all lineages in the trajectory simultaneously. Further, we specify a log2 fold cahnge cut-off to test against using the `l2fc` argument. 
+
+Across both conditions, using a global test, we find $2205$ DE genes with respect to a fold change of 2 on a 5% FDR level. On a lineage-specific basis, there are about twice as much DE genes in the mock lineage (2120) as compared to the TGFB lineage (1136). Many of the DE genes in the TGFB condition are also DE in the Mock condition, around 80%. 
+
+The authors of the original paper found $1105$ DE genes on a FDR level of $1e-10$ for the Mock condition.
+
+
+```{r}
+assocRes <- associationTest(sce, lineages = TRUE, l2fc=log2(2))
+assocGenes <- rownames(assocRes)[which(p.adjust(assocRes$pvalue, "fdr") <= 0.05)]
+mockGenes <-  rownames(assocRes)[which(p.adjust(assocRes$pvalue_lineage1_conditionMock, "fdr") <= 0.05)]
+tgfbGenes <-  rownames(assocRes)[which(p.adjust(assocRes$pvalue_lineage1_conditionTGFB, "fdr") <= 0.05)]
+
+length(assocGenes)
+length(mockGenes)
+length(tgfbGenes)
+
+UpSetR::upset(fromList(list(global=assocGenes, mock=mockGenes, tgfb=tgfbGenes)),
+              nintersects=3, order.by="degree")
+```
+
+
+
+### Visualization of DE genes
+
+Below we visualize and cluster the genes whose expression vary over pseudotime.
+As was also observed in the original manuscript, genes are mainly upregulated at the start- or endpoints of the lineage.
+
+```{r}
+### based on mean smoother
+yhatSmooth <- predictSmooth(sce, gene=mockGenes, nPoints=50)
+heatSmooth <- pheatmap(t(scale(t(yhatSmooth[,1:50]))), cluster_cols = FALSE,
+         show_rownames = FALSE, show_colnames=FALSE)
+
+## the hierarchical trees constructed here, can also be used for 
+## clustering of the genes according to their average expression pattern.
+cl <- sort(cutree(heatSmooth$tree_row, k=6))
+table(cl)
+```
+
+
+```{r, eval=FALSE}
+### based on fitted values (plotting takes a while to run)
+yhatCell <- predictCells(sce, gene=mockGenes)
+yhatCellMock <- yhatCell[,conditions == "Mock"]
+# order according to pseudotime
+ooMock <- order(pt1[conditions == "Mock"], decreasing=FALSE)
+yhatCellMock <- yhatCellMock[,ooMock]
+pheatmap(t(scale(t(yhatCellMock))), cluster_cols = FALSE,
+          show_rownames = FALSE, show_colnames=FALSE)
+```
+
+### Gene set enrichment analysis on genes from the Mock condition
+
+Gene set enrichment analysis confirms the biology on epithelial cell differentiation.
+
+```{r}
+## C5 category is according to gene ontology grouping: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4707969/pdf/nihms-743907.pdf
+library(msigdbr)
+library(fgsea)
+geneSets <- msigdbr(species = "Mus musculus", category = "C5", subcategory = "BP")
+### filter background to only include genes that we assessed.
+geneSets$gene_symbol <- toupper(geneSets$gene_symbol)
+geneSets <- geneSets[geneSets$gene_symbol %in% names(sce),]
+m_list <- geneSets %>% split(x = .$gene_symbol, f = .$gs_name)
+stats <- assocRes$waldStat_lineage1_conditionMock
+names(stats) <- rownames(assocRes)
+eaRes <- fgsea(pathways = m_list, stats=stats, nperm=5e4, minSize=10)
+ooEA <- order(eaRes$pval, decreasing=FALSE)
+kable(head(eaRes[ooEA,1:3], n=20))
+```
+
+
+## Differential expression between conditions
+
+### EDA
+
+The paper mentions that CDH1 and CRB3 should be expressed in similar kinetics.
+Note that the lower slope of CDH1 is also observed in the paper.
+
+```{r}
+plotSmoothers(sce, counts, gene="CDH1", alpha=1, border=TRUE) + ggtitle("CDH1") #+ scale_color_discrete(name = "Condition", labels = c("Mock", "TGFB"))
+plotSmoothers(sce, counts, gene="CRB3", alpha=1, border=TRUE) + ggtitle("CRB3") #+ scale_color_discrete(name = "Condition", labels = c("Mock", "TGFB"))
+```
+
+They also mention that 'only cells treated with TGF-Beta and positioned at the outer extreme of the trajectory expressed robust levels of FN1 and CDH2'.
+
+```{r}
+plotSmoothers(sce, counts, gene="FN1", alpha=1, border=TRUE) + ggtitle("FN1") #+ scale_color_discrete(name = "Condition", labels = c("Mock", "TGFB"))
+plotSmoothers(sce, counts, gene="CDH2", alpha=1, border=TRUE) + ggtitle("CDH2") #+ scale_color_discrete(name = "Condition", labels = c("Mock", "TGFB"))
+```
+
+
+### Differential expression analysis
+
+We discover 2013 genes that are DE with a fold change higher than $2$ or lower than $1/2$.
+
+```{r}
+condRes <- conditionTest(sce, l2fc=log2(2))
+condRes$padj <- p.adjust(condRes$pvalue, "fdr")
+mean(condRes$padj <= 0.05, na.rm=TRUE)
+sum(condRes$padj <= 0.05, na.rm=TRUE)
+conditionGenes <- rownames(condRes)[condRes$padj <= 0.05]
+conditionGenes <- conditionGenes[!is.na(conditionGenes)]
+```
+
+
+### Visualize most and least significant gene
+
+```{r}
+# plot genes
+oo <- order(condRes$waldStat, decreasing=TRUE)
+
+# most significant gene
+tradeSeq:::.plotSmoothers_conditions(sce, counts, gene=rownames(counts)[oo[1]], alpha=1, border=TRUE) #+ scale_color_discrete(name = "Condition", labels = c("Mock", "TGFB"))
+
+# least significant gene
+tradeSeq:::.plotSmoothers_conditions(sce, counts, gene=rownames(counts)[oo[nrow(counts)]], alpha=1, border=TRUE) #+ scale_color_discrete(name = "Condition", labels = c("Mock", "TGFB"))
+```
+
+## Heatmaps of genes DE between conditions
+
+Below we show heatmaps of the genes DE between conditions. The DE genes in the heatmaps are ordered according to a hierarchical clustering on th TGF-Beta condition.
+
+```{r}
+### based on mean smoother
+yhatSmooth <- predictSmooth(sce, gene=conditionGenes, nPoints=50)
+heatSmooth_TGF <- pheatmap(t(scale(t(yhatSmooth[,51:100]))), cluster_cols = FALSE,
+         show_rownames = FALSE, show_colnames=FALSE, main="TGF-Beta", legend=FALSE,
+         silent = TRUE)
+
+matchingHeatmap_mock <- pheatmap(t(scale(t(yhatSmooth[heatSmooth_TGF$tree_row$order,1:50]))), 
+                                 cluster_cols = FALSE, cluster_rows = FALSE,
+                                 show_rownames = FALSE, show_colnames=FALSE, main="Mock",
+                                 legend=FALSE, silent = TRUE)
+
+grid.arrange(heatSmooth_TGF[[4]], matchingHeatmap_mock[[4]], ncol=2)
+```
+
+## Gene set enrichment analysis
+
+Gene set enrichment analysis finds evidence for cell motility, cell junctions/adhesion and gastrulation. The original paper also focusses on the KRAS signaling pathway, which induces cell migration, amongst others.
+Other related processes include morphogenesis, gastrulation and cell adhesion.
+
+```{r}
+statsCond <- condRes$waldStat
+names(statsCond) <- rownames(condRes)
+eaRes <- fgsea(pathways = m_list, stats=statsCond, nperm=5e4, minSize=10)
+ooEA <- order(eaRes$pval, decreasing=FALSE)
+kable(head(eaRes[ooEA,1:3], n=20))
+```
+
+
 

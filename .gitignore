@@ -7,6 +7,9 @@
 .rds
 *.rds.gz
 
+# tradeSeq fit
+data/sce_conditions_4knots.rds
+
 # RStudio files
 .Rproj.user/
 *.Rproj
