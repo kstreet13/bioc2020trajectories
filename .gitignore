@@ -9,6 +9,7 @@
 
 # tradeSeq fit
 data/sce_conditions_4knots.rds
+data/sce_new.rds
 
 # RStudio files
 .Rproj.user/
@@ -30,3 +31,4 @@ data/sce_conditions_4knots.rds
 
 # built README
 README.html
+.Rproj.user

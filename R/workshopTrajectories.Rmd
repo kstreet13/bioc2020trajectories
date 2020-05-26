@@ -98,6 +98,23 @@ sce <- slingshot(sce, reducedDim = 'UMAP', clusterLabels = 'spatial_id', start.c
 
 ## Fit GAM
 
+```{r, eval=FALSE}
+sds <- readRDS("../data/SCEslingshot.rds")
+counts <- assays(sce)$counts
+pt1 <- colData(sds)$slingPseudotime_1
+cw <- matrix(rep(1, ncol(counts)))
+conditions <- factor(colData(sds)$treatment_id)
+set.seed(3)
+sce <- fitGAM(counts = as.matrix(counts),
+              pseudotime=pt1,
+              cellWeights=cw,
+              conditions = conditions,
+              nknots=4)
+mean(rowData(sce)$tradeSeq$converged)
+saveRDS(sce, file="../data/sce_new.rds")
+```
+
+
 ```{r}
 ## load results for now 
 sds <- readRDS("../data/SCEslingshot.rds")
