@@ -4,6 +4,7 @@
 
  - Kelly Street (kstreet@ds.dfci.harvard.edu)
  - Koen Van den Berge (koenvdberge@berkeley.edu)
+ - Hector Roux de Bézieux (hector.rouxdebezieux@berkeley.edu)
  
 # Workshop Description
 
