@@ -2,7 +2,7 @@ Package: bioc2020trajectories
 Title: Bioconductor 2020 Workshop on 'Trajectory inference across conditions: differential expression and differential progression'
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "Kelly",
+    c(person(given = "Kelly",
            family = "Street",
            role = c("aut", "cre")),
     person(given = "Koen",
@@ -10,7 +10,7 @@ Authors@R:
            role = c("aut", "cre")),
     person(given = "Hector",
            family = "Roux de Bezieux",
-           role = c("aut", "cre"))
+           role = c("aut", "cre")))
 Description: What the package does (one paragraph).
 License: What license it uses
 Encoding: UTF-8
