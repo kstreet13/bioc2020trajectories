@@ -1,0 +1,10 @@
+language: r
+sudo: false
+os:
+  - linux
+cache:
+  packages: true
+r:
+  - bioc-devel
+before_install:
+  - tlmgr install index

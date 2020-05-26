@@ -15,3 +15,9 @@ Description: What the package does (one paragraph).
 License: What license it uses
 Encoding: UTF-8
 LazyData: true
+License: CC BY 4.0  + file LICENSE
+RoxygenNote: 6.1.1
+VignetteBuilder:
+    knitr,
+    rmarkdown
+Suggests: knitr, rmarkdown

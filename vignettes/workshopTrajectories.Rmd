@@ -1,35 +1,94 @@
 ---
-title: 'BioC2020 Workshop on trajectory inference across conditions: differential
-  expression and differential progression'
-author: "Kelly Street, Koen Van den Berge, Hector Roux de Bezieux"
-date: "5/15/2020"
-output: 
-  html_document:
+output:
+  rmarkdown::html_document:
+    highlight: pygments
     toc: true
-    toc_float: true
+    toc_depth: 3
+    fig_width: 5
+bibliography: "`r system.file(package='bioc2020trajectories', 'vignettes', 'bibliography.bib')`"
+vignette: >
+  %\VignetteIndexEntry{dummychapter1}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding[utf8]{inputenc}
 ---
 
-To discuss:
+#  Trajectory inference across conditions: differential expression and differential progression
+
+## Instructor(s) name(s) and contact information
+
+ - Kelly Street (kstreet@ds.dfci.harvard.edu)
+ - Koen Van den Berge (koenvdberge@berkeley.edu)
+ - Hector Roux de Bézieux (hector.rouxdebezieux@berkeley.edu)
  
- - we should probably select a subset of genes to work with such that everything runs relatively fast. But this might influence the integration.
+## Workshop Description
+
+In single-cell RNA-sequencing (scRNA-seq), gene expression is assessed at the level of single cells. In dynamic biological systems, it may not be appropriate to assign cells to discrete groups, but rather a continuum of cell states may be observed, e.g. the differentiation of a stem cell population into mature cell types. This is often represented as a trajectory in reduced dimension.
+
+Many methods have been suggested for trajectory inference. However, in this setting, it is often unclear how one should handle multiple biological groups or conditions, e.g. constructing and comparing the differentiation trajectory of a wild type versus a knock-out stem cell population.
+
+In this workshop, we will explore methods for comparing multiple conditions in a trajectory inference analysis. We start by integrating datasets from multiple conditions into a single trajectory. By comparing the conditions along the trajectory's path, we can detect large-scale changes, indicative of differential progression. We also demonstrate how to detect subtler changes by finding genes that exhibit different behaviors between these conditions along a differentiation path.
+
+[This vignette](https://bioconductor.org/packages/release/bioc/vignettes/slingshot/inst/doc/conditionsVignette.html) provides a more complete problem description and proposes a few analytical approaches, which will serve as the basis of our workshop.
+
+## Pre-requisites
 
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+Software:
 
-```{r}
-library(SingleCellExperiment)
-library(Seurat)
-library(slingshot)
-#  devtools::install_github("statOmics/tradeSeq", ref="conditions")
-library(tradeSeq)
-library(Matrix)
-library(UpSetR)
-```
+* Basic knowledge of _R_ syntax
+* Familiarity with single-cell RNA-sequencing
+* Familiarity with the `SingleCellExperiment` class
+
+Background reading:
+
+* The textbook "Orchestrating Single-Cell Analysis with Bioconductor" is a great reference for single-cell analysis using Bioconductor packages.
+* [Slingshot paper](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-018-4772-0)
+* [tradeSeq paper](https://www.biorxiv.org/content/10.1101/623397v1)
 
 
-# Download dataset
+## Workshop Participation
+
+The workshop will start with an introduction to the problem and the dataset using presentation slides. Following this, we will have a lab session on how one may tackle the problem of handling multiple conditions in trajectory inference and in downstream analysis involving differential progression and differential expression.
+
+## _R_ / _Bioconductor_ packages used
+
+* The workshop will focus on Bioconductor packages [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html), [Slingshot](https://bioconductor.org/packages/release/bioc/html/slingshot.html), and [tradeSeq](https://bioconductor.org/packages/release/bioc/html/tradeSeq.html) 
+
+## Time outline
+
+
+| Activity                     | Time |
+|------------------------------|------|
+| Introduction                     | 15m  |
+| Data Integration and Trajectory Inference   | 10m  |
+| Differential Progression                    | 15m  |
+| Differential Expression          | 15m  |
+| Wrap-up and Conclusions          | 5m  |
+
+
+## Workshop goals and objectives
+
+Participants will learn how to reason about trajectories in single-cell RNA-seq data and how they may be used for interpretation of complex scRNA-seq datasets.
+
+
+## Learning goals
+
+* Reason about dynamic biological systems.
+* Grasp the complexity of analyzing large scRNA-seq datasets with the goal of extracting relevant biological information.
+* Understand the concepts of differential progression and differential expression along a trajectory path.
+
+## Learning objectives
+
+* Learn how to analyze single-cell RNA-seq data using Bioconductor packages.
+* Import and explore large scRNA-seq datasets.
+* Understand the challenges of trajectory inference.
+* Compose analysis pipeline that allows interpretation of complex scRNA-seq datasets.
+* Assess the added complexity of handling multiple conditions in these dynamic systems and how it influences the analysis pipeline.
+* Discuss how the analysis pipeline can incorporate this change and evaluate it.
+
+
+
+## Download dataset
 
 ```{r downloadData}
 dataDir <- getwd()
@@ -50,7 +109,7 @@ sce <- sce[which(filt), ]
 ```
 
 
-# Integration and trajectory inference
+## Integration and trajectory inference
 
 ```{r integrationTI}
 ########################
@@ -91,12 +150,12 @@ sce <- slingshot(sce, reducedDim = 'UMAP', clusterLabels = 'spatial_id', start.c
 ```
 
 
-# Differential progression
+## Differential progression
 
 
-# Differential expression
+## Differential expression
 
-## Fit GAM
+### Fit GAM
 
 ```{r, eval=FALSE}
 sds <- readRDS("../data/SCEslingshot.rds")
@@ -124,7 +183,7 @@ names(sce) <- featureData(cds)$gene_short_name[which(filt)]
 ```
 
 
-## Assess DE along pseudotime (or pseudospace)
+### Assess DE along pseudotime (or pseudospace)
 
 Note that the axis represented by the trajectory in this dataset is actually the migration of cells from the epithelium to the mesenchyme and therefore could also be looked at as a space dimension, although it is likely to be correlated with chronological time, too.
 
@@ -151,7 +210,7 @@ UpSetR::upset(fromList(list(global=assocGenes, mock=mockGenes, tgfb=tgfbGenes)),
 
 
 
-### Visualization of DE genes
+#### Visualization of DE genes
 
 Below we visualize and cluster the genes whose expression vary over pseudotime.
 As was also observed in the original manuscript, genes are mainly upregulated at the start- or endpoints of the lineage.
@@ -180,7 +239,7 @@ pheatmap(t(scale(t(yhatCellMock))), cluster_cols = FALSE,
           show_rownames = FALSE, show_colnames=FALSE)
 ```
 
-### Gene set enrichment analysis on genes from the Mock condition
+#### Gene set enrichment analysis on genes from the Mock condition
 
 Gene set enrichment analysis confirms the biology on epithelial cell differentiation.
 
@@ -201,9 +260,9 @@ kable(head(eaRes[ooEA,1:3], n=20))
 ```
 
 
-## Differential expression between conditions
+### Differential expression between conditions
 
-### EDA
+#### EDA
 
 The paper mentions that CDH1 and CRB3 should be expressed in similar kinetics.
 Note that the lower slope of CDH1 is also observed in the paper.
@@ -221,7 +280,7 @@ plotSmoothers(sce, counts, gene="CDH2", alpha=1, border=TRUE) + ggtitle("CDH2") 
 ```
 
 
-### Differential expression analysis
+#### Differential expression analysis
 
 We discover 2013 genes that are DE with a fold change higher than $2$ or lower than $1/2$.
 
@@ -235,7 +294,7 @@ conditionGenes <- conditionGenes[!is.na(conditionGenes)]
 ```
 
 
-### Visualize most and least significant gene
+#### Visualize most and least significant gene
 
 ```{r}
 # plot genes
@@ -248,7 +307,7 @@ tradeSeq:::.plotSmoothers_conditions(sce, counts, gene=rownames(counts)[oo[1]], 
 tradeSeq:::.plotSmoothers_conditions(sce, counts, gene=rownames(counts)[oo[nrow(counts)]], alpha=1, border=TRUE) #+ scale_color_discrete(name = "Condition", labels = c("Mock", "TGFB"))
 ```
 
-## Heatmaps of genes DE between conditions
+### Heatmaps of genes DE between conditions
 
 Below we show heatmaps of the genes DE between conditions. The DE genes in the heatmaps are ordered according to a hierarchical clustering on th TGF-Beta condition.
 
@@ -267,7 +326,7 @@ matchingHeatmap_mock <- pheatmap(t(scale(t(yhatSmooth[heatSmooth_TGF$tree_row$or
 grid.arrange(heatSmooth_TGF[[4]], matchingHeatmap_mock[[4]], ncol=2)
 ```
 
-## Gene set enrichment analysis
+### Gene set enrichment analysis
 
 Gene set enrichment analysis finds evidence for cell motility, cell junctions/adhesion and gastrulation. The original paper also focusses on the KRAS signaling pathway, which induces cell migration, amongst others.
 Other related processes include morphogenesis, gastrulation and cell adhesion.
