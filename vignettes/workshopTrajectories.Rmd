@@ -89,14 +89,23 @@ Participants will learn how to reason about trajectories in single-cell RNA-seq 
 
 ## Download dataset
 
-```{r downloadData}
+```{r downloadData_biocFileCache, eval=FALSE}
 library(BiocFileCache)
 url <- "ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE114nnn/GSE114687/suppl/GSE114687_pseudospace_cds.rds.gz"
 path <- paste0(rappdirs::user_cache_dir(), basename(url))
 bfc <- BiocFileCache(path, ask = FALSE)
 # addCds <- bfcadd(bfc, "cds", fpath=url)
-addCds <- bfcrpath(bfc, "cds", fpath=url)
+addCds <- bfcrpath(x=bfc, rnames="cds", fpath=url)
 con <- gzcon(gzfile(addCds))
+cds <- readRDS(con)
+```
+
+```{r downloadData_easy}
+dataDir <- getwd()
+dataFile <- paste0(dataDir,"/GSE114687_pseudospace_cds.rds.gz")
+download.file(url = "ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE114nnn/GSE114687/suppl/GSE114687_pseudospace_cds.rds.gz",
+              destfile = dataFile)
+con <- gzcon(gzfile(dataFile))
 cds <- readRDS(con)
 ```
 
