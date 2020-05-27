@@ -1,18 +1,13 @@
 Package: bioc2020trajectories
 Title: Bioconductor 2020 Workshop on 'Trajectory inference across conditions: differential expression and differential progression'
 Version: 0.0.0.9000
-Authors@R: 
-    c(person(given = "Kelly",
-           family = "Street",
-           role = c("aut", "cre")),
-    person(given = "Koen",
-           family = "Van den Berge",
-           role = c("aut", "cre")),
-    person(given = "Hector",
-           family = "Roux de Bezieux",
-           role = c("aut", "cre")))
+Authors@R: c(person("Kelly", "Street", role = c("aut", "cre"),
+                     email = "kstreet@ds.dfci.harvard.edu"),
+              person("Koen", "Van den Berge", role = c("aut"),
+                     email = "koenvdberge@berkeley.edu"),
+	      person("Hector","Roux de Bezieux", role = c("aut"),
+			email = "hector.rouxdebezieux@berkeley.edu"))
 Description: What the package does (one paragraph).
-License: What license it uses
 Encoding: UTF-8
 LazyData: true
 License: CC BY 4.0  + file LICENSE
