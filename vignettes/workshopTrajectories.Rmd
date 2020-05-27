@@ -87,7 +87,6 @@ Participants will learn how to reason about trajectories in single-cell RNA-seq 
 * Discuss how the analysis pipeline can incorporate this change and evaluate it.
 
 
-
 ## Download dataset
 
 ```{r downloadData}
@@ -98,7 +97,6 @@ bfc <- BiocFileCache(path, ask = FALSE)
 addCds <- bfcadd(bfc, "cds", fpath=url)
 con <- gzcon(gzfile(addCds))
 cds <- readRDS(con)
-
 ```
 
 ```{r filtering}
@@ -113,7 +111,7 @@ sce <- sce[which(filt), ]
 
 ## Integration and trajectory inference
 
-```{r integrationTI}
+```{r integrationTI, eval=FALSE}
 ########################
 ### Split by condition and convert to Seurat
 ########################
@@ -176,7 +174,7 @@ saveRDS(sce, file="../data/sce_new.rds")
 ```
 
 
-```{r}
+```{r, eval=FALSE}
 ## load results for now 
 sds <- readRDS("../data/SCEslingshot.rds")
 sce <- readRDS("../data/sce_conditions_4knots.rds")
@@ -196,7 +194,7 @@ Across both conditions, using a global test, we find $2205$ DE genes with respec
 The authors of the original paper found $1105$ DE genes on a FDR level of $1e-10$ for the Mock condition.
 
 
-```{r}
+```{r, eval=FALSE}
 assocRes <- associationTest(sce, lineages = TRUE, l2fc=log2(2))
 assocGenes <- rownames(assocRes)[which(p.adjust(assocRes$pvalue, "fdr") <= 0.05)]
 mockGenes <-  rownames(assocRes)[which(p.adjust(assocRes$pvalue_lineage1_conditionMock, "fdr") <= 0.05)]
@@ -217,7 +215,7 @@ UpSetR::upset(fromList(list(global=assocGenes, mock=mockGenes, tgfb=tgfbGenes)),
 Below we visualize and cluster the genes whose expression vary over pseudotime.
 As was also observed in the original manuscript, genes are mainly upregulated at the start- or endpoints of the lineage.
 
-```{r}
+```{r, eval=FALSE}
 ### based on mean smoother
 yhatSmooth <- predictSmooth(sce, gene=mockGenes, nPoints=50)
 heatSmooth <- pheatmap(t(scale(t(yhatSmooth[,1:50]))), cluster_cols = FALSE,
@@ -245,7 +243,7 @@ pheatmap(t(scale(t(yhatCellMock))), cluster_cols = FALSE,
 
 Gene set enrichment analysis confirms the biology on epithelial cell differentiation.
 
-```{r}
+```{r, eval=FALSE}
 ## C5 category is according to gene ontology grouping: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4707969/pdf/nihms-743907.pdf
 library(msigdbr)
 library(fgsea)
@@ -269,14 +267,14 @@ kable(head(eaRes[ooEA,1:3], n=20))
 The paper mentions that CDH1 and CRB3 should be expressed in similar kinetics.
 Note that the lower slope of CDH1 is also observed in the paper.
 
-```{r}
+```{r, eval=FALSE}
 plotSmoothers(sce, counts, gene="CDH1", alpha=1, border=TRUE) + ggtitle("CDH1") #+ scale_color_discrete(name = "Condition", labels = c("Mock", "TGFB"))
 plotSmoothers(sce, counts, gene="CRB3", alpha=1, border=TRUE) + ggtitle("CRB3") #+ scale_color_discrete(name = "Condition", labels = c("Mock", "TGFB"))
 ```
 
 They also mention that 'only cells treated with TGF-Beta and positioned at the outer extreme of the trajectory expressed robust levels of FN1 and CDH2'.
 
-```{r}
+```{r, eval=FALSE}
 plotSmoothers(sce, counts, gene="FN1", alpha=1, border=TRUE) + ggtitle("FN1") #+ scale_color_discrete(name = "Condition", labels = c("Mock", "TGFB"))
 plotSmoothers(sce, counts, gene="CDH2", alpha=1, border=TRUE) + ggtitle("CDH2") #+ scale_color_discrete(name = "Condition", labels = c("Mock", "TGFB"))
 ```
@@ -286,7 +284,7 @@ plotSmoothers(sce, counts, gene="CDH2", alpha=1, border=TRUE) + ggtitle("CDH2") 
 
 We discover 2013 genes that are DE with a fold change higher than $2$ or lower than $1/2$.
 
-```{r}
+```{r, eval=FALSE}
 condRes <- conditionTest(sce, l2fc=log2(2))
 condRes$padj <- p.adjust(condRes$pvalue, "fdr")
 mean(condRes$padj <= 0.05, na.rm=TRUE)
@@ -298,7 +296,7 @@ conditionGenes <- conditionGenes[!is.na(conditionGenes)]
 
 #### Visualize most and least significant gene
 
-```{r}
+```{r, eval=FALSE}
 # plot genes
 oo <- order(condRes$waldStat, decreasing=TRUE)
 
@@ -313,7 +311,7 @@ tradeSeq:::.plotSmoothers_conditions(sce, counts, gene=rownames(counts)[oo[nrow(
 
 Below we show heatmaps of the genes DE between conditions. The DE genes in the heatmaps are ordered according to a hierarchical clustering on th TGF-Beta condition.
 
-```{r}
+```{r, eval=FALSE}
 ### based on mean smoother
 yhatSmooth <- predictSmooth(sce, gene=conditionGenes, nPoints=50)
 heatSmooth_TGF <- pheatmap(t(scale(t(yhatSmooth[,51:100]))), cluster_cols = FALSE,
@@ -333,7 +331,7 @@ grid.arrange(heatSmooth_TGF[[4]], matchingHeatmap_mock[[4]], ncol=2)
 Gene set enrichment analysis finds evidence for cell motility, cell junctions/adhesion and gastrulation. The original paper also focusses on the KRAS signaling pathway, which induces cell migration, amongst others.
 Other related processes include morphogenesis, gastrulation and cell adhesion.
 
-```{r}
+```{r, eval=FALSE}
 statsCond <- condRes$waldStat
 names(statsCond) <- rownames(condRes)
 eaRes <- fgsea(pathways = m_list, stats=statsCond, nperm=5e4, minSize=10)
