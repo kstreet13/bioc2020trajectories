@@ -32,3 +32,4 @@ data/sce_new.rds
 # built README
 README.html
 .Rproj.user
+inst/doc
