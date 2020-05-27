@@ -16,3 +16,7 @@ VignetteBuilder:
     knitr,
     rmarkdown
 Suggests: knitr, rmarkdown
+Imports: 
+    BiocFileCache,
+    slingshot,
+    rappdirs
