@@ -89,18 +89,18 @@ Participants will learn how to reason about trajectories in single-cell RNA-seq 
 
 ## Download dataset
 
-```{r downloadData_biocFileCache, eval=FALSE}
+```{r downloadData_biocFileCache}
 library(BiocFileCache)
-url <- "ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE114nnn/GSE114687/suppl/GSE114687_pseudospace_cds.rds.gz"
+url <- "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE114687&format=file&file=GSE114687%5Fpseudospace%5Fcds%2Erds%2Egz"
 path <- paste0(rappdirs::user_cache_dir(), basename(url))
 bfc <- BiocFileCache(path, ask = FALSE)
-# addCds <- bfcadd(bfc, "cds", fpath=url)
-addCds <- bfcrpath(x=bfc, rnames="cds", fpath=url)
+addCds <- bfcadd(bfc, "cds", fpath=url)
+# addCds <- bfcrpath(x=bfc, rnames="cds", fpath=url)
 con <- gzcon(gzfile(addCds))
 cds <- readRDS(con)
 ```
 
-```{r downloadData_easy}
+```{r downloadData_easy, eval=FALSE}
 dataDir <- getwd()
 dataFile <- paste0(dataDir,"/GSE114687_pseudospace_cds.rds.gz")
 download.file(url = "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE114687&format=file&file=GSE114687%5Fpseudospace%5Fcds%2Erds%2Egz",
@@ -110,6 +110,7 @@ cds <- readRDS(con)
 ```
 
 ```{r filtering}
+library(SingleCellExperiment)
 sce <- SingleCellExperiment(assays=list(counts=exprs(cds)), colData = pData(cds),
 							reducedDims = SimpleList(tSNE.orig=cbind(pData(cds)$TSNE.1,pData(cds)$TSNE.2)))
 filt <- apply(counts(sce), 1, function(x){
