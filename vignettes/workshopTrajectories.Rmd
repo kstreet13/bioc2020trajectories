@@ -5,7 +5,7 @@ output:
     toc: true
     toc_depth: 3
     fig_width: 5
-bibliography: "`r system.file(package='bioc2020trajectories', 'vignettes', 'bibliography.bib')`"
+#bibliography: "`r system.file(package='bioc2020trajectories', 'vignettes', 'bibliography.bib')`"
 vignette: >
   %\VignetteIndexEntry{bioc2020trajectories}
   %\VignetteEngine{knitr::rmarkdown}
@@ -42,6 +42,7 @@ Software:
 Background reading:
 
 * The textbook "Orchestrating Single-Cell Analysis with Bioconductor" is a great reference for single-cell analysis using Bioconductor packages.
+* The data used in this vignette was originally published in [McFaline-Figueroa, et al.](https://www.nature.com/articles/s41588-019-0489-5) "A pooled single-cell genetic screen identifies regulatory checkpoints in the continuum of the epithelial-to-mesenchymal transition."
 * [Slingshot paper](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-018-4772-0)
 * [tradeSeq paper](https://www.biorxiv.org/content/10.1101/623397v1)
 
@@ -110,7 +111,7 @@ cds <- readRDS(con)
 ```
 
 ```{r filtering}
-library(SingleCellExperiment)
+suppressMessages(library(SingleCellExperiment))
 sce <- SingleCellExperiment(assays=list(counts=exprs(cds)), colData = pData(cds),
 							reducedDims = SimpleList(tSNE.orig=cbind(pData(cds)$TSNE.1,pData(cds)$TSNE.2)))
 filt <- apply(counts(sce), 1, function(x){
@@ -129,6 +130,7 @@ sce <- sce[which(filt), ]
 assays(sce)$logcounts <- log1p(assays(sce)$counts)
 sceMock <- sce[ ,sce$treatment_id=='Mock']
 sceTGFB <- sce[ ,sce$treatment_id=='TGFB']
+library(Seurat)
 soMock <- as.Seurat(sceMock)
 soTGFB <- as.Seurat(sceTGFB)
 
@@ -155,11 +157,28 @@ integrated <- RunUMAP(integrated, dims = 1:50)
 ### Back to SCE for slingshot
 ########################
 sce <- as.SingleCellExperiment(integrated)
-
-sce <- slingshot(sce, reducedDim = 'UMAP', clusterLabels = 'spatial_id', start.clus = 'inner',
-				 approx_points = 150)
+library(slingshot)
+sce <- slingshot(sce, reducedDim = 'UMAP', clusterLabels = 'spatial_id',
+                 start.clus = 'inner', approx_points = 150)
 ```
 
+
+```{r plotSlingshot, echo=FALSE}
+library(slingshot); library(SingleCellExperiment); library(scales)
+sce <- readRDS("../data/SCEslingshot.rds")
+plot(reducedDim(sce,'UMAP'), asp=1, pch=16, xlab='UMAP-1', ylab='UMAP-2',
+     col = alpha(c(1:2)[factor(sce$treatment_id)], alpha = .5))
+legend('topright', pch = 16, col = 1:2, bty = 'n',
+       legend = levels(factor(sce$treatment_id)))
+plot(reducedDim(sce,'UMAP'), asp=1, pch=16, xlab='UMAP-1', ylab='UMAP-2',
+     col = alpha(c(3,4)[factor(sce$spatial_id)], alpha = .5))
+lines(SlingshotDataSet(sce), type = 'lineages')
+legend('topright', pch = 16, col = 3:4, bty = 'n',
+       legend = levels(factor(sce$spatial_id)))
+plot(reducedDim(sce,'UMAP'), asp=1, pch=16, xlab='UMAP-1', ylab='UMAP-2',
+     col = hcl.colors(100, alpha = .5)[cut(sce$slingPseudotime_1, breaks = 100)])
+lines(SlingshotDataSet(sce))
+```
 
 ## Differential progression
 
