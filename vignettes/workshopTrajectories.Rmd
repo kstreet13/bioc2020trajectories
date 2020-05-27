@@ -94,7 +94,8 @@ library(BiocFileCache)
 url <- "ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE114nnn/GSE114687/suppl/GSE114687_pseudospace_cds.rds.gz"
 path <- paste0(rappdirs::user_cache_dir(), basename(url))
 bfc <- BiocFileCache(path, ask = FALSE)
-addCds <- bfcadd(bfc, "cds", fpath=url)
+# addCds <- bfcadd(bfc, "cds", fpath=url)
+addCds <- bfcrpath(bfc, "cds", fpath=url)
 con <- gzcon(gzfile(addCds))
 cds <- readRDS(con)
 ```
