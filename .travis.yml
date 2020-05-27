@@ -4,6 +4,8 @@ os:
   - linux
 cache:
   packages: true
+  directories:
+  - $HOME/.cache
 r:
   - bioc-devel
 before_install:

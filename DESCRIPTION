@@ -20,6 +20,4 @@ Imports:
     BiocFileCache,
     slingshot,
     rappdirs,
-    tradeSeq,
-    Seurat,
     SingleCellExperiment
