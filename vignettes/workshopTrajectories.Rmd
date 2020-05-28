@@ -1,4 +1,5 @@
 ---
+title: "Trajectory inference across conditions: differential expression and differential progression"
 output:
   rmarkdown::html_document:
     highlight: pygments
@@ -12,7 +13,7 @@ vignette: >
   %\VignetteEncoding[utf8]{inputenc}
 ---
 
-#  Trajectory inference across conditions: differential expression and differential progression
+# Overview
 
 ## Instructor(s) name(s) and contact information
 
@@ -88,6 +89,9 @@ Participants will learn how to reason about trajectories in single-cell RNA-seq 
 * Discuss how the analysis pipeline can incorporate this change and evaluate it.
 
 
+# Primary Analysis
+
+
 ## Download dataset
 
 ```{r downloadData_biocFileCache}
@@ -125,6 +129,8 @@ sce <- sce[which(filt), ]
 
 Our dataset contains cells collected from samples undergoing two different treatment conditions which were necessarily collected separately. Hence, we will start with an integration step to combine these two sets of cells, similar to batch correction. Our goal is to remove the technical effects of the different sample collections while preserving any true, biological differences between the two treatment groups.
 
+Data integration and normalization are complex problems and there are a variety of methods addressing each. However, since neither is the main focus of this workshop, we elected to use an existing pipeline for these tasks. The full Seurat data integration workflow with SCTransform normalization is described in [this vignette](https://satijalab.org/seurat/v3.1/integration.html).
+
 ```{r integration, eval=FALSE}
 ########################
 ### Split by condition and convert to Seurat
@@ -156,7 +162,9 @@ integrated <- RunPCA(integrated)
 integrated <- RunUMAP(integrated, dims = 1:50)
 ```
 
-Once the two sets of cells have been integrated, we perform trajectory inference to order the cells according to EMT progression. We  use `slingshot` for trajectory inference, with the cells' position (inner vs. outer) serving as the cluster identifier. Since we only expect a single lineage, these two clusters should be sufficient to correctly orient the pseudotime axis.
+Once the two sets of cells have been integrated, we perform trajectory inference to order the cells according to EMT progression. We  use `slingshot` for trajectory inference, with the cells' position (inner or outer) serving as the cluster identifier. This ensures that we will only find a single lineage while still allowing suffiecient flexibility to correctly orient the pseudotime axis.
+
+Note that we perform trajectory inference using cells from both conditions, rather than splitting the data into two groups. This choice allows us to use the maximum amount of data in the construction of our trajectory, which should lead to more robust results than separate, potentially noisey trajectories constructed on subsets of the data. As we will see, not all cell types are necessarily present in every condition, so this approach ensures that our trajectory accounts for all cell types present in the overall data. 
 
 ```{r slingshot, eval = FALSE}
 ########################
@@ -169,26 +177,42 @@ sce <- slingshot(sce, reducedDim = 'UMAP', clusterLabels = 'spatial_id',
 ```
 
 
-```{r plotSlingshot, echo=FALSE}
+```{r plotSlingshot, echo=FALSE, fig.width=8}
 library(slingshot); library(SingleCellExperiment); library(scales)
 sce <- readRDS("../data/SCEslingshot.rds")
-plot(reducedDim(sce,'UMAP'), asp=1, pch=16, xlab='UMAP-1', ylab='UMAP-2',
-     col = alpha(c(1:2)[factor(sce$treatment_id)], alpha = .5))
+shuffle <- sample(ncol(sce))
+layout(matrix(1:4,2,byrow = TRUE))
+par(mar = c(4.5,4,1,1))
+plot(reducedDim(sce,'UMAP')[shuffle, ], asp=1, pch=16, xlab='UMAP-1', ylab='UMAP-2',
+     col = alpha(c(1:2)[factor(sce$treatment_id)][shuffle], alpha = .5))
 legend('topright', pch = 16, col = 1:2, bty = 'n',
        legend = levels(factor(sce$treatment_id)))
-plot(reducedDim(sce,'UMAP'), asp=1, pch=16, xlab='UMAP-1', ylab='UMAP-2',
-     col = alpha(c(3,4)[factor(sce$spatial_id)], alpha = .5))
+plot(reducedDim(sce,'UMAP')[shuffle, ], asp=1, pch=16, xlab='UMAP-1', ylab='UMAP-2',
+     col = alpha(c(3,4)[factor(sce$spatial_id)][shuffle], alpha = .5))
 lines(SlingshotDataSet(sce), type = 'lineages')
 legend('topright', pch = 16, col = 3:4, bty = 'n',
        legend = levels(factor(sce$spatial_id)))
-plot(reducedDim(sce,'UMAP'), asp=1, pch=16, xlab='UMAP-1', ylab='UMAP-2',
-     col = hcl.colors(100, alpha = .5)[cut(sce$slingPseudotime_1, breaks = 100)])
+plot(reducedDim(sce,'UMAP')[shuffle, ], asp=1, pch=16, xlab='UMAP-1', ylab='UMAP-2',
+     col = hcl.colors(100, alpha = .5)[cut(sce$slingPseudotime_1, breaks = 100)][shuffle])
 lines(SlingshotDataSet(sce))
+# Pseudotime densities (by spatial)
+ds <- list(Inner = density(slingPseudotime(sce)[sce$spatial_id=='inner',1]),
+		   Outer = density(slingPseudotime(sce)[sce$spatial_id=='outer',1]))
+xlim <- range(c(ds$Inner$x, ds$Outer$x))
+ylim <- range(c(ds$Inner$y, ds$Outer$y))
+plot(xlim,ylim, col='white',xlab='Pseudotime',ylab='')
+polygon(c(min(ds$Inner$x),ds$Inner$x,max(ds$Inner$x)),
+		c(0,ds$Inner$y,0), col = alpha(brewer.pal(4,'Set1')[3], alpha = .5))
+polygon(c(min(ds$Outer$x),ds$Inner$x,max(ds$Inner$x)),
+		c(0,ds$Outer$y,0), col = alpha(brewer.pal(4,'Set1')[2], alpha = .5))
+legend('topright',legend=c('Inner','Outer'), fill=alpha(brewer.pal(4,'Set1')[3:2], alpha=.5), bty='n')
+layout(1)
+par(mar = c(5,4,4,2)+.1)
 ```
 
 ## Differential progression
 
-
+Now that we have ordered the cells by EMT progression, we can begin to address the main question: how is this progression affected by TGF-$\beta$ treatment? In this section, we interpret this question as a univariate analysis of the pseudotime values between the two groups.
 
 ```{r plotDensities, echo=FALSE, fig.height=4}
 # Pseudotime densities (by treatment)
@@ -201,25 +225,20 @@ polygon(c(min(ds$Mock$x),ds$Mock$x,max(ds$Mock$x)),
 		c(0,ds$Mock$y,0), col = rgb(0,0,0,.5))
 polygon(c(min(ds$TGFB$x),ds$Mock$x,max(ds$Mock$x)),
 		c(0,ds$TGFB$y,0), col = alpha(brewer.pal(4,'Set1')[1], alpha = .5))
-legend('topright',legend=c('Mock','TGFB'), fill=alpha(c(1,brewer.pal(3,'Set1')[1]), alpha=.5), bty='n', title = 'Treatment')
+legend('topright',legend=c('Mock','TGFB'), fill=alpha(c(1,brewer.pal(3,'Set1')[1]), alpha=.5), bty='n')
+```
 
-# Pseudotime densities (by spatial)
-ds <- list(Inner = density(slingPseudotime(sce)[sce$spatial_id=='inner',1]),
-		   Outer = density(slingPseudotime(sce)[sce$spatial_id=='outer',1]))
-xlim <- range(c(ds$Inner$x, ds$Outer$x))
-ylim <- range(c(ds$Inner$y, ds$Outer$y))
-plot(xlim,ylim, col='white',xlab='Pseudotime',ylab='')
-polygon(c(min(ds$Inner$x),ds$Inner$x,max(ds$Inner$x)),
-		c(0,ds$Inner$y,0), col = alpha(brewer.pal(4,'Set1')[3], alpha = .5))
-polygon(c(min(ds$Outer$x),ds$Inner$x,max(ds$Inner$x)),
-		c(0,ds$Outer$y,0), col = alpha(brewer.pal(4,'Set1')[2], alpha = .5))
-legend('topright',legend=c('Inner','Outer'), fill=alpha(brewer.pal(4,'Set1')[3:2], alpha=.5), bty='n', title = 'Spatial Location')
+The density estimates for the two groups show a trimodal distribution for the untreated cells, but a tendancy toward later pseudotime values in the TGF-$\beta$ treated cells. The difference is striking enough that a standard T-test would likely be significant, but we are we are interested more generally in differences between the two distributions, not just the difference of means (one could imagine a scenario in which the treated group tended toward the extremes, but the means were the same). Hence, we propose a Kolmogorov-Smirnov Test to assess whether the two groups of pseudotime values are derived from the same distribution.
 
-# Kolmogorov-Smirnov Test
+```{r KStest}
+########################
+### Kolmogorov-Smirnov Test
+########################
 ks.test(slingPseudotime(sce)[sce$treatment_id=='Mock',1],
 		slingPseudotime(sce)[sce$treatment_id=='TGFB',1])
-
 ```
+
+As we might expect, this test is highly signifcant, so we can conclude that there are differences between the two distributions.
 
 ## Differential expression
 
