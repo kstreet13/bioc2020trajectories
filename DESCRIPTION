@@ -12,7 +12,7 @@ Encoding: UTF-8
 LazyData: true
 License: CC BY 4.0  + file LICENSE
 RoxygenNote: 6.1.1
-Suggests: knitr, rmarkdown
+Suggests: knitr, RColorBrewer, rmarkdown, scales
 Imports: 
     BiocFileCache,
     slingshot,

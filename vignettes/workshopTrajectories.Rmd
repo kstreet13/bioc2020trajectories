@@ -179,7 +179,8 @@ sce <- slingshot(sce, reducedDim = 'UMAP', clusterLabels = 'spatial_id',
 
 
 ```{r plotSlingshot, echo=FALSE, fig.width=8}
-library(slingshot); library(SingleCellExperiment); library(scales)
+library(slingshot); library(SingleCellExperiment)
+library(RColorBrewer); library(scales)
 sce <- readRDS("../data/SCEslingshot.rds")
 shuffle <- sample(ncol(sce))
 layout(matrix(1:4,2,byrow = TRUE))
