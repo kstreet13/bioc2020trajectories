@@ -17,5 +17,7 @@ Imports:
     BiocFileCache,
     slingshot,
     rappdirs,
-    SingleCellExperiment
+    SingleCellExperiment,
+    monocle,
+    tradeSeq
 VignetteBuilder: knitr
