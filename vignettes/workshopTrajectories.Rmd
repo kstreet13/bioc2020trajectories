@@ -97,6 +97,7 @@ Participants will learn how to reason about trajectories in single-cell RNA-seq 
 
 ```{r downloadData_biocFileCache}
 library(BiocFileCache)
+library(monocle)
 url <- "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE114687&format=file&file=GSE114687%5Fpseudospace%5Fcds%2Erds%2Egz"
 path <- paste0(rappdirs::user_cache_dir(), basename(url))
 bfc <- BiocFileCache(path, ask = FALSE)
