@@ -97,15 +97,18 @@ Participants will learn how to reason about trajectories in single-cell RNA-seq 
 
 ```{r downloadData_biocFileCache}
 library(BiocFileCache)
-library(monocle)
 url <- "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE114687&format=file&file=GSE114687%5Fpseudospace%5Fcds%2Erds%2Egz"
 path <- paste0(rappdirs::user_cache_dir(), basename(url))
 bfc <- BiocFileCache(path, ask = FALSE)
 addCds <- bfcadd(bfc, "cds", fpath=url)
-# addCds <- bfcrpath(x=bfc, rnames="cds", fpath=url)
+```
+
+```{r, eval=FALSE}
+library(monocle)
 con <- gzcon(gzfile(addCds))
 cds <- readRDS(con)
 ```
+
 
 ```{r downloadData_easy, eval=FALSE}
 dataDir <- getwd()
@@ -116,7 +119,7 @@ con <- gzcon(gzfile(dataFile))
 cds <- readRDS(con)
 ```
 
-```{r filtering}
+```{r filtering, eval=FALSE}
 suppressMessages(library(SingleCellExperiment))
 sce <- SingleCellExperiment(assays=list(counts=exprs(cds)), colData = pData(cds),
 							reducedDims = SimpleList(tSNE.orig=cbind(pData(cds)$TSNE.1,pData(cds)$TSNE.2)))

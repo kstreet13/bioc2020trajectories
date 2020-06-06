@@ -19,5 +19,6 @@ Imports:
     rappdirs,
     SingleCellExperiment,
     monocle,
-    tradeSeq
+    tradeSeq,
+    HDF5Array
 VignetteBuilder: knitr
