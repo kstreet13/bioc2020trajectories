@@ -248,6 +248,10 @@ As we might expect, this test is highly signifcant, so we can conclude that ther
 
 ### Differential expression
 
+We will now proceed to discover genes whose expression changes along the trajectory, or between the two lineages of each trajectory using the Bioconductor package `tradeSeq`. 
+For each condition (i.e., mock and TGF-Beta), a smooth average expression profile along pseudotime will be estimated for each gene, using a negative binomial model.
+Each differential expression hypothesis of interest will then be translated into testing a linear combination of the parameters of this smoothed expression estimate.
+
 #### Fit GAM
 
 ```{r, eval=FALSE}
@@ -278,9 +282,10 @@ names(sce) <- featureData(cds)$gene_short_name[which(filt)]
 
 #### Assess DE along pseudotime (or pseudospace)
 
+
 Note that the axis represented by the trajectory in this dataset is actually the migration of cells from the epithelium to the mesenchyme and therefore could also be looked at as a space dimension, although it is likely to be correlated with chronological time, too.
 
-To assess significant changes in gene expression as a function of pseudotime within each lineage, we use the `associationTest`, which tests whether the estimated smoothers are significantly varying as a function of pseudotime within each lineage. The `lineages=TRUE` argument specifies that we would like the results for each lineage separately, asides from the default global test, which tests for significant associations across all lineages in the trajectory simultaneously. Further, we specify a log2 fold cahnge cut-off to test against using the `l2fc` argument. 
+To assess significant changes in gene expression as a function of pseudotime within each lineage, we use the `associationTest`, which tests the null hypothesis that gene expression is not a function of pseudotime, i.e., whether the estimated smoothers are significantly varying as a function of pseudotime within each lineage. The `lineages=TRUE` argument specifies that we would like the results for each lineage separately, asides from the default global test, which tests for significant associations across all lineages in the trajectory simultaneously. Further, we specify a log2 fold change cut-off to test against using the `l2fc` argument. 
 
 Across both conditions, using a global test, we find $2205$ DE genes with respect to a fold change of 2 on a 5% FDR level. On a lineage-specific basis, there are about twice as much DE genes in the mock lineage (2120) as compared to the TGFB lineage (1136). Many of the DE genes in the TGFB condition are also DE in the Mock condition, around 80%. 
 
@@ -334,7 +339,7 @@ pheatmap(t(scale(t(yhatCellMock))), cluster_cols = FALSE,
 
 ##### Gene set enrichment analysis on genes from the Mock condition
 
-Gene set enrichment analysis confirms the biology on epithelial cell differentiation.
+Gene set enrichment analysis on the DE genes within the mock condition confirms the biology on epithelial cell differentiation.
 
 ```{r, eval=FALSE}
 ## C5 category is according to gene ontology grouping: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4707969/pdf/nihms-743907.pdf
@@ -354,6 +359,8 @@ kable(head(eaRes[ooEA,1:3], n=20))
 
 
 #### Differential expression between conditions
+
+In the following sections, we will investigate differential expression for each gene, between the two conditions, i.e., the mock and TGF-Beta conditions.
 
 ##### EDA
 
@@ -375,6 +382,8 @@ plotSmoothers(sce, counts, gene="CDH2", alpha=1, border=TRUE) + ggtitle("CDH2") 
 
 ##### Differential expression analysis
 
+To test differential expression between conditions, we use the `conditionTest` function implemented in `tradeSeq`. 
+This function tests the null hypothesis that genes have identical expression patterns in each condition.
 We discover 2013 genes that are DE with a fold change higher than $2$ or lower than $1/2$.
 
 ```{r, eval=FALSE}
@@ -402,7 +411,7 @@ tradeSeq:::.plotSmoothers_conditions(sce, counts, gene=rownames(counts)[oo[nrow(
 
 #### Heatmaps of genes DE between conditions
 
-Below we show heatmaps of the genes DE between conditions. The DE genes in the heatmaps are ordered according to a hierarchical clustering on th TGF-Beta condition.
+Below we show heatmaps of the genes DE between conditions. The DE genes in the heatmaps are ordered according to a hierarchical clustering on the TGF-Beta condition.
 
 ```{r, eval=FALSE}
 ### based on mean smoother
@@ -421,7 +430,7 @@ grid.arrange(heatSmooth_TGF[[4]], matchingHeatmap_mock[[4]], ncol=2)
 
 #### Gene set enrichment analysis
 
-Gene set enrichment analysis finds evidence for cell motility, cell junctions/adhesion and gastrulation. The original paper also focusses on the KRAS signaling pathway, which induces cell migration, amongst others.
+Gene set enrichment analysis on genes that are differentially expressed between conditions finds evidence for cell motility, cell junctions/adhesion and gastrulation. The original paper also focusses on the KRAS signaling pathway, which induces cell migration, amongst others.
 Other related processes include morphogenesis, gastrulation and cell adhesion.
 
 ```{r, eval=FALSE}
