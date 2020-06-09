@@ -101,10 +101,6 @@ url <- "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE114687&format=file&fil
 path <- paste0(rappdirs::user_cache_dir(), basename(url))
 bfc <- BiocFileCache(path, ask = FALSE)
 addCds <- bfcadd(bfc, "cds", fpath=url)
-```
-
-```{r, eval=FALSE}
-library(monocle)
 con <- gzcon(gzfile(addCds))
 cds <- readRDS(con)
 ```
@@ -121,8 +117,8 @@ cds <- readRDS(con)
 
 ```{r filtering, eval=FALSE}
 suppressMessages(library(SingleCellExperiment))
-sce <- SingleCellExperiment(assays=list(counts=exprs(cds)), colData = pData(cds),
-							reducedDims = SimpleList(tSNE.orig=cbind(pData(cds)$TSNE.1,pData(cds)$TSNE.2)))
+sce <- SingleCellExperiment(assays=list(counts=cds@assayData$exprs), colData = pData(cds@phenoData),
+							reducedDims = SimpleList(tSNE.orig=cbind(cds@phenoData@data$TSNE.1,cds@phenoData@data$TSNE.2)))
 filt <- apply(counts(sce), 1, function(x){
 	sum(x >= 2) >= 15
 })
