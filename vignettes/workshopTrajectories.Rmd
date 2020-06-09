@@ -122,6 +122,7 @@ sce <- SingleCellExperiment(assays=list(counts=cds@assayData$exprs), colData = p
 filt <- apply(counts(sce), 1, function(x){
 	sum(x >= 2) >= 15
 })
+rm(cds) ; gc()
 sce <- sce[which(filt), ]
 ```
 
@@ -168,6 +169,8 @@ Once the two sets of cells have been integrated, we perform trajectory inference
 Note that we perform trajectory inference using cells from both conditions, rather than splitting the data into two groups. This choice allows us to use the maximum amount of data in the construction of our trajectory, which should lead to more robust results than separate, potentially noisey trajectories constructed on subsets of the data. As we will see, not all cell types are necessarily present in every condition, so this approach ensures that our trajectory accounts for all cell types present in the overall data. 
 
 ```{r slingshot, eval = FALSE}
+## download integrated object here.
+
 ########################
 ### Back to SCE for slingshot
 ########################

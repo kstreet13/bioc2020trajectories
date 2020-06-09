@@ -19,5 +19,6 @@ Imports:
     rappdirs,
     SingleCellExperiment,
     tradeSeq,
-    HDF5Array
+    HDF5Array,
+    igraph
 VignetteBuilder: knitr
