@@ -21,5 +21,10 @@ Imports:
     SingleCellExperiment,
     tradeSeq,
     HDF5Array,
-    igraph
+    igraph,
+    EMT,
+    RANN,
+    magrittr,
+    mgcv,
+    purrr
 VignetteBuilder: knitr
