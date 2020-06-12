@@ -1,6 +1,6 @@
 Package: bioc2020trajectories
 Title: Bioconductor 2020 Workshop on 'Trajectory inference across conditions: differential expression and differential progression'
-Version: 0.0.0.9000
+Version: 0.0.0.91
 Authors@R: c(person("Kelly", "Street", role = c("aut", "cre"),
                      email = "kstreet@ds.dfci.harvard.edu"),
               person("Koen", "Van den Berge", role = c("aut"),
