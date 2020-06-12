@@ -8,10 +8,11 @@ Authors@R: c(person("Kelly", "Street", role = c("aut", "cre"),
 	      person("Hector","Roux de Bezieux", role = c("aut"),
 			email = "hector.rouxdebezieux@berkeley.edu"))
 Description: What the package does (one paragraph).
+Depends: R (>= 3.5.0)
 Encoding: UTF-8
 LazyData: true
 License: CC BY 4.0  + file LICENSE
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Suggests: knitr, RColorBrewer, rmarkdown, scales
 Imports: 
     BiocFileCache,

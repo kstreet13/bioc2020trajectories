@@ -317,7 +317,9 @@ saveRDS(sce, file="../data/sce_new.rds")
 sds <- readRDS("../data/SCEslingshot.rds")
 sce <- readRDS("../data/sce_conditions_4knots.rds")
 # set gene short names which are easier to work with
-names(sce) <- featureData(cds)$gene_short_name[which(filt)]
+# names(sce) <- featureData(cds)$gene_short_name[which(filt)]
+data("geneNames", package="bioc2020trajectories")
+names(sce) <- geneNames
 ```
 
 
