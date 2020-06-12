@@ -293,14 +293,22 @@ We will now proceed to discover genes whose expression changes along the traject
 For each condition (i.e., mock and TGF-Beta), a smooth average expression profile along pseudotime will be estimated for each gene, using a negative binomial model.
 Each differential expression hypothesis of interest will then be translated into testing a linear combination of the parameters of this smoothed expression estimate.
 
-#### Fit GAM
+#### Select number of knots
 
-```{r, eval=FALSE}
+```{r}
 sds <- readRDS("../data/SCEslingshot.rds")
 counts <- assays(sce)$counts
 pt1 <- colData(sds)$slingPseudotime_1
 cw <- matrix(rep(1, ncol(counts)))
 conditions <- factor(colData(sds)$treatment_id)
+
+```
+
+
+#### Fit GAM
+
+```{r, eval=FALSE}
+
 set.seed(3)
 sce <- fitGAM(counts = as.matrix(counts),
               pseudotime=pt1,
@@ -308,18 +316,16 @@ sce <- fitGAM(counts = as.matrix(counts),
               conditions = conditions,
               nknots=4)
 mean(rowData(sce)$tradeSeq$converged)
-saveRDS(sce, file="../data/sce_new.rds")
+saveRDS(sce, file="../data/sce.rds")
 ```
 
 
 ```{r, eval=FALSE}
 ## load results for now 
-sds <- readRDS("../data/SCEslingshot.rds")
-sce <- readRDS("../data/sce_conditions_4knots.rds")
+sce <- readRDS("../data/sce.rds")
 # set gene short names which are easier to work with
-# names(sce) <- featureData(cds)$gene_short_name[which(filt)]
-data("geneNames", package="bioc2020trajectories")
-names(sce) <- geneNames
+names(sce) <- cds@featureData$gene_short_name[which(filt)]
+
 ```
 
 
