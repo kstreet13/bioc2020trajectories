@@ -33,3 +33,4 @@ Imports:
     mgcv,
     purrr
 VignetteBuilder: knitr
+Remotes: github::statOmics/tradeSeq@conditions
