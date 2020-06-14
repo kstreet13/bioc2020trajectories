@@ -33,7 +33,9 @@
   return(res)
 }
 
-#' @description Compute a proximity score to show whether nearby cells have the 
+#' @title Proximity score.
+#'
+#' @description Compute a proximity score to show whether nearby cells have the
 #' same condition of not
 #'
 #' @param rd The reduced dimension matrix of the cells
@@ -45,7 +47,7 @@
 #' @importFrom magrittr %>%
 #' @import RANN purrr EMT
 #' @importFrom mgcv gam
-#' @examples 
+#' @examples
 #' sd <- create_differential_topology(n_cells = 200, shift = 0,
 #'                                    unbalance_level = .8)
 #' scores <- proximity_score(sd$rd, sd$cl, 4)
@@ -57,13 +59,13 @@
 proximity_score <- function(rd, cl, k = 10, smooth = k) {
   # Code inspired from the monocle3 package
   # https://github.com/cole-trapnell-lab/monocle3/blob/9becd94f60930c2a9b51770e3818c194dd8201eb/R/cluster_cells.R#L194
-  
+
   props <- as.vector(table(cl) / length(cl))
   groups <- unique(cl)
   if (length(groups) == 1) stop("cl should have at least 2 classes")
-  
+
   # Get the graph
-  # We need to add 1 because by default, nn2 counts each cell as its own 
+  # We need to add 1 because by default, nn2 counts each cell as its own
   # neighbour
   tmp <- RANN::nn2(rd, rd, k + 1, searchtype = "standard")
   neighborMatrix <- tmp[[1]]
@@ -75,7 +77,7 @@ proximity_score <- function(rd, cl, k = 10, smooth = k) {
   simMatrix <- clMatrix == clMatrix[, 1]
   # Remove each cell from being it's own neighbour
   simMatrix <- simMatrix[, -1]
-  
+
   # Get the basic scores
   scores <- rowMeans(simMatrix)
 
@@ -88,6 +90,6 @@ proximity_score <- function(rd, cl, k = 10, smooth = k) {
                     "k = smooth)")
   mm <- mgcv::gam(as.formula(formula))
   scaled_scores <- predict(mm, type = "response")
-  
+
   return(list("scores" = scores, "scaled_scores" = scaled_scores))
 }

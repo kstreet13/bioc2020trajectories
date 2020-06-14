@@ -93,49 +93,10 @@ Participants will learn how to reason about trajectories in single-cell RNA-seq 
 ## Primary Analysis
 
 
-### Download dataset
+### Import dataset
 
-```{r downloadData_biocFileCache, eval = FALSE}
-library(BiocFileCache)
-url <- "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE114687&format=file&file=GSE114687%5Fpseudospace%5Fcds%2Erds%2Egz"
-path <- paste0(rappdirs::user_cache_dir(), basename(url))
-bfc <- BiocFileCache(path, ask = FALSE)
-addCds <- bfcadd(bfc, "cds", fpath = url)
-con <- gzcon(gzfile(addCds))
-cds <- readRDS(con)
-```
-
-
-```{r downloadData_easy, eval=FALSE}
-dataDir <- getwd()
-dataFile <- paste0(dataDir,"/GSE114687_pseudospace_cds.rds.gz")
-download.file(url = "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE114687&format=file&file=GSE114687%5Fpseudospace%5Fcds%2Erds%2Egz",
-              destfile = dataFile)
-con <- gzcon(gzfile(dataFile))
-cds <- readRDS(con)
-```
-
-```{r filtering, eval=FALSE}
-suppressMessages(library(SingleCellExperiment))
-# Extract useful info from the cellDataSet object
-counts <- cds@assayData$exprs
-phenoData <- pData(cds@phenoData)
-rd <- SimpleList(
-  tSNE.orig = cbind(cds@phenoData@data$TSNE.1, cds@phenoData@data$TSNE.2)
-  )
-rm(cds) ; gc(verbose = FALSE)
-filt <- apply(counts, 1, function(x){
-	sum(x >= 2) >= 15
-})
-counts <- counts[filt, ]
-
-sce <- SingleCellExperiment(assays=list(counts=counts),
-                            colData = phenoData,
-                            reducedDims = rd)
-```
-
-```{r clean, eval = FALSE, echo = FALSE}
-rm(counts, rd, phenoData, filt)
+```{r}
+sce <- readRDS("../data/sce.rds")
 ```
 
 
@@ -150,8 +111,8 @@ Data integration and normalization are complex problems and there are a variety 
 ### Split by condition and convert to Seurat
 ########################
 assays(sce)$logcounts <- log1p(assays(sce)$counts)
-sceMock <- sce[ ,sce$treatment_id=='Mock']
-sceTGFB <- sce[ ,sce$treatment_id=='TGFB']
+sceMock <- sce[ ,colData(sce)$pheno$treatment_id=='Mock']
+sceTGFB <- sce[ ,colData(sce)$pheno$treatment_id=='TGFB']
 library(Seurat)
 soMock <- as.Seurat(sceMock)
 soTGFB <- as.Seurat(sceTGFB)
@@ -183,36 +144,34 @@ Once the two sets of cells have been integrated, we can visualize all the data i
 
 
 ```{r compute scores, eval = FALSE}
-## download integrated object here.
-########################
-### Back to SCE
-########################
-sce <- as.SingleCellExperiment(integrated)
+library(scales)
+shuffle <- sample(ncol(sce))
 
 
 layout(matrix(1:2, 1, byrow = TRUE))
 par(mar = c(4.5,4,1,1))
 
-plot(reducedDim(sce, "UMAP")[shuffle, ],
+plot(reducedDims(sce)$UMAP[shuffle, ],
   asp = 1, pch = 16, xlab = "UMAP-1", ylab = "UMAP-2",
-  col = alpha(c(1:2)[factor(sce$treatment_id)][shuffle], alpha = .5))
+  col = alpha(c(1:2)[factor(colData(sce)$pheno$treatment_id)][shuffle], alpha = .5))
 legend("topright", pch = 16, col = 1:2, bty = "n", 
-       legend = levels(factor(sce$treatment_id)))
-plot(reducedDim(sce, "UMAP")[shuffle, ], asp = 1, pch = 16, xlab = "UMAP-1", ylab = "UMAP-2", 
-     col = alpha(c(3, 4)[factor(sce$spatial_id)][shuffle], alpha = .5))
-legend("topright", pch = 16, col = 3:4, bty = "n", legend = levels(factor(sce$spatial_id)))
+       legend = levels(factor(colData(sce)$pheno$treatment_id)))
+plot(reducedDims(sce)$UMAP[shuffle, ], asp = 1, pch = 16, xlab = "UMAP-1", ylab = "UMAP-2", 
+     col = alpha(c(3, 4)[factor(colData(sce)$pheno$spatial_id)][shuffle], alpha = .5))
+legend("topright", pch = 16, col = 3:4, bty = "n", legend = levels(factor(colData(sce)$pheno$spatial_id)))
 layout(1)
 par(mar = c(5, 4, 4, 2) + .1)
 ```
 
-We know from biological knownledge that the EMT development goes from the inner to the outer cells. The question is: should we fit a separate trajectory for each condition? We might expect the trajectory itself to be changed by the treatment if it is very large. Otherwise, the treatment will impact the expression profile of some genes but the overal trajectory will be preserved. To help asssess this, we deviced a spatial score. Regions with a very high score indicate places where the cell distribution according to treatment label is far from the overall distribution. Here, we see that, while there are some small regions of imbalance, the gloabl path along the development axis is well-balanced. This means that we can fit a global trajectory to the full dataset. 
+We know from biological knowledge that the EMT development goes from the inner to the outer cells. The question is: should we fit a separate trajectory for each condition? We might expect the trajectory itself to be changed by the treatment if it is very large. Otherwise, the treatment will impact the expression profile of some genes but the overal trajectory will be preserved. To help asssess this, we deviced a spatial score. Regions with a very high score indicate places where the cell distribution according to treatment label is far from the overall distribution. Here, we see that, while there are some small regions of imbalance, the gloabl path along the development axis is well-balanced. This means that we can fit a global trajectory to the full dataset. 
 
 ```{r, eval = FALSE}
-scores <- proximity_score(rd = reducedDim(sce, "UMAP"), cl = sce$treatment_id,
+source("../R/proximity_score.R")
+scores <- proximity_score(rd = reducedDims(sce)$UMAP, cl = colData(sce)$pheno$treatment_id,
                           k = 20, smooth = 40)
 grad <- viridis::plasma(10, begin = 0, end = 1)
 names(grad) <- levels(cut(scores$scaled_scores, breaks = 10))
-plot(reducedDim(sce, "UMAP"), col = grad[cut(scores$scaled_scores, breaks = 10)],
+plot(reducedDims(sce)$UMAP, col = grad[cut(scores$scaled_scores, breaks = 10)],
      asp = 1, pch = 16, xlab = "UMAP-1", ylab = "UMAP-2", cex =.8)
 # Need to add a scale... I am lost without ggplot2 :) 
 ```
@@ -225,7 +184,7 @@ Note that we perform trajectory inference using cells from both conditions, rath
 
 ```{r slingshot, eval = FALSE}
 library(slingshot)
-sce <- slingshot(sce, reducedDim = 'UMAP', clusterLabels = 'spatial_id',
+sce <- slingshot(sce, reducedDim = 'UMAP', clusterLabels = colData(sce)$pheno$spatial_id,
                  start.clus = 'inner', approx_points = 150)
 ```
 
@@ -233,16 +192,15 @@ sce <- slingshot(sce, reducedDim = 'UMAP', clusterLabels = 'spatial_id',
 ```{r plotSlingshot, echo = FALSE, fig.width =  8}
 library(slingshot); library(SingleCellExperiment)
 library(RColorBrewer); library(scales)
-sce <- readRDS("../data/SCEslingshot.rds")
-shuffle <- sample(ncol(sce))
+# sce <- readRDS("../data/SCEslingshot.rds")
 layout(matrix(1:2, 1, byrow = TRUE))
 par(mar = c(4.5,4,1,1))
-plot(reducedDim(sce, "UMAP")[shuffle, ], asp = 1, pch = 16, xlab = "UMAP-1", ylab = "UMAP-2",
+plot(reducedDims(sce)$UMAP[shuffle, ], asp = 1, pch = 16, xlab = "UMAP-1", ylab = "UMAP-2",
   col = hcl.colors(100, alpha = .5)[cut(sce$slingPseudotime_1, breaks = 100)][shuffle])
 lines(SlingshotDataSet(sce))
 # Pseudotime densities (by spatial)
-ds <- list( Inner = density(slingPseudotime(sce)[sce$spatial_id == "inner", 1]),
-            Outer = density(slingPseudotime(sce)[sce$spatial_id == "outer", 1]))
+ds <- list( Inner = density(slingPseudotime(sce)[colData(sce)$pheno$spatial_id == "inner", 1]),
+            Outer = density(slingPseudotime(sce)[colData(sce)$pheno$spatial_id == "outer", 1]))
 xlim <- range(c(ds$Inner$x, ds$Outer$x))
 ylim <- range(c(ds$Inner$y, ds$Outer$y))
 plot(xlim, ylim, col = "white", xlab = "Pseudotime", ylab = "")
@@ -262,8 +220,8 @@ Now that we have ordered the cells by EMT progression, we can begin to address t
 
 ```{r plotDensities, echo=FALSE, fig.height=4}
 # Pseudotime densities (by treatment)
-ds <- list(Mock = density(slingPseudotime(sce)[sce$treatment_id == "Mock", 1]),
-           TGFB = density(slingPseudotime(sce)[sce$treatment_id == "TGFB", 1]))
+ds <- list(Mock = density(slingPseudotime(sce)[colData(sce)$pheno$treatment_id == "Mock", 1]),
+           TGFB = density(slingPseudotime(sce)[colData(sce)$pheno$treatment_id == "TGFB", 1]))
 xlim <- range(c(ds$Mock$x, ds$TGFB$x))
 ylim <- range(c(ds$Mock$y, ds$TGFB$y))
 plot(xlim, ylim, col = "white", xlab = "Pseudotime", ylab = "")
@@ -281,8 +239,8 @@ The density estimates for the two groups show a trimodal distribution for the un
 ########################
 ### Kolmogorov-Smirnov Test
 ########################
-ks.test(slingPseudotime(sce)[sce$treatment_id == "Mock", 1],
-        slingPseudotime(sce)[sce$treatment_id == "TGFB", 1])
+ks.test(slingPseudotime(sce)[colData(sce)$pheno$treatment_id == "Mock", 1],
+        slingPseudotime(sce)[colData(sce)$pheno$treatment_id == "TGFB", 1])
 ```
 
 As we might expect, this test is highly signifcant, so we can conclude that there are differences between the two distributions.
@@ -295,37 +253,32 @@ Each differential expression hypothesis of interest will then be translated into
 
 #### Select number of knots
 
-```{r}
-sds <- readRDS("../data/SCEslingshot.rds")
-counts <- assays(sce)$counts
-pt1 <- colData(sds)$slingPseudotime_1
-cw <- matrix(rep(1, ncol(counts)))
-conditions <- factor(colData(sds)$treatment_id)
-
+```{r evaluateK, eval=FALSE}
+library(tradeSeq)
+pt1 <- colData(sce)$slingPseudotime_1
+cw <- matrix(rep(1, ncol(sce)))
+conditions <- factor(colData(sce)$treatment_id)
+set.seed(3)
+icMat <- evaluateK(counts = as.matrix(assays(sce)$counts),
+              pseudotime=pt1,
+              cellWeights=cw,
+              conditions = conditions,
+              nGenes=300,
+              k=3:7)
 ```
 
 
 #### Fit GAM
 
 ```{r, eval=FALSE}
-
 set.seed(3)
-sce <- fitGAM(counts = as.matrix(counts),
+sce <- fitGAM(counts = as.matrix(assays(sce)$counts),
               pseudotime=pt1,
               cellWeights=cw,
               conditions = conditions,
-              nknots=4)
+              nknots=5)
 mean(rowData(sce)$tradeSeq$converged)
 saveRDS(sce, file="../data/sce.rds")
-```
-
-
-```{r, eval=FALSE}
-## load results for now 
-sce <- readRDS("../data/sce.rds")
-# set gene short names which are easier to work with
-names(sce) <- cds@featureData$gene_short_name[which(filt)]
-
 ```
 
 
