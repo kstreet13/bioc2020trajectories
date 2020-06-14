@@ -1,4 +1,5 @@
 ---
+title: "Trajectory inference across conditions: differential expression and differential progression"
 output:
   rmarkdown::html_document:
     highlight: pygments
@@ -89,6 +90,14 @@ Participants will learn how to reason about trajectories in single-cell RNA-seq 
 * Assess the added complexity of handling multiple conditions in these dynamic systems and how it influences the analysis pipeline.
 * Discuss how the analysis pipeline can incorporate this change and evaluate it.
 
+```{r}
+suppressPackageStartupMessages({
+  library(slingshot); library(SingleCellExperiment)
+  library(RColorBrewer); library(scales)
+})
+```
+
+
 
 ## Primary Analysis
 
@@ -143,8 +152,7 @@ integrated <- RunUMAP(integrated, dims = 1:50)
 Once the two sets of cells have been integrated, we can visualize all the data in one reduced dimension. We also look at the repartition of cells in this space according to the treatment and spatial id.
 
 
-```{r compute scores, eval = FALSE}
-library(scales)
+```{r compute scores, eval = TRUE}
 shuffle <- sample(ncol(sce))
 
 
@@ -165,7 +173,7 @@ par(mar = c(5, 4, 4, 2) + .1)
 
 We know from biological knowledge that the EMT development goes from the inner to the outer cells. The question is: should we fit a separate trajectory for each condition? We might expect the trajectory itself to be changed by the treatment if it is very large. Otherwise, the treatment will impact the expression profile of some genes but the overal trajectory will be preserved. To help asssess this, we deviced a spatial score. Regions with a very high score indicate places where the cell distribution according to treatment label is far from the overall distribution. Here, we see that, while there are some small regions of imbalance, the gloabl path along the development axis is well-balanced. This means that we can fit a global trajectory to the full dataset. 
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 source("../R/proximity_score.R")
 scores <- proximity_score(rd = reducedDims(sce)$UMAP, cl = colData(sce)$pheno$treatment_id,
                           k = 20, smooth = 40)
@@ -182,7 +190,7 @@ We perform trajectory inference to order the cells according to EMT progression.
 
 Note that we perform trajectory inference using cells from both conditions, rather than splitting the data into two groups. This choice allows us to use the maximum amount of data in the construction of our trajectory, which should lead to more robust results than separate, potentially noisey trajectories constructed on subsets of the data. As we will see, not all cell types are necessarily present in every condition, so this approach ensures that our trajectory accounts for all cell types present in the overall data. 
 
-```{r slingshot, eval = FALSE}
+```{r slingshot, eval = TRUE}
 library(slingshot)
 sce <- slingshot(sce, reducedDim = 'UMAP', clusterLabels = colData(sce)$pheno$spatial_id,
                  start.clus = 'inner', approx_points = 150)
@@ -190,9 +198,6 @@ sce <- slingshot(sce, reducedDim = 'UMAP', clusterLabels = colData(sce)$pheno$sp
 
 
 ```{r plotSlingshot, echo = FALSE, fig.width =  8}
-library(slingshot); library(SingleCellExperiment)
-library(RColorBrewer); library(scales)
-# sce <- readRDS("../data/SCEslingshot.rds")
 layout(matrix(1:2, 1, byrow = TRUE))
 par(mar = c(4.5,4,1,1))
 plot(reducedDims(sce)$UMAP[shuffle, ], asp = 1, pch = 16, xlab = "UMAP-1", ylab = "UMAP-2",
