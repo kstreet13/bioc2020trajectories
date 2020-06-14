@@ -18,7 +18,8 @@ Suggests:
     RColorBrewer,
     rmarkdown,
     scales,
-    pkgdown
+    pkgdown,
+    viridis
 Imports: 
     BiocFileCache,
     slingshot,

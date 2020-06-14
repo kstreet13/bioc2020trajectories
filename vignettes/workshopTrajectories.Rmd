@@ -94,6 +94,7 @@ Participants will learn how to reason about trajectories in single-cell RNA-seq 
 suppressPackageStartupMessages({
   library(slingshot); library(SingleCellExperiment)
   library(RColorBrewer); library(scales)
+  library(viridis)
 })
 ```
 
