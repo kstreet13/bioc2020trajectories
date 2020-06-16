@@ -105,15 +105,6 @@ suppressPackageStartupMessages({
 
 ## Primary Analysis
 
-
-### Import dataset
-
-```{r}
-sce <- readRDS("../data/sce.rds")
-
-```
-
-
 ### Integration
 
 Our dataset contains cells collected from samples undergoing two different treatment conditions which were necessarily collected separately. Hence, we will start with an integration step to combine these two sets of cells, similar to batch correction. Our goal is to remove the technical effects of the different sample collections while preserving any true, biological differences between the two treatment groups.
@@ -121,6 +112,8 @@ Our dataset contains cells collected from samples undergoing two different treat
 Data integration and normalization are complex problems and there are a variety of methods addressing each. Interested participants can explore [the corresponding chapter of the Bioconductor Ebook](https://osca.bioconductor.org/integrating-datasets.html). However, since neither is the main focus of this workshop, we elected to use an existing pipeline for these tasks. The full Seurat data integration workflow with SCTransform normalization is described in [this vignette](https://satijalab.org/seurat/v3.1/integration.html).
 
 ```{r integration, eval=FALSE}
+sce <- bioc2020trajectories::importRawData()
+
 ########################
 ### Split by condition and convert to Seurat
 ########################
@@ -149,6 +142,16 @@ anchors <- FindIntegrationAnchors(object.list = dtlist, normalization.method = "
 integrated <- IntegrateData(anchorset = anchors, normalization.method = "SCT")
 integrated <- RunPCA(integrated)
 integrated <- RunUMAP(integrated, dims = 1:50)
+
+## convert back to singleCellExperiment
+sce <- as.SingleCellExperiment(integrated, assay="RNA")
+```
+
+
+### Import dataset
+
+```{r}
+sce <- readRDS("../data/sce.rds")
 ```
 
 
@@ -453,85 +456,5 @@ names(statsCond) <- rownames(condRes)
 eaRes <- fgsea(pathways = m_list, stats=statsCond, nperm=5e4, minSize=10)
 ooEA <- order(eaRes$pval, decreasing=FALSE)
 kable(head(eaRes[ooEA,1:3], n=20))
-```
-
-
-
-
-
-
-## tmp
-
-```{r}
-library(BiocFileCache)
-url <- "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE114687&format=file&file=GSE114687%5Fpseudospace%5Fcds%2Erds%2Egz"
-path <- paste0(rappdirs::user_cache_dir(), basename(url))
-bfc <- BiocFileCache(path, ask = FALSE)
-addCds <- bfcadd(bfc, "cds", fpath = url)
-con <- gzcon(gzfile(addCds))
-cds <- readRDS(con)
-
-suppressMessages(library(SingleCellExperiment))
-# Extract useful info from the cellDataSet object
-counts <- cds@assayData$exprs
-phenoData <- pData(cds@phenoData)
-rd <- SimpleList(
-  tSNE.orig = cbind(cds@phenoData@data$TSNE.1, cds@phenoData@data$TSNE.2)
-  )
-rm(cds) ; gc(verbose = FALSE)
-filt <- apply(counts, 1, function(x){
-	sum(x >= 2) >= 15
-})
-counts <- counts[filt, ]
-sce <- SingleCellExperiment(assays=list(counts=counts),
-                            colData = phenoData,
-                            reducedDims = rd)
-
-########################
-### Split by condition and convert to Seurat
-########################
-assays(sce)$logcounts <- log1p(assays(sce)$counts)
-sceMock <- sce[ ,colData(sce)$treatment_id=='Mock']
-sceTGFB <- sce[ ,colData(sce)$treatment_id=='TGFB']
-library(Seurat)
-soMock <- as.Seurat(sceMock)
-soTGFB <- as.Seurat(sceTGFB)
-
-########################
-### Normalize
-########################
-soMock <- SCTransform(soMock, verbose = FALSE)
-soTGFB <- SCTransform(soTGFB, verbose = FALSE)
-
-########################
-### Integrate
-########################
-dtlist <- list(Mock = soMock, TGFB = soTGFB)
-intfts <- SelectIntegrationFeatures(object.list = dtlist, nfeatures = nrow(sce)) # maxes out at 4080 (why?)
-dtlist <- PrepSCTIntegration(object.list = dtlist,
-							 anchor.features = intfts)
-anchors <- FindIntegrationAnchors(object.list = dtlist, normalization.method = "SCT",
-								  anchor.features = intfts)
-integrated <- IntegrateData(anchorset = anchors, normalization.method = "SCT")
-integrated <- RunPCA(integrated)
-integrated <- RunUMAP(integrated, dims = 1:50)
-
-sce <- as.SingleCellExperiment(integrated, assay="RNA")
-
-sce <- SingleCellExperiment(assays=list(counts=sce$counts),
-                            colData = colData(sce),
-                            reducedDims = reducedDims(sce))
-sce <- readRDS("../data/sce.rds")
-hlp <- colData(sce)
-hlp$pheno <- as.data.frame(hlp$pheno)
-rownames(hlp$tradeSeq) <- rownames(hlp$pheno)
-rownames(hlp$slingshot) <- rownames(hlp$pheno)
-
-colData(sce) <- NULL
-colData(sce)$pheno <- DataFrame(hlp$pheno)
-colData(sce)$tradeSeq <- DataFrame(hlp$tradeSeq)
-colData(sce)$slingshot <- DataFrame(hlp$slingshot)
-
-saveRDS(sce, file="../data/sce.rds")
 ```
 
