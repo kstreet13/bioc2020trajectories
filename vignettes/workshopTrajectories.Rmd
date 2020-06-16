@@ -114,7 +114,7 @@ sce <- readRDS("../data/sce.rds")
 
 Our dataset contains cells collected from samples undergoing two different treatment conditions which were necessarily collected separately. Hence, we will start with an integration step to combine these two sets of cells, similar to batch correction. Our goal is to remove the technical effects of the different sample collections while preserving any true, biological differences between the two treatment groups.
 
-Data integration and normalization are complex problems and there are a variety of methods addressing each. However, since neither is the main focus of this workshop, we elected to use an existing pipeline for these tasks. The full Seurat data integration workflow with SCTransform normalization is described in [this vignette](https://satijalab.org/seurat/v3.1/integration.html).
+Data integration and normalization are complex problems and there are a variety of methods addressing each. Interested participants can explore [the corresponding chapter of the Bioconductor Ebook](https://osca.bioconductor.org/integrating-datasets.html). However, since neither is the main focus of this workshop, we elected to use an existing pipeline for these tasks. The full Seurat data integration workflow with SCTransform normalization is described in [this vignette](https://satijalab.org/seurat/v3.1/integration.html).
 
 ```{r integration, eval=FALSE}
 ########################
@@ -155,8 +155,6 @@ Once the two sets of cells have been integrated, we can visualize all the data i
 
 ```{r compute scores, eval = TRUE}
 shuffle <- sample(ncol(sce))
-
-
 layout(matrix(1:2, 1, byrow = TRUE))
 par(mar = c(4.5,4,1,1))
 
@@ -175,14 +173,15 @@ par(mar = c(5, 4, 4, 2) + .1)
 We know from biological knowledge that the EMT development goes from the inner to the outer cells. The question is: should we fit a separate trajectory for each condition? We might expect the trajectory itself to be changed by the treatment if it is very large. Otherwise, the treatment will impact the expression profile of some genes but the overal trajectory will be preserved. To help asssess this, we deviced a spatial score. Regions with a very high score indicate places where the cell distribution according to treatment label is far from the overall distribution. Here, we see that, while there are some small regions of imbalance, the gloabl path along the development axis is well-balanced. This means that we can fit a global trajectory to the full dataset. 
 
 ```{r, eval = TRUE}
-source("../R/proximity_score.R")
-scores <- proximity_score(rd = reducedDims(sce)$UMAP, cl = colData(sce)$pheno$treatment_id,
-                          k = 20, smooth = 40)
+scores <- bioc2020trajectories::proximity_score(
+  rd = reducedDims(sce)$UMAP, 
+  cl = colData(sce)$pheno$treatment_id,
+  k = 20, smooth = 40)
 grad <- viridis::plasma(10, begin = 0, end = 1)
 names(grad) <- levels(cut(scores$scaled_scores, breaks = 10))
 plot(reducedDims(sce)$UMAP, col = grad[cut(scores$scaled_scores, breaks = 10)],
-     asp = 1, pch = 16, xlab = "UMAP-1", ylab = "UMAP-2", cex =.8)
-legend("topleft", legend=names(grad), col=grad, pch=16, bty='n', cex=2/3)
+     asp = 1, pch = 16, xlab = "UMAP-1", ylab = "UMAP-2", cex = .8)
+legend("topleft", legend = names(grad), col = grad, pch = 16, bty = "n", cex = 2 / 3)
 ```
 
 ### Trajectory Inference
