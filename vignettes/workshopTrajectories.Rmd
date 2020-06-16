@@ -153,9 +153,9 @@ integrated <- RunUMAP(integrated, dims = 1:50)
 Once the two sets of cells have been integrated, we can visualize all the data in one reduced dimension. We also look at the repartition of cells in this space according to the treatment and spatial id.
 
 
-```{r compute scores, eval = TRUE}
+```{r compute scores, eval = TRUE, fig.width=7}
 shuffle <- sample(ncol(sce))
-layout(matrix(1:2, 1, byrow = TRUE))
+layout(matrix(1:2, nrow = 1))
 par(mar = c(4.5,4,1,1))
 
 plot(reducedDims(sce)$UMAP[shuffle, ],
@@ -198,7 +198,7 @@ sce <- slingshot(sce, reducedDim = 'UMAP', clusterLabels = colData(sce)$pheno$sp
 
 
 ```{r plotSlingshot, echo = FALSE, fig.width =  8}
-layout(matrix(1:2, 1, byrow = TRUE))
+layout(matrix(c(1,1,2,3),2))
 par(mar = c(4.5,4,1,1))
 plot(reducedDims(sce)$UMAP[shuffle, ], asp = 1, pch = 16, xlab = "UMAP-1", ylab = "UMAP-2",
   col = hcl.colors(100, alpha = .5)[cut(sce$slingPseudotime_1, breaks = 100)][shuffle])
@@ -213,8 +213,14 @@ polygon(c(min(ds$Inner$x), ds$Inner$x, max(ds$Inner$x)), c(0, ds$Inner$y, 0),
   col = alpha(brewer.pal(4, "Set1")[3], alpha = .5))
 polygon(c(min(ds$Outer$x), ds$Inner$x, max(ds$Inner$x)), c(0, ds$Outer$y, 0),
         col = alpha(brewer.pal(4, "Set1")[2], alpha = .5))
-legend("topright", legend = c("Inner", "Outer"), 
+legend("topleft", legend = c("Inner", "Outer"), 
        fill = alpha(brewer.pal(4, "Set1")[3:2], alpha = .5), bty = "n")
+
+plot(reducedDims(sce)$UMAP[shuffle, ], asp = 1, pch = 16, xlab = "UMAP-1", ylab = "UMAP-2", 
+     col = alpha(c(3, 4)[factor(colData(sce)$pheno$spatial_id)][shuffle], alpha = .5))
+lines(SlingshotDataSet(sce), type='lineages', show.constraints = TRUE)
+legend("topright", pch = 16, col = 3:4, bty = "n", legend = levels(factor(colData(sce)$pheno$spatial_id)))
+
 layout(1)
 par(mar = c(5, 4, 4, 2) + .1)
 ```
