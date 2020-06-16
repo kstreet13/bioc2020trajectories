@@ -1,6 +1,5 @@
 # Trajectory inference across conditions: differential expression and differential progression
 
-<>[![Build Status](https://travis-ci.com/kstreet13/bioc2020trajectories.svg?branch=master)](https://travis-ci.com/kstreet13/bioc2020trajectories)
 [![.github/workflows/basic_checks.yaml](https://github.com/kstreet13/bioc2020trajectories/workflows/.github/workflows/basic_checks.yaml/badge.svg)](https://github.com/kstreet13/bioc2020trajectories/actions)
 
 
