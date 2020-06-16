@@ -182,7 +182,7 @@ grad <- viridis::plasma(10, begin = 0, end = 1)
 names(grad) <- levels(cut(scores$scaled_scores, breaks = 10))
 plot(reducedDims(sce)$UMAP, col = grad[cut(scores$scaled_scores, breaks = 10)],
      asp = 1, pch = 16, xlab = "UMAP-1", ylab = "UMAP-2", cex =.8)
-# Need to add a scale... I am lost without ggplot2 :) 
+legend("topleft", legend=names(grad), col=grad, pch=16, bty='n', cex=2/3)
 ```
 
 ### Trajectory Inference

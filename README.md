@@ -32,7 +32,7 @@ Background reading:
 
 * The textbook "Orchestrating Single-Cell Analysis with Bioconductor" is a great reference for single-cell analysis using Bioconductor packages.
 * [Slingshot paper](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-018-4772-0)
-* [tradeSeq paper](https://www.biorxiv.org/content/10.1101/623397v1)
+* [tradeSeq paper](https://www.nature.com/articles/s41467-020-14766-3)
 
 
 ## Workshop Participation
