@@ -32,6 +32,10 @@ Imports:
     RANN,
     magrittr,
     mgcv,
-    purrr
+    purrr,
+    UpSetR,
+    pheatmap,
+    msigdbr,
+    fgsea
 VignetteBuilder: knitr
 Remotes: github::statOmics/tradeSeq@conditions

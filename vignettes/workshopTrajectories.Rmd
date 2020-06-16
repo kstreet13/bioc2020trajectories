@@ -94,7 +94,10 @@ Participants will learn how to reason about trajectories in single-cell RNA-seq 
 suppressPackageStartupMessages({
   library(slingshot); library(SingleCellExperiment)
   library(RColorBrewer); library(scales)
-  library(viridis)
+  library(viridis); library(UpSetR)
+  library(pheatmap); library(msigdbr)
+  library(fgsea); library(knitr)
+  library(tradeSeq)
 })
 ```
 
@@ -107,6 +110,7 @@ suppressPackageStartupMessages({
 
 ```{r}
 sce <- readRDS("../data/sce.rds")
+
 ```
 
 
@@ -283,7 +287,6 @@ sce <- fitGAM(counts = as.matrix(assays(sce)$counts),
               conditions = conditions,
               nknots=5)
 mean(rowData(sce)$tradeSeq$converged)
-saveRDS(sce, file="../data/sce.rds")
 ```
 
 
@@ -294,23 +297,20 @@ Note that the axis represented by the trajectory in this dataset is actually the
 
 To assess significant changes in gene expression as a function of pseudotime within each lineage, we use the `associationTest`, which tests the null hypothesis that gene expression is not a function of pseudotime, i.e., whether the estimated smoothers are significantly varying as a function of pseudotime within each lineage. The `lineages=TRUE` argument specifies that we would like the results for each lineage separately, asides from the default global test, which tests for significant associations across all lineages in the trajectory simultaneously. Further, we specify a log2 fold change cut-off to test against using the `l2fc` argument. 
 
-Across both conditions, using a global test, we find $2205$ DE genes with respect to a fold change of 2 on a 5% FDR level. On a lineage-specific basis, there are about twice as much DE genes in the mock lineage (2120) as compared to the TGFB lineage (1136). Many of the DE genes in the TGFB condition are also DE in the Mock condition, around 80%. 
+On a lineage-specific basis, there are about twice as much DE genes in the mock lineage (2120) as compared to the TGFB lineage (1136). Many of the DE genes in the TGFB condition are also DE in the Mock condition, around 80%. 
 
 The authors of the original paper found $1105$ DE genes on a FDR level of $1e-10$ for the Mock condition.
 
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 assocRes <- associationTest(sce, lineages = TRUE, l2fc=log2(2))
-assocGenes <- rownames(assocRes)[which(p.adjust(assocRes$pvalue, "fdr") <= 0.05)]
 mockGenes <-  rownames(assocRes)[which(p.adjust(assocRes$pvalue_lineage1_conditionMock, "fdr") <= 0.05)]
 tgfbGenes <-  rownames(assocRes)[which(p.adjust(assocRes$pvalue_lineage1_conditionTGFB, "fdr") <= 0.05)]
 
-length(assocGenes)
 length(mockGenes)
 length(tgfbGenes)
 
-UpSetR::upset(fromList(list(global=assocGenes, mock=mockGenes, tgfb=tgfbGenes)),
-              nintersects=3, order.by="degree")
+UpSetR::upset(fromList(list(mock=mockGenes, tgfb=tgfbGenes)))
 ```
 
 
@@ -320,7 +320,7 @@ UpSetR::upset(fromList(list(global=assocGenes, mock=mockGenes, tgfb=tgfbGenes)),
 Below we visualize and cluster the genes whose expression vary over pseudotime.
 As was also observed in the original manuscript, genes are mainly upregulated at the start- or endpoints of the lineage.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 ### based on mean smoother
 yhatSmooth <- predictSmooth(sce, gene=mockGenes, nPoints=50)
 heatSmooth <- pheatmap(t(scale(t(yhatSmooth[,1:50]))), cluster_cols = FALSE,
@@ -334,6 +334,9 @@ table(cl)
 
 
 ```{r, eval=FALSE}
+conditions <- colData(sce)$pheno$treatment_id
+pt1 <- colData(sce)$slingshot$pseudotime
+  
 ### based on fitted values (plotting takes a while to run)
 yhatCell <- predictCells(sce, gene=mockGenes)
 yhatCellMock <- yhatCell[,conditions == "Mock"]
@@ -348,10 +351,8 @@ pheatmap(t(scale(t(yhatCellMock))), cluster_cols = FALSE,
 
 Gene set enrichment analysis on the DE genes within the mock condition confirms the biology on epithelial cell differentiation.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 ## C5 category is according to gene ontology grouping: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4707969/pdf/nihms-743907.pdf
-library(msigdbr)
-library(fgsea)
 geneSets <- msigdbr(species = "Mus musculus", category = "C5", subcategory = "BP")
 ### filter background to only include genes that we assessed.
 geneSets$gene_symbol <- toupper(geneSets$gene_symbol)
@@ -448,4 +449,83 @@ ooEA <- order(eaRes$pval, decreasing=FALSE)
 kable(head(eaRes[ooEA,1:3], n=20))
 ```
 
+
+
+
+
+
+## tmp
+
+```{r}
+library(BiocFileCache)
+url <- "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE114687&format=file&file=GSE114687%5Fpseudospace%5Fcds%2Erds%2Egz"
+path <- paste0(rappdirs::user_cache_dir(), basename(url))
+bfc <- BiocFileCache(path, ask = FALSE)
+addCds <- bfcadd(bfc, "cds", fpath = url)
+con <- gzcon(gzfile(addCds))
+cds <- readRDS(con)
+
+suppressMessages(library(SingleCellExperiment))
+# Extract useful info from the cellDataSet object
+counts <- cds@assayData$exprs
+phenoData <- pData(cds@phenoData)
+rd <- SimpleList(
+  tSNE.orig = cbind(cds@phenoData@data$TSNE.1, cds@phenoData@data$TSNE.2)
+  )
+rm(cds) ; gc(verbose = FALSE)
+filt <- apply(counts, 1, function(x){
+	sum(x >= 2) >= 15
+})
+counts <- counts[filt, ]
+sce <- SingleCellExperiment(assays=list(counts=counts),
+                            colData = phenoData,
+                            reducedDims = rd)
+
+########################
+### Split by condition and convert to Seurat
+########################
+assays(sce)$logcounts <- log1p(assays(sce)$counts)
+sceMock <- sce[ ,colData(sce)$treatment_id=='Mock']
+sceTGFB <- sce[ ,colData(sce)$treatment_id=='TGFB']
+library(Seurat)
+soMock <- as.Seurat(sceMock)
+soTGFB <- as.Seurat(sceTGFB)
+
+########################
+### Normalize
+########################
+soMock <- SCTransform(soMock, verbose = FALSE)
+soTGFB <- SCTransform(soTGFB, verbose = FALSE)
+
+########################
+### Integrate
+########################
+dtlist <- list(Mock = soMock, TGFB = soTGFB)
+intfts <- SelectIntegrationFeatures(object.list = dtlist, nfeatures = nrow(sce)) # maxes out at 4080 (why?)
+dtlist <- PrepSCTIntegration(object.list = dtlist,
+							 anchor.features = intfts)
+anchors <- FindIntegrationAnchors(object.list = dtlist, normalization.method = "SCT",
+								  anchor.features = intfts)
+integrated <- IntegrateData(anchorset = anchors, normalization.method = "SCT")
+integrated <- RunPCA(integrated)
+integrated <- RunUMAP(integrated, dims = 1:50)
+
+sce <- as.SingleCellExperiment(integrated, assay="RNA")
+
+sce <- SingleCellExperiment(assays=list(counts=sce$counts),
+                            colData = colData(sce),
+                            reducedDims = reducedDims(sce))
+sce <- readRDS("../data/sce.rds")
+hlp <- colData(sce)
+hlp$pheno <- as.data.frame(hlp$pheno)
+rownames(hlp$tradeSeq) <- rownames(hlp$pheno)
+rownames(hlp$slingshot) <- rownames(hlp$pheno)
+
+colData(sce) <- NULL
+colData(sce)$pheno <- DataFrame(hlp$pheno)
+colData(sce)$tradeSeq <- DataFrame(hlp$tradeSeq)
+colData(sce)$slingshot <- DataFrame(hlp$slingshot)
+
+saveRDS(sce, file="../data/sce.rds")
+```
 
