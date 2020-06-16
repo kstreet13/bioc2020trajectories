@@ -47,14 +47,6 @@
 #' @importFrom magrittr %>%
 #' @import RANN purrr EMT
 #' @importFrom mgcv gam
-#' @examples
-#' sd <- create_differential_topology(n_cells = 200, shift = 0,
-#'                                    unbalance_level = .8)
-#' scores <- proximity_score(sd$rd, sd$cl, 4)
-#' ggplot(data.frame(sd$rd, scores = scores$scaled_scores),
-#'        aes(x = Dim1, y = Dim2, col = scores)) +
-#'   geom_point() +
-#'   theme_classic()
 #' @export
 proximity_score <- function(rd, cl, k = 10, smooth = k) {
   # Code inspired from the monocle3 package

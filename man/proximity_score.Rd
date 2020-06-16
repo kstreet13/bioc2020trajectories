@@ -21,12 +21,3 @@ we smooth more.}
 Compute a proximity score to show whether nearby cells have the
 same condition of not
 }
-\examples{
-sd <- create_differential_topology(n_cells = 200, shift = 0,
-                                   unbalance_level = .8)
-scores <- proximity_score(sd$rd, sd$cl, 4)
-ggplot(data.frame(sd$rd, scores = scores$scaled_scores),
-       aes(x = Dim1, y = Dim2, col = scores)) +
-  geom_point() +
-  theme_classic()
-}
