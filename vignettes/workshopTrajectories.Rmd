@@ -97,7 +97,8 @@ suppressPackageStartupMessages({
   library(viridis); library(UpSetR)
   library(pheatmap); library(msigdbr)
   library(fgsea); library(knitr)
-  library(tradeSeq)
+  library(tradeSeq); library(ggplot2)
+  library(gridExtra)
 })
 ```
 
@@ -306,7 +307,7 @@ Note that the axis represented by the trajectory in this dataset is actually the
 
 To assess significant changes in gene expression as a function of pseudotime within each lineage, we use the `associationTest`, which tests the null hypothesis that gene expression is not a function of pseudotime, i.e., whether the estimated smoothers are significantly varying as a function of pseudotime within each lineage. The `lineages=TRUE` argument specifies that we would like the results for each lineage separately, asides from the default global test, which tests for significant associations across all lineages in the trajectory simultaneously. Further, we specify a log2 fold change cut-off to test against using the `l2fc` argument. 
 
-On a lineage-specific basis, there are about twice as much DE genes in the mock lineage (2120) as compared to the TGFB lineage (1136). Many of the DE genes in the TGFB condition are also DE in the Mock condition, around 80%. 
+On a lineage-specific basis, there are over twice as much DE genes in the mock lineage (2398) as compared to the TGFB lineage (1013). Many of the DE genes in the TGFB condition are also DE in the Mock condition, around 80%. 
 
 The authors of the original paper found $1105$ DE genes on a FDR level of $1e-10$ for the Mock condition.
 
@@ -384,16 +385,16 @@ In the following sections, we will investigate differential expression for each 
 The paper mentions that CDH1 and CRB3 should be expressed in similar kinetics.
 Note that the lower slope of CDH1 is also observed in the paper.
 
-```{r, eval=FALSE}
-plotSmoothers(sce, counts, gene="CDH1", alpha=1, border=TRUE) + ggtitle("CDH1") #+ scale_color_discrete(name = "Condition", labels = c("Mock", "TGFB"))
-plotSmoothers(sce, counts, gene="CRB3", alpha=1, border=TRUE) + ggtitle("CRB3") #+ scale_color_discrete(name = "Condition", labels = c("Mock", "TGFB"))
+```{r, eval=TRUE}
+plotSmoothers(sce, assays(sce)$counts, gene="CDH1", alpha=1, border=TRUE) + ggtitle("CDH1")
+plotSmoothers(sce, assays(sce)$counts, gene="CRB3", alpha=1, border=TRUE) + ggtitle("CRB3")
 ```
 
 They also mention that 'only cells treated with TGF-Beta and positioned at the outer extreme of the trajectory expressed robust levels of FN1 and CDH2'.
 
-```{r, eval=FALSE}
-plotSmoothers(sce, counts, gene="FN1", alpha=1, border=TRUE) + ggtitle("FN1") #+ scale_color_discrete(name = "Condition", labels = c("Mock", "TGFB"))
-plotSmoothers(sce, counts, gene="CDH2", alpha=1, border=TRUE) + ggtitle("CDH2") #+ scale_color_discrete(name = "Condition", labels = c("Mock", "TGFB"))
+```{r, eval=TRUE}
+plotSmoothers(sce, assays(sce)$counts, gene="FN1", alpha=1, border=TRUE) + ggtitle("FN1")
+plotSmoothers(sce, assays(sce)$counts, gene="CDH2", alpha=1, border=TRUE) + ggtitle("CDH2") 
 ```
 
 
@@ -401,9 +402,9 @@ plotSmoothers(sce, counts, gene="CDH2", alpha=1, border=TRUE) + ggtitle("CDH2") 
 
 To test differential expression between conditions, we use the `conditionTest` function implemented in `tradeSeq`. 
 This function tests the null hypothesis that genes have identical expression patterns in each condition.
-We discover 2013 genes that are DE with a fold change higher than $2$ or lower than $1/2$.
+We discover $1993$ genes that are DE with a fold change higher than $2$ or lower than $1/2$.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 condRes <- conditionTest(sce, l2fc=log2(2))
 condRes$padj <- p.adjust(condRes$pvalue, "fdr")
 mean(condRes$padj <= 0.05, na.rm=TRUE)
@@ -415,22 +416,22 @@ conditionGenes <- conditionGenes[!is.na(conditionGenes)]
 
 ##### Visualize most and least significant gene
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # plot genes
 oo <- order(condRes$waldStat, decreasing=TRUE)
 
 # most significant gene
-tradeSeq:::.plotSmoothers_conditions(sce, counts, gene=rownames(counts)[oo[1]], alpha=1, border=TRUE) #+ scale_color_discrete(name = "Condition", labels = c("Mock", "TGFB"))
+plotSmoothers(sce, assays(sce)$counts, gene=rownames(assays(sce)$counts)[oo[1]], alpha=1, border=TRUE)
 
 # least significant gene
-tradeSeq:::.plotSmoothers_conditions(sce, counts, gene=rownames(counts)[oo[nrow(counts)]], alpha=1, border=TRUE) #+ scale_color_discrete(name = "Condition", labels = c("Mock", "TGFB"))
+plotSmoothers(sce, assays(sce)$counts, gene=rownames(assays(sce)$counts)[oo[nrow(sce)]], alpha=1, border=TRUE)
 ```
 
 #### Heatmaps of genes DE between conditions
 
 Below we show heatmaps of the genes DE between conditions. The DE genes in the heatmaps are ordered according to a hierarchical clustering on the TGF-Beta condition.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 ### based on mean smoother
 yhatSmooth <- predictSmooth(sce, gene=conditionGenes, nPoints=50)
 heatSmooth_TGF <- pheatmap(t(scale(t(yhatSmooth[,51:100]))), cluster_cols = FALSE,
@@ -450,7 +451,7 @@ grid.arrange(heatSmooth_TGF[[4]], matchingHeatmap_mock[[4]], ncol=2)
 Gene set enrichment analysis on genes that are differentially expressed between conditions finds evidence for cell motility, cell junctions/adhesion and gastrulation. The original paper also focusses on the KRAS signaling pathway, which induces cell migration, amongst others.
 Other related processes include morphogenesis, gastrulation and cell adhesion.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 statsCond <- condRes$waldStat
 names(statsCond) <- rownames(condRes)
 eaRes <- fgsea(pathways = m_list, stats=statsCond, nperm=5e4, minSize=10)

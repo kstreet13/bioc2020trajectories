@@ -36,6 +36,7 @@ Imports:
     UpSetR,
     pheatmap,
     msigdbr,
-    fgsea
+    fgsea,
+    gridExtra
 VignetteBuilder: knitr
 Remotes: github::statOmics/tradeSeq@conditions
