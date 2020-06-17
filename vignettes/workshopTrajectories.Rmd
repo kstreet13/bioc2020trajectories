@@ -13,17 +13,15 @@ vignette: >
   %\VignetteEncoding[utf8]{inputenc}
 ---
 
-# Trajectory inference across conditions: differential expression and differential progression
+# Overview
 
-## Overview
-
-### Instructor(s) name(s) and contact information
+## Instructor(s) name(s) and contact information
 
  - Kelly Street (kstreet@ds.dfci.harvard.edu)
  - Koen Van den Berge (koenvdberge@berkeley.edu)
  - Hector Roux de Bézieux (hector.rouxdebezieux@berkeley.edu)
  
-### Workshop Description
+## Workshop Description
 
 In single-cell RNA-sequencing (scRNA-seq), gene expression is assessed at the level of single cells. In dynamic biological systems, it may not be appropriate to assign cells to discrete groups, but rather a continuum of cell states may be observed, e.g. the differentiation of a stem cell population into mature cell types. This is often represented as a trajectory in reduced dimension.
 
@@ -33,7 +31,7 @@ In this workshop, we will explore methods for comparing multiple conditions in a
 
 [This vignette](https://bioconductor.org/packages/release/bioc/vignettes/slingshot/inst/doc/conditionsVignette.html) provides a more complete problem description and proposes a few analytical approaches, which will serve as the basis of our workshop.
 
-### Pre-requisites
+## Pre-requisites
 
 
 Software:
@@ -50,11 +48,11 @@ Background reading:
 * [tradeSeq paper](https://www.biorxiv.org/content/10.1101/623397v1)
 
 
-### Workshop Participation
+## Workshop Participation
 
 The workshop will start with an introduction to the problem and the dataset using presentation slides. Following this, we will have a lab session on how one may tackle the problem of handling multiple conditions in trajectory inference and in downstream analysis involving differential progression and differential expression.
 
-### _R_ / _Bioconductor_ packages used
+## _R_ / _Bioconductor_ packages used
 
 * The workshop will focus on Bioconductor packages [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html), [Slingshot](https://bioconductor.org/packages/release/bioc/html/slingshot.html), and [tradeSeq](https://bioconductor.org/packages/release/bioc/html/tradeSeq.html) 
 
@@ -70,18 +68,18 @@ The workshop will start with an introduction to the problem and the dataset usin
 | Wrap-up and Conclusions          | 5m  |
 
 
-### Workshop goals and objectives
+## Workshop goals and objectives
 
 Participants will learn how to reason about trajectories in single-cell RNA-seq data and how they may be used for interpretation of complex scRNA-seq datasets.
 
 
-### Learning goals
+## Learning goals
 
 * Reason about dynamic biological systems.
 * Grasp the complexity of analyzing large scRNA-seq datasets with the goal of extracting relevant biological information.
 * Understand the concepts of differential progression and differential expression along a trajectory path.
 
-### Learning objectives
+## Learning objectives
 
 * Learn how to analyze single-cell RNA-seq data using Bioconductor packages.
 * Import and explore large scRNA-seq datasets.
@@ -101,15 +99,15 @@ suppressPackageStartupMessages({
 })
 ```
 
+# Analysis
 
-
-## Primary Analysis
-
-### Integration
+## Integration
 
 Our dataset contains cells collected from samples undergoing two different treatment conditions which were necessarily collected separately. Hence, we will start with an integration step to combine these two sets of cells, similar to batch correction. Our goal is to remove the technical effects of the different sample collections while preserving any true, biological differences between the two treatment groups.
 
 Data integration and normalization are complex problems and there are a variety of methods addressing each. Interested participants can explore [the corresponding chapter of the Bioconductor Ebook](https://osca.bioconductor.org/integrating-datasets.html). However, since neither is the main focus of this workshop, we elected to use an existing pipeline for these tasks. The full Seurat data integration workflow with SCTransform normalization is described in [this vignette](https://satijalab.org/seurat/v3.1/integration.html).
+
+Since this whole step is quite slow, it will not be run during the workshop but the code is provided below.
 
 ```{r integration, eval=FALSE}
 sce <- bioc2020trajectories::importRawData()
@@ -148,16 +146,16 @@ sce <- as.SingleCellExperiment(integrated, assay="RNA")
 ```
 
 
-### Import dataset
+## Import dataset
+
+The pre-processed dataset is available with the repository and can be loaded thus:
 
 ```{r}
 data("sce", package = "bioc2020trajectories")
-counts <- Matrix::Matrix(counts(sce), sparse = TRUE)
-counts(sce) <- counts
 ```
 
 
-### Differential Topology
+## Differential Topology
 
 Once the two sets of cells have been integrated, we can visualize all the data in one reduced dimension. We also look at the repartition of cells in this space according to the treatment and spatial id.
 
@@ -179,7 +177,9 @@ layout(1)
 par(mar = c(5, 4, 4, 2) + .1)
 ```
 
-We know from biological knowledge that the EMT development goes from the inner to the outer cells. The question is: should we fit a separate trajectory for each condition? We might expect the trajectory itself to be changed by the treatment if it is very large. Otherwise, the treatment will impact the expression profile of some genes but the overal trajectory will be preserved. To help asssess this, we deviced a spatial score. Regions with a very high score indicate places where the cell distribution according to treatment label is far from the overall distribution. Here, we see that, while there are some small regions of imbalance, the gloabl path along the development axis is well-balanced. This means that we can fit a global trajectory to the full dataset. 
+We know from biological knowledge that the EMT development goes from the inner to the outer cells. The question is: should we fit a separate trajectory for each condition? We might expect the trajectory itself to be changed by the treatment if it is very large. Otherwise, the treatment will impact the expression profile of some genes but the overal trajectory will be preserved. 
+
+To help asssess this, we deviced a spatial score. Regions with a very high score indicate places where the cell distribution according to treatment label is unbalanced compared the overall distribution. Here, we see that, while there are some small regions of imbalance, the global path along the development axis is well-balanced. This means that we can fit a global trajectory to the full dataset. This choice allows us to use the maximum amount of data in the construction of our trajectory, which should lead to more robust results than separate, potentially noisey trajectories constructed on subsets of the data. As we will see, not all cell types are necessarily present in every condition, so this approach ensures that our trajectory accounts for all cell types present in the overall data. 
 
 ```{r, eval = TRUE}
 scores <- bioc2020trajectories::proximity_score(
@@ -193,11 +193,13 @@ plot(reducedDims(sce)$UMAP, col = grad[cut(scores$scaled_scores, breaks = 10)],
 legend("topleft", legend = names(grad), col = grad, pch = 16, bty = "n", cex = 2 / 3)
 ```
 
-### Trajectory Inference
+For more information on the score, run `help("proximity_score", "bioc2020trajectories")`
+
+## Trajectory Inference
 
 We perform trajectory inference to order the cells according to EMT progression. We  use `slingshot` for trajectory inference, with the cells' position (inner or outer) serving as the cluster identifier. This ensures that we will only find a single lineage while still allowing suffiecient flexibility to correctly orient the pseudotime axis.
 
-Note that we perform trajectory inference using cells from both conditions, rather than splitting the data into two groups. This choice allows us to use the maximum amount of data in the construction of our trajectory, which should lead to more robust results than separate, potentially noisey trajectories constructed on subsets of the data. As we will see, not all cell types are necessarily present in every condition, so this approach ensures that our trajectory accounts for all cell types present in the overall data. 
+Note that we perform trajectory inference using cells from both conditions, rather than splitting the data into two groups, as discussed above. 
 
 ```{r slingshot, eval = TRUE}
 library(slingshot)
@@ -234,7 +236,7 @@ layout(1)
 par(mar = c(5, 4, 4, 2) + .1)
 ```
 
-### Differential progression
+## Differential progression
 
 Now that we have ordered the cells by EMT progression, we can begin to address the main question: how is this progression affected by TGF-$\beta$ treatment? In this section, we interpret this question as a univariate analysis of the pseudotime values between the two groups.
 
@@ -253,7 +255,7 @@ legend("topright", legend = c("Mock", "TGFB"),
        fill = alpha(c(1, brewer.pal(3, "Set1")[1]), alpha = .5), bty = "n")
 ```
 
-The density estimates for the two groups show a trimodal distribution for the untreated cells, but a tendancy toward later pseudotime values in the TGF-$\beta$ treated cells. The difference is striking enough that a standard T-test would likely be significant, but we are we are interested more generally in differences between the two distributions, not just the difference of means (one could imagine a scenario in which the treated group tended toward the extremes, but the means were the same). Hence, we propose a Kolmogorov-Smirnov Test to assess whether the two groups of pseudotime values are derived from the same distribution.
+The density estimates for the two groups show a trimodal distribution for the untreated cells, but a tendancy toward later pseudotime values in the TGF-$\beta$ treated cells. The difference is striking enough that a standard T-test would likely be significant, but we are we are interested more generally in differences between the two distributions, not just the difference of means (one could imagine a scenario in which the treated group tended toward the extremes, but the means were the same). Hence, we propose a Kolmogorov-Smirnov Test to assess whether the two groups of pseudotime values are derived from the same distribution. For more info on the Kolmogorov-Smirnov Test, see [here](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test).
 
 ```{r KStest, eval = FALSE}
 ########################
@@ -263,9 +265,9 @@ ks.test(slingPseudotime(sce)[colData(sce)$pheno$treatment_id == "Mock", 1],
         slingPseudotime(sce)[colData(sce)$pheno$treatment_id == "TGFB", 1])
 ```
 
-As we might expect, this test is highly signifcant, so we can conclude that there are differences between the two distributions.
+As we might expect from the plot, this test is highly signifcant, so we can conclude that there are differences between the two distributions.
 
-### Differential expression
+## Differential expression
 
 We will now proceed to discover genes whose expression changes along the trajectory, or between the two lineages of each trajectory using the Bioconductor package `tradeSeq`. 
 For each condition (i.e., mock and TGF-Beta), a smooth average expression profile along pseudotime will be estimated for each gene, using a negative binomial model.
@@ -280,7 +282,9 @@ if (!requireNamespace("devtools", quietly = TRUE)) {
 devtools::install_github("statOmics/tradeSeq", ref = "conditions")
 ```
 
-#### Select number of knots
+### Select number of knots
+
+The next two steps are quite time-consuming so we will not run them during the workshop. They can be easily parallelized, relying on the `BiocParallel` bioconductor package. See [here](https://statomics.github.io/tradeSeq/articles/fitGAM.html#parallel-computing-1) for more details.
 
 ```{r evaluateK, eval=FALSE}
 library(tradeSeq)
@@ -296,8 +300,7 @@ icMat <- evaluateK(counts = as.matrix(assays(sce)$counts),
                    k = 3:7)
 ```
 
-
-#### Fit GAM
+### Fit GAM
 
 ```{r, eval=FALSE}
 set.seed(3)
@@ -310,8 +313,7 @@ mean(rowData(sce)$tradeSeq$converged)
 ```
 
 
-#### Assess DE along pseudotime (or pseudospace)
-
+### Assess DE along pseudotime (or pseudospace)
 
 Note that the axis represented by the trajectory in this dataset is actually the migration of cells from the epithelium to the mesenchyme and therefore could also be looked at as a space dimension, although it is likely to be correlated with chronological time, too.
 
@@ -338,7 +340,7 @@ length(tgfbGenes)
 UpSetR::upset(fromList(list(mock = mockGenes, tgfb = tgfbGenes)))
 ```
 
-##### Visualization of DE genes
+#### Visualization of DE genes
 
 Below we visualize and cluster the genes whose expression vary over pseudotime.
 As was also observed in the original manuscript, genes are mainly upregulated at the start- or endpoints of the lineage.
@@ -372,7 +374,7 @@ pheatmap(t(scale(t(yhatCellMock))), cluster_cols = FALSE,
           show_rownames = FALSE, show_colnames=FALSE)
 ```
 
-##### Gene set enrichment analysis on genes from the Mock condition
+#### Gene set enrichment analysis on genes from the Mock condition
 
 Gene set enrichment analysis on the DE genes within the mock condition confirms the biology on epithelial cell differentiation.
 
@@ -391,11 +393,11 @@ kable(head(eaRes[ooEA, 1:3], n = 20))
 ```
 
 
-#### Differential expression between conditions
+### Differential expression between conditions
 
 In the following sections, we will investigate differential expression for each gene, between the two conditions, i.e., the mock and TGF-Beta conditions.
 
-##### EDA
+#### EDA
 
 The paper mentions that CDH1 and CRB3 should be expressed in similar kinetics.
 Note that the lower slope of CDH1 is also observed in the paper.
@@ -412,8 +414,7 @@ plotSmoothers(sce, assays(sce)$counts, gene = "FN1", alpha = 1, border = TRUE) +
 plotSmoothers(sce, assays(sce)$counts, gene = "CDH2", alpha = 1, border = TRUE) + ggtitle("CDH2")
 ```
 
-
-##### Differential expression analysis
+#### Differential expression analysis
 
 To test differential expression between conditions, we use the `conditionTest` function implemented in `tradeSeq`. 
 This function tests the null hypothesis that genes have identical expression patterns in each condition.
@@ -428,8 +429,7 @@ conditionGenes <- rownames(condRes)[condRes$padj <= 0.05]
 conditionGenes <- conditionGenes[!is.na(conditionGenes)]
 ```
 
-
-##### Visualize most and least significant gene
+#### Visualize most and least significant gene
 
 ```{r, eval=TRUE}
 # plot genes
@@ -446,7 +446,7 @@ plotSmoothers(sce, assays(sce)$counts,
               alpha = 1, border = TRUE)
 ```
 
-#### Heatmaps of genes DE between conditions
+### Heatmaps of genes DE between conditions
 
 Below we show heatmaps of the genes DE between conditions. The DE genes in the heatmaps are ordered according to a hierarchical clustering on the TGF-Beta condition.
 
@@ -468,7 +468,7 @@ matchingHeatmap_mock <- pheatmap(t(scale(t(yhatSmooth[heatSmooth_TGF$tree_row$or
 grid.arrange(heatSmooth_TGF[[4]], matchingHeatmap_mock[[4]], ncol = 2)
 ```
 
-#### Gene set enrichment analysis
+### Gene set enrichment analysis
 
 Gene set enrichment analysis on genes that are differentially expressed between conditions finds evidence for cell motility, cell junctions/adhesion and gastrulation. The original paper also focusses on the KRAS signaling pathway, which induces cell migration, amongst others.
 Other related processes include morphogenesis, gastrulation and cell adhesion.

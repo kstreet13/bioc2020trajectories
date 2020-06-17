@@ -17,7 +17,23 @@ Default to 10.}
 \item{smooth}{The smoothing parameter. Default to k. Lower values mean that
 we smooth more.}
 }
+\value{
+A list with two components:
+\itemize{
+  \item \code{scores} is the raw score, a vector with one value per cell.
+  \item \code{scaled_scores} is the score after local smoothing. A vector with one value per cell.
+}
+}
 \description{
 Compute a proximity score to show whether nearby cells have the
 same condition of not
+}
+\details{
+The score is computed in two steps. First, a score is computed for 
+each cell. The distribution of labels among the \code{k}-nearest- neighbours 
+is computed to the overall distribution for  all cells. This yields a p-value 
+based on the multinomial distribution, which is squared to return the scores. 
+
+Then, splines are used to smooth the scores along the reduced dimension space, 
+with \code{smooth} nodes.  This yields the scaled_scores.
 }

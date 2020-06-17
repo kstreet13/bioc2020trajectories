@@ -28,7 +28,6 @@ Imports:
     tradeSeq,
     HDF5Array,
     igraph,
-    EMT,
     RANN,
     magrittr,
     mgcv,

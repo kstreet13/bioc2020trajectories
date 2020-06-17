@@ -2,7 +2,6 @@
 
 export(importRawData)
 export(proximity_score)
-import(EMT)
 import(RANN)
 import(purrr)
 importFrom(magrittr,"%>%")
