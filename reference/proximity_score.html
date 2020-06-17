@@ -156,6 +156,21 @@ we smooth more.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A list with two components:</p><ul>
+<li><p><code>scores</code> is the raw score, a vector with one value per cell.</p></li>
+<li><p><code>scaled_scores</code> is the score after local smoothing. A vector with one value per cell.</p></li>
+</ul>
+
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The score is computed in two steps. First, a score is computed for 
+each cell. The distribution of labels among the <code>k</code>-nearest- neighbours 
+is computed to the overall distribution for  all cells. This yields a p-value 
+based on the multinomial distribution, which is squared to return the scores.</p>
+<p>Then, splines are used to smooth the scores along the reduced dimension space, 
+with <code>smooth</code> nodes.  This yields the scaled_scores.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
