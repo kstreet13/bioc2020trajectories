@@ -381,7 +381,7 @@
 <a href="#visualization-of-de-genes" class="anchor"></a>Visualization of DE genes</h4>
 <p>Below we visualize and cluster the genes whose expression vary over pseudotime, using the smoothed expression patterns As was also observed in the original manuscript, genes are mainly upregulated at the start- or endpoints of the lineage.</p>
 <div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="co">### based on mean smoother</span>
-<span class="no">yhatSmooth</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/predictSmooth.html">predictSmooth</a></span>(<span class="no">sce</span>, <span class="kw">gene</span> <span class="kw">=</span> <span class="no">mockGenes</span>, <span class="kw">nPoints</span> <span class="kw">=</span> <span class="fl">50</span>)
+<span class="no">yhatSmooth</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/predictSmooth.html">predictSmooth</a></span>(<span class="no">sce</span>, <span class="kw">gene</span> <span class="kw">=</span> <span class="no">mockGenes</span>, <span class="kw">nPoints</span> <span class="kw">=</span> <span class="fl">50</span>, <span class="kw">tidy</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
 <span class="no">heatSmooth</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html">pheatmap</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="no">yhatSmooth</span>[, <span class="fl">1</span>:<span class="fl">50</span>]))),
                        <span class="kw">cluster_cols</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
                        <span class="kw">show_rownames</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
@@ -435,104 +435,104 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">GO_EPITHELIUM_DEVELOPMENT</td>
+<td align="left">GO_EPIDERMIS_DEVELOPMENT</td>
 <td align="right">0.0000400</td>
-<td align="right">0.0787184</td>
+<td align="right">0.1012094</td>
 </tr>
 <tr class="even">
 <td align="left">GO_MITOTIC_CELL_CYCLE</td>
-<td align="right">0.0000400</td>
-<td align="right">0.0787184</td>
+<td align="right">0.0001000</td>
+<td align="right">0.1012094</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_EPIDERMIS_DEVELOPMENT</td>
-<td align="right">0.0001000</td>
-<td align="right">0.1115178</td>
+<td align="left">GO_CELL_CYCLE</td>
+<td align="right">0.0001600</td>
+<td align="right">0.1012094</td>
 </tr>
 <tr class="even">
-<td align="left">GO_CELL_CYCLE</td>
-<td align="right">0.0001400</td>
-<td align="right">0.1115178</td>
-</tr>
-<tr class="odd">
 <td align="left">GO_EPITHELIAL_CELL_DIFFERENTIATION</td>
 <td align="right">0.0001600</td>
-<td align="right">0.1115178</td>
-</tr>
-<tr class="even">
-<td align="left">GO_MITOTIC_NUCLEAR_DIVISION</td>
-<td align="right">0.0001800</td>
-<td align="right">0.1115178</td>
+<td align="right">0.1012094</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_SKIN_DEVELOPMENT</td>
-<td align="right">0.0002000</td>
-<td align="right">0.1115178</td>
+<td align="right">0.0001600</td>
+<td align="right">0.1012094</td>
 </tr>
 <tr class="even">
+<td align="left">GO_EPITHELIUM_DEVELOPMENT</td>
+<td align="right">0.0001800</td>
+<td align="right">0.1012094</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_MITOTIC_NUCLEAR_DIVISION</td>
+<td align="right">0.0001800</td>
+<td align="right">0.1012094</td>
+</tr>
+<tr class="even">
+<td align="left">GO_ORGANELLE_FISSION</td>
+<td align="right">0.0002400</td>
+<td align="right">0.1049579</td>
+</tr>
+<tr class="odd">
 <td align="left">GO_PROTEOLYSIS</td>
-<td align="right">0.0002600</td>
-<td align="right">0.1115178</td>
+<td align="right">0.0002400</td>
+<td align="right">0.1049579</td>
+</tr>
+<tr class="even">
+<td align="left">GO_CELL_CYCLE_PROCESS</td>
+<td align="right">0.0003000</td>
+<td align="right">0.1089947</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_REGULATION_OF_MODIFICATION_OF_SYNAPTIC_STRUCTURE</td>
-<td align="right">0.0002606</td>
-<td align="right">0.1115178</td>
-</tr>
-<tr class="even">
-<td align="left">GO_NEGATIVE_REGULATION_OF_CELLULAR_COMPONENT_ORGANIZATION</td>
-<td align="right">0.0003000</td>
-<td align="right">0.1115178</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_ORGANELLE_FISSION</td>
-<td align="right">0.0003200</td>
-<td align="right">0.1115178</td>
+<td align="right">0.0003408</td>
+<td align="right">0.1089947</td>
 </tr>
 <tr class="even">
 <td align="left">GO_EPIDERMAL_CELL_DIFFERENTIATION</td>
-<td align="right">0.0003400</td>
-<td align="right">0.1115178</td>
+<td align="right">0.0003600</td>
+<td align="right">0.1089947</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_CELL_CYCLE_PROCESS</td>
-<td align="right">0.0004000</td>
-<td align="right">0.1211053</td>
+<td align="left">GO_NEGATIVE_REGULATION_OF_CELLULAR_COMPONENT_ORGANIZATION</td>
+<td align="right">0.0003600</td>
+<td align="right">0.1089947</td>
 </tr>
 <tr class="even">
-<td align="left">GO_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
-<td align="right">0.0005000</td>
-<td align="right">0.1364453</td>
+<td align="left">GO_CYTOSKELETON_ORGANIZATION</td>
+<td align="right">0.0004000</td>
+<td align="right">0.1124549</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_CYTOSKELETON_ORGANIZATION</td>
-<td align="right">0.0005200</td>
-<td align="right">0.1364453</td>
+<td align="left">GO_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
+<td align="right">0.0004600</td>
+<td align="right">0.1207016</td>
 </tr>
 <tr class="even">
 <td align="left">GO_KERATINOCYTE_DIFFERENTIATION</td>
-<td align="right">0.0006400</td>
-<td align="right">0.1491507</td>
+<td align="right">0.0005800</td>
+<td align="right">0.1342844</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_REGULATION_OF_CHROMOSOME_ORGANIZATION</td>
-<td align="right">0.0006800</td>
-<td align="right">0.1491507</td>
+<td align="left">GO_REGULATION_OF_NUCLEAR_DIVISION</td>
+<td align="right">0.0005800</td>
+<td align="right">0.1342844</td>
 </tr>
 <tr class="even">
-<td align="left">GO_REGULATION_OF_NUCLEAR_DIVISION</td>
-<td align="right">0.0007000</td>
-<td align="right">0.1491507</td>
+<td align="left">GO_REGULATION_OF_CHROMOSOME_ORGANIZATION</td>
+<td align="right">0.0006400</td>
+<td align="right">0.1399439</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_NEGATIVE_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
-<td align="right">0.0007200</td>
-<td align="right">0.1491507</td>
+<td align="right">0.0006800</td>
+<td align="right">0.1408646</td>
 </tr>
 <tr class="even">
-<td align="left">GO_CELL_DIVISION</td>
-<td align="right">0.0008400</td>
-<td align="right">0.1645931</td>
+<td align="left">GO_CHROMOSOME_ORGANIZATION</td>
+<td align="right">0.0008600</td>
+<td align="right">0.1692446</td>
 </tr>
 </tbody>
 </table>
@@ -588,7 +588,7 @@
 <a href="#heatmaps-of-genes-de-between-conditions" class="anchor"></a>Heatmaps of genes DE between conditions</h3>
 <p>Below we show heatmaps of the genes DE between conditions. The DE genes in the heatmaps are ordered according to a hierarchical clustering on the TGF-Beta condition.</p>
 <div class="sourceCode" id="cb37"><html><body><pre class="r"><span class="co">### based on mean smoother</span>
-<span class="no">yhatSmooth</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/predictSmooth.html">predictSmooth</a></span>(<span class="no">sce</span>, <span class="kw">gene</span> <span class="kw">=</span> <span class="no">conditionGenes</span>, <span class="kw">nPoints</span> <span class="kw">=</span> <span class="fl">50</span>)
+<span class="no">yhatSmooth</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/predictSmooth.html">predictSmooth</a></span>(<span class="no">sce</span>, <span class="kw">gene</span> <span class="kw">=</span> <span class="no">conditionGenes</span>, <span class="kw">nPoints</span> <span class="kw">=</span> <span class="fl">50</span>, <span class="kw">tidy</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
 <span class="no">heatSmooth_TGF</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html">pheatmap</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="no">yhatSmooth</span>[, <span class="fl">51</span>:<span class="fl">100</span>]))),
   <span class="kw">cluster_cols</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
   <span class="kw">show_rownames</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">show_colnames</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"TGF-Beta"</span>, <span class="kw">legend</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
@@ -629,27 +629,27 @@
 <tr class="odd">
 <td align="left">GO_BIOLOGICAL_ADHESION</td>
 <td align="right">0.0000200</td>
-<td align="right">0.0787984</td>
+<td align="right">0.0393992</td>
 </tr>
 <tr class="even">
 <td align="left">GO_LOCOMOTION</td>
-<td align="right">0.0000400</td>
-<td align="right">0.0787984</td>
+<td align="right">0.0000200</td>
+<td align="right">0.0393992</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_CELL_MOTILITY</td>
-<td align="right">0.0000600</td>
-<td align="right">0.0787984</td>
+<td align="left">GO_ANATOMICAL_STRUCTURE_FORMATION_INVOLVED_IN_MORPHOGENESIS</td>
+<td align="right">0.0000400</td>
+<td align="right">0.0525323</td>
 </tr>
 <tr class="even">
-<td align="left">GO_ANATOMICAL_STRUCTURE_FORMATION_INVOLVED_IN_MORPHOGENESIS</td>
-<td align="right">0.0001200</td>
-<td align="right">0.1181976</td>
+<td align="left">GO_CELL_MOTILITY</td>
+<td align="right">0.0000600</td>
+<td align="right">0.0590988</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_REGULATION_OF_CELL_ADHESION</td>
-<td align="right">0.0002000</td>
-<td align="right">0.1313307</td>
+<td align="right">0.0001600</td>
+<td align="right">0.1260775</td>
 </tr>
 <tr class="even">
 <td align="left">GO_TRANSCRIPTION_BY_RNA_POLYMERASE_III</td>
@@ -658,73 +658,73 @@
 </tr>
 <tr class="odd">
 <td align="left">GO_REGULATION_OF_MITOCHONDRIAL_GENE_EXPRESSION</td>
-<td align="right">0.0004000</td>
-<td align="right">0.2251384</td>
+<td align="right">0.0004600</td>
+<td align="right">0.2589091</td>
 </tr>
 <tr class="even">
 <td align="left">GO_EXTRACELLULAR_STRUCTURE_ORGANIZATION</td>
-<td align="right">0.0006000</td>
-<td align="right">0.2954941</td>
+<td align="right">0.0006600</td>
+<td align="right">0.3250435</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_REGULATION_OF_CELL_POPULATION_PROLIFERATION</td>
-<td align="right">0.0012000</td>
-<td align="right">0.4465244</td>
-</tr>
-<tr class="even">
 <td align="left">GO_MITOCHONDRIAL_RNA_METABOLIC_PROCESS</td>
-<td align="right">0.0013000</td>
-<td align="right">0.4465244</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_REGULATION_OF_CELLULAR_COMPONENT_MOVEMENT</td>
-<td align="right">0.0013000</td>
-<td align="right">0.4465244</td>
+<td align="right">0.0009200</td>
+<td align="right">0.4011556</td>
 </tr>
 <tr class="even">
-<td align="left">GO_CELL_JUNCTION_ORGANIZATION</td>
-<td align="right">0.0015200</td>
-<td align="right">0.4465244</td>
+<td align="left">GO_REGULATION_OF_CELLULAR_COMPONENT_MOVEMENT</td>
+<td align="right">0.0010600</td>
+<td align="right">0.4011556</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_CARDIOVASCULAR_SYSTEM_DEVELOPMENT</td>
-<td align="right">0.0015800</td>
-<td align="right">0.4465244</td>
+<td align="right">0.0011200</td>
+<td align="right">0.4011556</td>
 </tr>
 <tr class="even">
+<td align="left">GO_REGULATION_OF_CELL_POPULATION_PROLIFERATION</td>
+<td align="right">0.0012400</td>
+<td align="right">0.4071252</td>
+</tr>
+<tr class="odd">
 <td align="left">GO_CIRCULATORY_SYSTEM_DEVELOPMENT</td>
-<td align="right">0.0016600</td>
-<td align="right">0.4465244</td>
+<td align="right">0.0013800</td>
+<td align="right">0.4182378</td>
+</tr>
+<tr class="even">
+<td align="left">GO_CELL_JUNCTION_ORGANIZATION</td>
+<td align="right">0.0015400</td>
+<td align="right">0.4333913</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_N_TERMINAL_PROTEIN_AMINO_ACID_MODIFICATION</td>
-<td align="right">0.0017000</td>
-<td align="right">0.4465244</td>
+<td align="right">0.0017800</td>
+<td align="right">0.4383162</td>
 </tr>
 <tr class="even">
-<td align="left">GO_GASTRULATION</td>
-<td align="right">0.0020400</td>
-<td align="right">0.4727905</td>
-</tr>
-<tr class="odd">
 <td align="left">GO_TUBE_DEVELOPMENT</td>
-<td align="right">0.0020400</td>
-<td align="right">0.4727905</td>
-</tr>
-<tr class="even">
-<td align="left">GO_CELL_JUNCTION_ASSEMBLY</td>
-<td align="right">0.0022200</td>
-<td align="right">0.4859236</td>
+<td align="right">0.0017800</td>
+<td align="right">0.4383162</td>
 </tr>
 <tr class="odd">
+<td align="left">GO_GASTRULATION</td>
+<td align="right">0.0021400</td>
+<td align="right">0.4959666</td>
+</tr>
+<tr class="even">
 <td align="left">GO_POSITIVE_REGULATION_OF_MULTICELLULAR_ORGANISMAL_PROCESS</td>
-<td align="right">0.0023800</td>
-<td align="right">0.4935270</td>
+<td align="right">0.0023000</td>
+<td align="right">0.4976743</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_CELL_JUNCTION_ASSEMBLY</td>
+<td align="right">0.0024000</td>
+<td align="right">0.4976743</td>
 </tr>
 <tr class="even">
 <td align="left">GO_MOTOR_NEURON_AXON_GUIDANCE</td>
-<td align="right">0.0028799</td>
-<td align="right">0.5444255</td>
+<td align="right">0.0028599</td>
+<td align="right">0.5174430</td>
 </tr>
 </tbody>
 </table>
@@ -775,7 +775,7 @@
 ##  [1] nlme_3.1-147                  bitops_1.0-6                 
 ##  [3] DDRTree_0.1.5                 fs_1.4.1                     
 ##  [5] rprojroot_1.3-2               docopt_0.6.1                 
-##  [7] tools_4.0.0                   backports_1.1.7              
+##  [7] tools_4.0.0                   backports_1.1.8              
 ##  [9] R6_2.4.1                      irlba_2.3.3                  
 ## [11] mgcv_1.8-31                   colorspace_1.4-1             
 ## [13] withr_2.2.0                   tidyselect_1.1.0             
@@ -785,7 +785,7 @@
 ## [21] stringr_1.4.0                 digest_0.6.25                
 ## [23] sparsesvd_0.2                 rmarkdown_2.2                
 ## [25] XVector_0.29.2                pkgconfig_2.0.3              
-## [27] htmltools_0.4.0               highr_0.8                    
+## [27] htmltools_0.5.0               highr_0.8                    
 ## [29] limma_3.45.7                  rlang_0.4.6                  
 ## [31] VGAM_1.1-3                    FNN_1.1.3                    
 ## [33] farver_2.0.3                  generics_0.0.2               
