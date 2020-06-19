@@ -354,7 +354,7 @@ As was also observed in the original manuscript, genes are mainly upregulated at
 
 ```{r, eval=TRUE}
 ### based on mean smoother
-yhatSmooth <- predictSmooth(sce, gene = mockGenes, nPoints = 50)
+yhatSmooth <- predictSmooth(sce, gene = mockGenes, nPoints = 50, tidy = FALSE)
 heatSmooth <- pheatmap(t(scale(t(yhatSmooth[, 1:50]))),
                        cluster_cols = FALSE,
                        show_rownames = FALSE, 
@@ -458,7 +458,7 @@ Below we show heatmaps of the genes DE between conditions. The DE genes in the h
 
 ```{r, eval=TRUE}
 ### based on mean smoother
-yhatSmooth <- predictSmooth(sce, gene = conditionGenes, nPoints = 50)
+yhatSmooth <- predictSmooth(sce, gene = conditionGenes, nPoints = 50, tidy = FALSE)
 heatSmooth_TGF <- pheatmap(t(scale(t(yhatSmooth[, 51:100]))),
   cluster_cols = FALSE,
   show_rownames = FALSE, show_colnames = FALSE, main = "TGF-Beta", legend = FALSE,
