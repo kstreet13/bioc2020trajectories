@@ -154,7 +154,7 @@ sce <- as.SingleCellExperiment(integrated, assay="RNA")
 
 ## Import dataset
 
-We have mad the pre-processed, integrated dataset available as a `SingleCellExperiment` object in the workshop package, which we import below.
+We have made the pre-processed, integrated dataset available as a `SingleCellExperiment` object in the workshop package, which we import below.
 
 ```{r}
 data("sce", package = "bioc2020trajectories")
@@ -189,7 +189,7 @@ We know from biological knowledge that the EMT development goes from the inner t
 
 **I think spatial score is unfortunate wording here since the trajectory is also representing a spatial effect. Something like conditional imbalance score could be better.** 
 
-To help asssess this, we devised a spatial score. Regions with a high score indicate that the cell distribution according to treatment label is unbalanced compared the overall distribution. Here, we see that, while there are some small regions of imbalance, the global path along the development axis is well-balanced. This means that we can fit a global trajectory to the full dataset. This choice allows us to use the maximal amount of data in the construction of our trajectory, which should lead to more robust results than separate, potentially noisy trajectories constructed on subsets of the data. As we will see, not all cell types are necessarily present in every condition, so this approach ensures that our trajectory accounts for all cell types present in the overall data. 
+To help assess this, we devised a spatial score. Regions with a high score indicate that the cell distribution according to treatment label is unbalanced compared the overall distribution. Here, we see that, while there are some small regions of imbalance, the global path along the development axis is well-balanced. This means that we can fit a global trajectory to the full dataset. This choice allows us to use the maximal amount of data in the construction of our trajectory, which should lead to more robust results than separate, potentially noisy trajectories constructed on subsets of the data. As we will see, not all cell types are necessarily present in every condition, so this approach ensures that our trajectory accounts for all cell types present in the overall data. 
 
 ```{r, eval = TRUE}
 scores <- bioc2020trajectories::proximity_score(
@@ -207,7 +207,7 @@ For more information on the score, run `help("proximity_score", "bioc2020traject
 
 ## Trajectory Inference
 
-We perform trajectory inference to order the cells according to EMT progression. We  use `slingshot` for trajectory inference, with the cells' position (inner or outer) serving as the cluster identifier. This ensures that we will only find a single lineage while still allowing suffiecient flexibility to correctly orient the pseudotime axis.
+We perform trajectory inference to order the cells according to EMT progression. We  use `slingshot` for trajectory inference, with the cells' position (inner or outer) serving as the cluster identifier. This ensures that we will only find a single lineage while still allowing sufficient flexibility to correctly orient the pseudotime axis.
 
 Note that we perform trajectory inference using cells from both conditions, rather than splitting the data into two groups, as discussed above. 
 
@@ -275,7 +275,7 @@ ks.test(slingPseudotime(sce)[colData(sce)$pheno$treatment_id == "Mock", 1],
         slingPseudotime(sce)[colData(sce)$pheno$treatment_id == "TGFB", 1])
 ```
 
-As we might expect from the plot, this test is highly signifcant, so we can conclude that there are differences between the two distributions.
+As we might expect from the plot, this test is highly significant, so we can conclude that there are differences between the two distributions.
 
 ## Differential expression
 
@@ -476,7 +476,7 @@ grid.arrange(heatSmooth_TGF[[4]], matchingHeatmap_mock[[4]], ncol = 2)
 
 ### Gene set enrichment analysis
 
-Gene set enrichment analysis on genes that are differentially expressed between conditions finds evidence for cell motility, cell junctions/adhesion and gastrulation. The original paper also focusses on the KRAS signaling pathway, which induces cell migration, amongst others.
+Gene set enrichment analysis on genes that are differentially expressed between conditions finds evidence for cell motility, cell junctions/adhesion and gastrulation. The original paper also focuses on the KRAS signaling pathway, which induces cell migration, amongst others.
 Other related processes include morphogenesis, gastrulation and cell adhesion.
 
 ```{r, eval=TRUE}
