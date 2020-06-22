@@ -1,5 +1,5 @@
 Package: bioc2020trajectories
-Title: Bioconductor 2020 Workshop on 'Trajectory inference across conditions: differential expression and differential progression'
+Title: Trajectory inference across conditions: differential expression and differential progression
 Version: 0.0.0.91
 Authors@R: c(person("Kelly", "Street", role = c("aut", "cre"),
                      email = "kstreet@ds.dfci.harvard.edu"),
@@ -39,3 +39,4 @@ Imports:
     gridExtra
 VignetteBuilder: knitr
 Remotes: github::statOmics/tradeSeq@conditions
+URL: https://kstreet13.github.io/bioc2020trajectories
