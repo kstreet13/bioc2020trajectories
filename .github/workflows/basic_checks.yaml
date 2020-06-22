@@ -12,13 +12,13 @@ jobs:
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
         shell: Rscript {0}
         
-      - name: Cache R packages
-        if: runner.os != 'Windows'
-        uses: actions/cache@v1
-        with:
-          path: /usr/local/lib/R/site-library
-          key: ${{ runner.os }}-r-1-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ runner.os }}-r-1-
+#      - name: Cache R packages
+#        if: runner.os != 'Windows'
+#        uses: actions/cache@v1
+#        with:
+#          path: /usr/local/lib/R/site-library
+#          key: ${{ runner.os }}-r-1-${{ hashFiles('.github/depends.Rds') }}
+#          restore-keys: ${{ runner.os }}-r-1-
 
       # This lets us augment with additional dependencies
       - name: Install system dependencies
