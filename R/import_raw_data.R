@@ -19,7 +19,7 @@ importRawData <- function(){
   counts <- cds@assayData$exprs
   phenoData <- pData(cds@phenoData)
   rd <- SimpleList(
-    tSNE.orig = cbind(cds@phenoData@data$TSNE.1, cds@phenoData@data$TSNE.2)
+    tSNEorig = cbind(cds@phenoData@data$TSNE.1, cds@phenoData@data$TSNE.2)
   )
   rm(cds) ; gc(verbose = FALSE)
   filt <- apply(counts, 1, function(x){
