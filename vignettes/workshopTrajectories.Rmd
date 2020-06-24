@@ -187,12 +187,10 @@ par(mar = c(5, 4, 4, 2) + .1)
 
 We know from biological knowledge that the EMT development goes from the inner to the outer cells. The question is: should we fit a separate trajectory for each condition? We might expect the trajectory itself to be changed by the treatment if the treatment effect is systematically large. Otherwise, the treatment may impact the expression profile of some genes but the overall trajectory will be preserved. 
 
-**I think spatial score is unfortunate wording here since the trajectory is also representing a spatial effect. Something like conditional imbalance score could be better.** 
-
-To help assess this, we devised a spatial score. Regions with a high score indicate that the cell distribution according to treatment label is unbalanced compared the overall distribution. Here, we see that, while there are some small regions of imbalance, the global path along the development axis is well-balanced. This means that we can fit a global trajectory to the full dataset. This choice allows us to use the maximal amount of data in the construction of our trajectory, which should lead to more robust results than separate, potentially noisy trajectories constructed on subsets of the data. As we will see, not all cell types are necessarily present in every condition, so this approach ensures that our trajectory accounts for all cell types present in the overall data. 
+To help assess this, we devised an imbalance score. Regions with a high score indicate that the local cell distribution according to treatment label is unbalanced compared the overall distribution. Here, we see that, while there are some small regions of imbalance, the global path along the development axis is well-balanced. This means that we can fit a global trajectory to the full dataset. This choice allows us to use the maximal amount of data in the construction of our trajectory, which should lead to more robust results than separate, potentially noisy trajectories constructed on subsets of the data. As we will see, not all cell types are necessarily present in every condition, so this approach ensures that our trajectory accounts for all cell types present in the overall data. 
 
 ```{r, eval = TRUE}
-scores <- bioc2020trajectories::proximity_score(
+scores <- bioc2020trajectories::imbalance_score(
   rd = reducedDims(sce)$UMAP, 
   cl = colData(sce)$pheno$treatment_id,
   k = 20, smooth = 40)
@@ -203,7 +201,7 @@ plot(reducedDims(sce)$UMAP, col = grad[cut(scores$scaled_scores, breaks = 10)],
 legend("topleft", legend = names(grad), col = grad, pch = 16, bty = "n", cex = 2 / 3)
 ```
 
-For more information on the score, run `help("proximity_score", "bioc2020trajectories")`
+For more information on the score, run `help("imbalance_score", "bioc2020trajectories")`
 
 ## Trajectory Inference
 

@@ -33,9 +33,9 @@
   return(res)
 }
 
-#' @title Proximity score.
+#' @title Imbalance score.
 #'
-#' @description Compute a proximity score to show whether nearby cells have the
+#' @description Compute an imbalance score to show whether nearby cells have the
 #' same condition of not
 #' 
 #' @return A list with two components:
@@ -51,6 +51,7 @@
 #' 
 #' Then, splines are used to smooth the scores along the reduced dimension space, 
 #' with \code{smooth} nodes.  This yields the scaled_scores.
+#' 
 #' @param rd The reduced dimension matrix of the cells
 #' @param cl the vector of conditions
 #' @param k The number of neighbours to consider when computing the score.
@@ -62,7 +63,7 @@
 #' @importFrom mgcv gam
 #' @import igraph
 #' @export
-proximity_score <- function(rd, cl, k = 10, smooth = k) {
+imbalance_score <- function(rd, cl, k = 10, smooth = k) {
   # Code inspired from the monocle3 package
   # https://github.com/cole-trapnell-lab/monocle3/blob/9becd94f60930c2a9b51770e3818c194dd8201eb/R/cluster_cells.R#L194
 
