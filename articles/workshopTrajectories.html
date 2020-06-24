@@ -282,9 +282,8 @@
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/layout.html">layout</a></span>(<span class="fl">1</span>)
 <span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">5</span>, <span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">2</span>) + <span class="fl">.1</span>)</pre></body></html></div>
 <p>We know from biological knowledge that the EMT development goes from the inner to the outer cells. The question is: should we fit a separate trajectory for each condition? We might expect the trajectory itself to be changed by the treatment if the treatment effect is systematically large. Otherwise, the treatment may impact the expression profile of some genes but the overall trajectory will be preserved.</p>
-<p><strong>I think spatial score is unfortunate wording here since the trajectory is also representing a spatial effect. Something like conditional imbalance score could be better.</strong></p>
-<p>To help assess this, we devised a spatial score. Regions with a high score indicate that the cell distribution according to treatment label is unbalanced compared the overall distribution. Here, we see that, while there are some small regions of imbalance, the global path along the development axis is well-balanced. This means that we can fit a global trajectory to the full dataset. This choice allows us to use the maximal amount of data in the construction of our trajectory, which should lead to more robust results than separate, potentially noisy trajectories constructed on subsets of the data. As we will see, not all cell types are necessarily present in every condition, so this approach ensures that our trajectory accounts for all cell types present in the overall data.</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">scores</span> <span class="kw">&lt;-</span> <span class="kw pkg">bioc2020trajectories</span><span class="kw ns">::</span><span class="fu">proximity_score</span>(
+<p>To help assess this, we devised an imbalance score. Regions with a high score indicate that the local cell distribution according to treatment label is unbalanced compared the overall distribution. Here, we see that, while there are some small regions of imbalance, the global path along the development axis is well-balanced. This means that we can fit a global trajectory to the full dataset. This choice allows us to use the maximal amount of data in the construction of our trajectory, which should lead to more robust results than separate, potentially noisy trajectories constructed on subsets of the data. As we will see, not all cell types are necessarily present in every condition, so this approach ensures that our trajectory accounts for all cell types present in the overall data.</p>
+<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">scores</span> <span class="kw">&lt;-</span> <span class="kw pkg">bioc2020trajectories</span><span class="kw ns">::</span><span class="fu">imbalance_score</span>(
   <span class="kw">rd</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/reducedDims.html">reducedDims</a></span>(<span class="no">sce</span>)$<span class="no">UMAP</span>,
   <span class="kw">cl</span> <span class="kw">=</span> <span class="fu">colData</span>(<span class="no">sce</span>)$<span class="no">pheno</span>$<span class="no">treatment_id</span>,
   <span class="kw">k</span> <span class="kw">=</span> <span class="fl">20</span>, <span class="kw">smooth</span> <span class="kw">=</span> <span class="fl">40</span>)</pre></body></html></div>
@@ -300,7 +299,7 @@
      <span class="kw">asp</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">pch</span> <span class="kw">=</span> <span class="fl">16</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">"UMAP-1"</span>, <span class="kw">ylab</span> <span class="kw">=</span> <span class="st">"UMAP-2"</span>, <span class="kw">cex</span> <span class="kw">=</span> <span class="fl">.8</span>)
 <span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span>(<span class="st">"topleft"</span>, <span class="kw">legend</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">grad</span>), <span class="kw">col</span> <span class="kw">=</span> <span class="no">grad</span>, <span class="kw">pch</span> <span class="kw">=</span> <span class="fl">16</span>, <span class="kw">bty</span> <span class="kw">=</span> <span class="st">"n"</span>, <span class="kw">cex</span> <span class="kw">=</span> <span class="fl">2</span> / <span class="fl">3</span>)</pre></body></html></div>
 <p><img src="workshopTrajectories_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
-<p>For more information on the score, run <code>help("proximity_score", "bioc2020trajectories")</code></p>
+<p>For more information on the score, run <code>help("imbalance_score", "bioc2020trajectories")</code></p>
 </div>
 <div id="trajectory-inference" class="section level2">
 <h2 class="hasAnchor">
@@ -442,104 +441,104 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">GO_MITOTIC_CELL_CYCLE</td>
-<td align="right">0.0000200</td>
-<td align="right">0.0787184</td>
-</tr>
-<tr class="even">
-<td align="left">GO_EPITHELIUM_DEVELOPMENT</td>
-<td align="right">0.0000600</td>
-<td align="right">0.0787184</td>
-</tr>
-<tr class="odd">
 <td align="left">GO_EPIDERMIS_DEVELOPMENT</td>
-<td align="right">0.0000800</td>
-<td align="right">0.0787184</td>
+<td align="right">0.0000200</td>
+<td align="right">0.0629747</td>
 </tr>
 <tr class="even">
-<td align="left">GO_CELL_CYCLE</td>
-<td align="right">0.0001000</td>
-<td align="right">0.0787184</td>
+<td align="left">GO_MITOTIC_CELL_CYCLE</td>
+<td align="right">0.0000400</td>
+<td align="right">0.0629747</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_EPITHELIAL_CELL_DIFFERENTIATION</td>
-<td align="right">0.0001000</td>
-<td align="right">0.0787184</td>
+<td align="right">0.0000600</td>
+<td align="right">0.0629747</td>
 </tr>
 <tr class="even">
-<td align="left">GO_MITOTIC_NUCLEAR_DIVISION</td>
+<td align="left">GO_CELL_CYCLE</td>
+<td align="right">0.0000800</td>
+<td align="right">0.0629747</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_EPITHELIUM_DEVELOPMENT</td>
+<td align="right">0.0000800</td>
+<td align="right">0.0629747</td>
+</tr>
+<tr class="even">
+<td align="left">GO_PROTEOLYSIS</td>
 <td align="right">0.0001400</td>
 <td align="right">0.0918382</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_NEGATIVE_REGULATION_OF_CELLULAR_COMPONENT_ORGANIZATION</td>
+<td align="left">GO_SKIN_DEVELOPMENT</td>
 <td align="right">0.0001800</td>
 <td align="right">0.0962114</td>
 </tr>
 <tr class="even">
-<td align="left">GO_ORGANELLE_FISSION</td>
-<td align="right">0.0002200</td>
+<td align="left">GO_NEGATIVE_REGULATION_OF_CELLULAR_COMPONENT_ORGANIZATION</td>
+<td align="right">0.0002000</td>
 <td align="right">0.0962114</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_SKIN_DEVELOPMENT</td>
+<td align="left">GO_MITOTIC_NUCLEAR_DIVISION</td>
 <td align="right">0.0002200</td>
 <td align="right">0.0962114</td>
 </tr>
 <tr class="even">
-<td align="left">GO_PROTEOLYSIS</td>
-<td align="right">0.0002800</td>
-<td align="right">0.1092811</td>
+<td align="left">GO_ORGANELLE_FISSION</td>
+<td align="right">0.0002600</td>
+<td align="right">0.1001871</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_CELL_CYCLE_PROCESS</td>
-<td align="right">0.0003200</td>
-<td align="right">0.1092811</td>
+<td align="right">0.0002800</td>
+<td align="right">0.1001871</td>
 </tr>
 <tr class="even">
 <td align="left">GO_EPIDERMAL_CELL_DIFFERENTIATION</td>
 <td align="right">0.0003400</td>
-<td align="right">0.1092811</td>
+<td align="right">0.1115178</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_REGULATION_OF_MODIFICATION_OF_SYNAPTIC_STRUCTURE</td>
-<td align="right">0.0003609</td>
-<td align="right">0.1092811</td>
+<td align="right">0.0005214</td>
+<td align="right">0.1426771</td>
 </tr>
 <tr class="even">
+<td align="left">GO_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
+<td align="right">0.0005400</td>
+<td align="right">0.1426771</td>
+</tr>
+<tr class="odd">
 <td align="left">GO_CYTOSKELETON_ORGANIZATION</td>
-<td align="right">0.0005000</td>
-<td align="right">0.1364453</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_NEGATIVE_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
-<td align="right">0.0005200</td>
-<td align="right">0.1364453</td>
-</tr>
-<tr class="even">
-<td align="left">GO_KERATINOCYTE_DIFFERENTIATION</td>
-<td align="right">0.0005800</td>
-<td align="right">0.1389149</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_REGULATION_OF_CHROMOSOME_ORGANIZATION</td>
-<td align="right">0.0006000</td>
-<td align="right">0.1389149</td>
+<td align="right">0.0005600</td>
+<td align="right">0.1426771</td>
 </tr>
 <tr class="even">
 <td align="left">GO_REGULATION_OF_NUCLEAR_DIVISION</td>
-<td align="right">0.0006800</td>
-<td align="right">0.1408646</td>
+<td align="right">0.0005800</td>
+<td align="right">0.1426771</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
+<td align="left">GO_KERATINOCYTE_DIFFERENTIATION</td>
 <td align="right">0.0006800</td>
-<td align="right">0.1408646</td>
+<td align="right">0.1574369</td>
+</tr>
+<tr class="even">
+<td align="left">GO_REGULATION_OF_CHROMOSOME_ORGANIZATION</td>
+<td align="right">0.0007600</td>
+<td align="right">0.1574369</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_NEGATIVE_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
+<td align="right">0.0007800</td>
+<td align="right">0.1574369</td>
 </tr>
 <tr class="even">
 <td align="left">GO_CELL_DIVISION</td>
-<td align="right">0.0008200</td>
-<td align="right">0.1613728</td>
+<td align="right">0.0008000</td>
+<td align="right">0.1574369</td>
 </tr>
 </tbody>
 </table>
@@ -624,7 +623,9 @@
 ## in the fgsea function call.</code></pre>
 <pre><code>## Warning in preparePathwaysAndStats(pathways, stats, minSize, maxSize, gseaParam, : There are ties in the preranked stats (0.04% of the list).
 ## The order of those tied genes will be arbitrary, which may produce unexpected results.</code></pre>
-<div class="sourceCode" id="cb46"><html><body><pre class="r"><span class="no">ooEA</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">eaRes</span>$<span class="no">pval</span>, <span class="kw">decreasing</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
+<pre><code>## Warning in fgseaSimple(...): There were 1 pathways for which P-values were not
+## calculated properly due to unbalanced gene-level statistic values</code></pre>
+<div class="sourceCode" id="cb47"><html><body><pre class="r"><span class="no">ooEA</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">eaRes</span>$<span class="no">pval</span>, <span class="kw">decreasing</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
 <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">eaRes</span>[<span class="no">ooEA</span>, <span class="fl">1</span>:<span class="fl">3</span>], <span class="kw">n</span> <span class="kw">=</span> <span class="fl">20</span>))</pre></body></html></div>
 <table class="table">
 <thead><tr class="header">
@@ -635,103 +636,103 @@
 <tbody>
 <tr class="odd">
 <td align="left">GO_BIOLOGICAL_ADHESION</td>
-<td align="right">0.00002</td>
-<td align="right">0.0393992</td>
+<td align="right">0.0000200</td>
+<td align="right">0.0262595</td>
 </tr>
 <tr class="even">
-<td align="left">GO_LOCOMOTION</td>
-<td align="right">0.00002</td>
-<td align="right">0.0393992</td>
+<td align="left">GO_CELL_MOTILITY</td>
+<td align="right">0.0000200</td>
+<td align="right">0.0262595</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_CELL_MOTILITY</td>
-<td align="right">0.00004</td>
-<td align="right">0.0525323</td>
+<td align="left">GO_LOCOMOTION</td>
+<td align="right">0.0000200</td>
+<td align="right">0.0262595</td>
 </tr>
 <tr class="even">
 <td align="left">GO_ANATOMICAL_STRUCTURE_FORMATION_INVOLVED_IN_MORPHOGENESIS</td>
-<td align="right">0.00014</td>
-<td align="right">0.1238261</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_REGULATION_OF_CELL_ADHESION</td>
-<td align="right">0.00022</td>
-<td align="right">0.1238261</td>
-</tr>
-<tr class="even">
-<td align="left">GO_REGULATION_OF_MITOCHONDRIAL_GENE_EXPRESSION</td>
-<td align="right">0.00022</td>
-<td align="right">0.1238261</td>
+<td align="right">0.0001600</td>
+<td align="right">0.1575568</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_TRANSCRIPTION_BY_RNA_POLYMERASE_III</td>
-<td align="right">0.00022</td>
-<td align="right">0.1238261</td>
+<td align="right">0.0002000</td>
+<td align="right">0.1575568</td>
+</tr>
+<tr class="even">
+<td align="left">GO_REGULATION_OF_CELL_ADHESION</td>
+<td align="right">0.0003200</td>
+<td align="right">0.1800650</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_REGULATION_OF_MITOCHONDRIAL_GENE_EXPRESSION</td>
+<td align="right">0.0003200</td>
+<td align="right">0.1800650</td>
 </tr>
 <tr class="even">
 <td align="left">GO_EXTRACELLULAR_STRUCTURE_ORGANIZATION</td>
-<td align="right">0.00048</td>
-<td align="right">0.2363953</td>
+<td align="right">0.0006800</td>
+<td align="right">0.3348083</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_MITOCHONDRIAL_RNA_METABOLIC_PROCESS</td>
-<td align="right">0.00102</td>
-<td align="right">0.4087668</td>
+<td align="left">GO_REGULATION_OF_CELLULAR_COMPONENT_MOVEMENT</td>
+<td align="right">0.0010800</td>
+<td align="right">0.4529759</td>
 </tr>
 <tr class="even">
-<td align="left">GO_REGULATION_OF_CELLULAR_COMPONENT_MOVEMENT</td>
-<td align="right">0.00110</td>
-<td align="right">0.4087668</td>
+<td align="left">GO_MITOCHONDRIAL_RNA_METABOLIC_PROCESS</td>
+<td align="right">0.0012200</td>
+<td align="right">0.4529759</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_REGULATION_OF_CELL_POPULATION_PROLIFERATION</td>
-<td align="right">0.00132</td>
-<td align="right">0.4087668</td>
-</tr>
-<tr class="even">
-<td align="left">GO_CARDIOVASCULAR_SYSTEM_DEVELOPMENT</td>
-<td align="right">0.00148</td>
-<td align="right">0.4087668</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_CELL_JUNCTION_ORGANIZATION</td>
-<td align="right">0.00148</td>
-<td align="right">0.4087668</td>
-</tr>
-<tr class="even">
-<td align="left">GO_CIRCULATORY_SYSTEM_DEVELOPMENT</td>
-<td align="right">0.00158</td>
-<td align="right">0.4087668</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_GASTRULATION</td>
-<td align="right">0.00162</td>
-<td align="right">0.4087668</td>
+<td align="right">0.0013600</td>
+<td align="right">0.4529759</td>
 </tr>
 <tr class="even">
 <td align="left">GO_N_TERMINAL_PROTEIN_AMINO_ACID_MODIFICATION</td>
-<td align="right">0.00166</td>
-<td align="right">0.4087668</td>
+<td align="right">0.0013800</td>
+<td align="right">0.4529759</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_TUBE_DEVELOPMENT</td>
-<td align="right">0.00184</td>
-<td align="right">0.4264385</td>
+<td align="left">GO_CARDIOVASCULAR_SYSTEM_DEVELOPMENT</td>
+<td align="right">0.0016600</td>
+<td align="right">0.4578996</td>
 </tr>
 <tr class="even">
-<td align="left">GO_CELL_JUNCTION_ASSEMBLY</td>
-<td align="right">0.00196</td>
-<td align="right">0.4290136</td>
+<td align="left">GO_CIRCULATORY_SYSTEM_DEVELOPMENT</td>
+<td align="right">0.0016600</td>
+<td align="right">0.4578996</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_POSITIVE_REGULATION_OF_MULTICELLULAR_ORGANISMAL_PROCESS</td>
-<td align="right">0.00234</td>
-<td align="right">0.4852324</td>
+<td align="left">GO_CELL_JUNCTION_ORGANIZATION</td>
+<td align="right">0.0018000</td>
+<td align="right">0.4578996</td>
+</tr>
+<tr class="even">
+<td align="left">GO_TUBE_DEVELOPMENT</td>
+<td align="right">0.0018600</td>
+<td align="right">0.4578996</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_GASTRULATION</td>
+<td align="right">0.0019800</td>
+<td align="right">0.4587685</td>
 </tr>
 <tr class="even">
 <td align="left">GO_MOTOR_NEURON_AXON_GUIDANCE</td>
-<td align="right">0.00298</td>
-<td align="right">0.5303740</td>
+<td align="right">0.0025000</td>
+<td align="right">0.5356933</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_CELL_JUNCTION_ASSEMBLY</td>
+<td align="right">0.0026199</td>
+<td align="right">0.5356933</td>
+</tr>
+<tr class="even">
+<td align="left">GO_POSITIVE_REGULATION_OF_MULTICELLULAR_ORGANISMAL_PROCESS</td>
+<td align="right">0.0027199</td>
+<td align="right">0.5356933</td>
 </tr>
 </tbody>
 </table>
@@ -743,7 +744,7 @@
 <a href="#final-notes" class="anchor"></a>Final notes</h1>
 <p>A compiled version of the vignette is available on the <a href="https://kstreet13.github.io/bioc2020trajectories/articles/workshopTrajectories.html">workshop website</a>.</p>
 <p>If you have questions that you could not ask during the workshop, feel free to open an issue on the github repository <a href="https://github.com/kstreet13/bioc2020trajectories/issues">here</a>.</p>
-<div class="sourceCode" id="cb47"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span>()</pre></body></html></div>
+<div class="sourceCode" id="cb48"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span>()</pre></body></html></div>
 <pre><code>## R version 4.0.0 (2020-04-24)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 18.04.4 LTS
