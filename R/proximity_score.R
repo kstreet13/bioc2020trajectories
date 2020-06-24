@@ -60,6 +60,7 @@
 #' @importFrom magrittr %>%
 #' @import RANN purrr
 #' @importFrom mgcv gam
+#' @import igraph
 #' @export
 proximity_score <- function(rd, cl, k = 10, smooth = k) {
   # Code inspired from the monocle3 package

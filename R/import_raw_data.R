@@ -4,10 +4,8 @@
 #' \code{SingleCellExperiment object}
 #'
 #' @export
+#' @import BiocFileCache SingleCellExperiment rappdirs slingshot HDF5Array
 importRawData <- function(){
-  require(BiocFileCache)
-  require(SingleCellExperiment)
-  require(rappdirs)
   url <- "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE114687&format=file&file=GSE114687%5Fpseudospace%5Fcds%2Erds%2Egz"
   path <- paste0(rappdirs::user_cache_dir(), basename(url))
   bfc <- BiocFileCache::BiocFileCache(path, ask = FALSE)
@@ -26,8 +24,9 @@ importRawData <- function(){
     sum(x >= 2) >= 15
   })
   counts <- counts[filt, ]
-  sce <- SingleCellExperiment::SingleCellExperiment(assays=list(counts=counts),
-                              colData = phenoData,
-                              reducedDims = rd)
+  sce <- SingleCellExperiment::SingleCellExperiment(
+    assays = list(counts = counts),
+    colData = phenoData,
+    reducedDims = rd)
   return(sce)
 }

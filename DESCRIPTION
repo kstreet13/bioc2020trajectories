@@ -19,24 +19,25 @@ Suggests:
     rmarkdown,
     scales,
     pkgdown,
-    viridis
+    viridis,
+    ggplot2,
+    UpSetR,
+    pheatmap,
+    msigdbr,
+    fgsea,
+    gridExtra,
+    tradeSeq
 Imports: 
     BiocFileCache,
     slingshot,
     rappdirs,
     SingleCellExperiment,
-    tradeSeq,
     HDF5Array,
     igraph,
     RANN,
     magrittr,
     mgcv,
-    purrr,
-    UpSetR,
-    pheatmap,
-    msigdbr,
-    fgsea,
-    gridExtra
+    purrr
 VignetteBuilder: knitr
 Remotes: github::statOmics/tradeSeq@conditions
 URL: https://kstreet13.github.io/bioc2020trajectories
