@@ -2,7 +2,13 @@
 
 export(importRawData)
 export(proximity_score)
+import(BiocFileCache)
+import(HDF5Array)
 import(RANN)
+import(SingleCellExperiment)
+import(igraph)
 import(purrr)
+import(rappdirs)
+import(slingshot)
 importFrom(magrittr,"%>%")
 importFrom(mgcv,gam)
