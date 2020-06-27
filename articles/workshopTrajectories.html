@@ -204,6 +204,7 @@
   <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">fgsea</span>); <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">knitr</span>)
   <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggplot2</span>); <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">gridExtra</span>)
 })</pre></body></html></div>
+<pre><code>## Warning: package 'knitr' was built under R version 4.0.2</code></pre>
 <pre><code>## Warning: package 'ggplot2' was built under R version 4.0.1</code></pre>
 </div>
 </div>
@@ -222,7 +223,7 @@
 <p>Our dataset contains cells collected from samples undergoing two different treatment conditions which were necessarily collected separately. Hence, we will start with an integration step to combine these two sets of cells, similar to batch correction. Our goal is to remove the technical effects of the different sample collections while preserving any true, biological differences between the two treatment groups.</p>
 <p>Data integration and normalization are complex problems and there are a variety of methods addressing each. Interested participants can explore <a href="https://osca.bioconductor.org/integrating-datasets.html">the corresponding chapter of the Bioconductor Ebook</a>. However, since neither is the main focus of this workshop, we elected to use an existing pipeline for these tasks. The full Seurat data integration workflow with SCTransform normalization is described in <a href="https://satijalab.org/seurat/v3.1/integration.html">this vignette</a>.</p>
 <p>Since this whole step is quite slow, it will not be run during the workshop but the code is provided below, along with a function to download and preprocess the public data from GEO.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">sce</span> <span class="kw">&lt;-</span> <span class="kw pkg">bioc2020trajectories</span><span class="kw ns">::</span><span class="fu">importRawData</span>()
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">sce</span> <span class="kw">&lt;-</span> <span class="kw pkg">bioc2020trajectories</span><span class="kw ns">::</span><span class="fu">importRawData</span>()
 
 <span class="co">########################</span>
 <span class="co">### Split by condition and convert to Seurat</span>
@@ -260,13 +261,13 @@
 <h2 class="hasAnchor">
 <a href="#import-dataset" class="anchor"></a>Import dataset</h2>
 <p>We have made the pre-processed, integrated dataset available as a <code>SingleCellExperiment</code> object in the workshop package, which we import below.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"sce"</span>, <span class="kw">package</span> <span class="kw">=</span> <span class="st">"bioc2020trajectories"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"sce"</span>, <span class="kw">package</span> <span class="kw">=</span> <span class="st">"bioc2020trajectories"</span>)</pre></body></html></div>
 </div>
 <div id="differential-topology" class="section level2">
 <h2 class="hasAnchor">
 <a href="#differential-topology" class="anchor"></a>Differential Topology</h2>
 <p>Once the two datasets have been integrated, we can visualize all the single cells in a shared reduced dimensional space. We also visualize the distribution of cells in this space according to the treatment (control and TGFB) and spatial location (inner cells versus outer cells).</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">shuffle</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span>(<span class="no">sce</span>))
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">shuffle</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span>(<span class="no">sce</span>))
 <span class="fu"><a href="https://rdrr.io/r/graphics/layout.html">layout</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fl">1</span>:<span class="fl">2</span>, <span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">1</span>))
 <span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">4.5</span>,<span class="fl">4</span>,<span class="fl">1</span>,<span class="fl">1</span>))
 
@@ -279,11 +280,11 @@
      <span class="kw">col</span> <span class="kw">=</span> <span class="fu"><a href="https://scales.r-lib.org//reference/alpha.html">alpha</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">3</span>, <span class="fl">4</span>)[<span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="fu">colData</span>(<span class="no">sce</span>)$<span class="no">pheno</span>$<span class="no">spatial_id</span>)][<span class="no">shuffle</span>], <span class="kw">alpha</span> <span class="kw">=</span> <span class="fl">.5</span>))
 <span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span>(<span class="st">"topright"</span>, <span class="kw">pch</span> <span class="kw">=</span> <span class="fl">16</span>, <span class="kw">col</span> <span class="kw">=</span> <span class="fl">3</span>:<span class="fl">4</span>, <span class="kw">bty</span> <span class="kw">=</span> <span class="st">"n"</span>, <span class="kw">legend</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="fu">colData</span>(<span class="no">sce</span>)$<span class="no">pheno</span>$<span class="no">spatial_id</span>)))</pre></body></html></div>
 <p><img src="workshopTrajectories_files/figure-html/compute%20scores-1.png" width="672"></p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/layout.html">layout</a></span>(<span class="fl">1</span>)
+<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/layout.html">layout</a></span>(<span class="fl">1</span>)
 <span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">5</span>, <span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">2</span>) + <span class="fl">.1</span>)</pre></body></html></div>
 <p>We know from biological knowledge that the EMT development goes from the inner to the outer cells. The question is: should we fit a separate trajectory for each condition? We might expect the trajectory itself to be changed by the treatment if the treatment effect is systematically large. Otherwise, the treatment may impact the expression profile of some genes but the overall trajectory will be preserved.</p>
 <p>To help assess this, we devised an imbalance score. Regions with a high score indicate that the local cell distribution according to treatment label is unbalanced compared the overall distribution. Here, we see that, while there are some small regions of imbalance, the global path along the development axis is well-balanced. This means that we can fit a global trajectory to the full dataset. This choice allows us to use the maximal amount of data in the construction of our trajectory, which should lead to more robust results than separate, potentially noisy trajectories constructed on subsets of the data. As we will see, not all cell types are necessarily present in every condition, so this approach ensures that our trajectory accounts for all cell types present in the overall data.</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">scores</span> <span class="kw">&lt;-</span> <span class="kw pkg">bioc2020trajectories</span><span class="kw ns">::</span><span class="fu">imbalance_score</span>(
+<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">scores</span> <span class="kw">&lt;-</span> <span class="kw pkg">bioc2020trajectories</span><span class="kw ns">::</span><span class="fu">imbalance_score</span>(
   <span class="kw">rd</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/reducedDims.html">reducedDims</a></span>(<span class="no">sce</span>)$<span class="no">UMAP</span>,
   <span class="kw">cl</span> <span class="kw">=</span> <span class="fu">colData</span>(<span class="no">sce</span>)$<span class="no">pheno</span>$<span class="no">treatment_id</span>,
   <span class="kw">k</span> <span class="kw">=</span> <span class="fl">20</span>, <span class="kw">smooth</span> <span class="kw">=</span> <span class="fl">40</span>)</pre></body></html></div>
@@ -293,7 +294,7 @@
 ## loading 'bioc2020trajectories'</code></pre>
 <pre><code>## Warning: replacing previous import 'igraph::simplify' by 'purrr::simplify' when
 ## loading 'bioc2020trajectories'</code></pre>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">grad</span> <span class="kw">&lt;-</span> <span class="kw pkg">viridis</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/viridis/man/reexports.html">plasma</a></span>(<span class="fl">10</span>, <span class="kw">begin</span> <span class="kw">=</span> <span class="fl">0</span>, <span class="kw">end</span> <span class="kw">=</span> <span class="fl">1</span>)
+<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">grad</span> <span class="kw">&lt;-</span> <span class="kw pkg">viridis</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/viridis/man/reexports.html">plasma</a></span>(<span class="fl">10</span>, <span class="kw">begin</span> <span class="kw">=</span> <span class="fl">0</span>, <span class="kw">end</span> <span class="kw">=</span> <span class="fl">1</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">grad</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/cut.html">cut</a></span>(<span class="no">scores</span>$<span class="no">scaled_scores</span>, <span class="kw">breaks</span> <span class="kw">=</span> <span class="fl">10</span>))
 <span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/reducedDims.html">reducedDims</a></span>(<span class="no">sce</span>)$<span class="no">UMAP</span>, <span class="kw">col</span> <span class="kw">=</span> <span class="no">grad</span>[<span class="fu"><a href="https://rdrr.io/r/base/cut.html">cut</a></span>(<span class="no">scores</span>$<span class="no">scaled_scores</span>, <span class="kw">breaks</span> <span class="kw">=</span> <span class="fl">10</span>)],
      <span class="kw">asp</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">pch</span> <span class="kw">=</span> <span class="fl">16</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">"UMAP-1"</span>, <span class="kw">ylab</span> <span class="kw">=</span> <span class="st">"UMAP-2"</span>, <span class="kw">cex</span> <span class="kw">=</span> <span class="fl">.8</span>)
@@ -306,7 +307,7 @@
 <a href="#trajectory-inference" class="anchor"></a>Trajectory Inference</h2>
 <p>We perform trajectory inference to order the cells according to EMT progression. We use <code>slingshot</code> for trajectory inference, with the cells’ position (inner or outer) serving as the cluster identifier. This ensures that we will only find a single lineage while still allowing sufficient flexibility to correctly orient the pseudotime axis.</p>
 <p>Note that we perform trajectory inference using cells from both conditions, rather than splitting the data into two groups, as discussed above.</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">slingshot</span>)
+<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">slingshot</span>)
 <span class="no">sce</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/slingshot/man/slingshot.html">slingshot</a></span>(<span class="no">sce</span>, <span class="kw">reducedDim</span> <span class="kw">=</span> <span class="st">'UMAP'</span>, <span class="kw">clusterLabels</span> <span class="kw">=</span> <span class="fu">colData</span>(<span class="no">sce</span>)$<span class="no">pheno</span>$<span class="no">spatial_id</span>,
                  <span class="kw">start.clus</span> <span class="kw">=</span> <span class="st">'inner'</span>, <span class="kw">approx_points</span> <span class="kw">=</span> <span class="fl">150</span>)</pre></body></html></div>
 <pre><code>## Using full covariance matrix</code></pre>
@@ -320,7 +321,7 @@
 <p>Now that we have ordered the cells by EMT progression, we can begin to address the main question: how is this progression affected by TGF-<span class="math inline">\(\beta\)</span> treatment? In this section, we interpret this question as a univariate analysis of the pseudotime values between the two groups.</p>
 <p><img src="workshopTrajectories_files/figure-html/plotDensities-1.png" width="700"></p>
 <p>The density estimates for the two groups show a trimodal distribution for the untreated cells, but a tendency toward later pseudotime values in the TGF-<span class="math inline">\(\beta\)</span> treated cells. The difference is striking enough that a standard T-test would likely be significant, but we are we are interested more generally in differences between the two distributions, not just the difference of means (one could imagine a scenario in which the treated group tended toward the extremes, but the means were the same). Hence, we propose a Kolmogorov-Smirnov Test to assess whether the two groups of pseudotime values are derived from the same distribution. For more info on the Kolmogorov-Smirnov Test, see <a href="https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test">here</a>.</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="co">########################</span>
+<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="co">########################</span>
 <span class="co">### Kolmogorov-Smirnov Test</span>
 <span class="co">########################</span>
 <span class="fu"><a href="https://rdrr.io/r/stats/ks.test.html">ks.test</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/slingshot/man/slingPseudotime.html">slingPseudotime</a></span>(<span class="no">sce</span>)[<span class="fu">colData</span>(<span class="no">sce</span>)$<span class="no">pheno</span>$<span class="no">treatment_id</span> <span class="kw">==</span> <span class="st">"Mock"</span>, <span class="fl">1</span>],
@@ -338,25 +339,25 @@
 <a href="#select-number-of-knots" class="anchor"></a>Select number of knots</h3>
 <p>Before we can fit these smoothed expression profiles, we need to get a sense of how complex the expression patterns are in this dataset. This is translated into selecting a number of knots for the NB-GAMs, where a higher number of knots allows for more complex expression patterns. Here, we pick <span class="math inline">\(5\)</span> knots.</p>
 <p>See <a href="https://people.maths.bris.ac.uk/~sw15190/mgcv/">here</a> for more information on smoothers.</p>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tradeSeq</span>)
+<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tradeSeq</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">3</span>)
 <span class="no">icMat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/evaluateK.html">evaluateK</a></span>(<span class="kw">counts</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="fu">assays</span>(<span class="no">sce</span>)$<span class="no">counts</span>),
                    <span class="kw">pseudotime</span> <span class="kw">=</span> <span class="fu">colData</span>(<span class="no">sce</span>)$<span class="no">slingshot</span>$<span class="no">pseudotime</span>,
                    <span class="kw">cellWeights</span> <span class="kw">=</span> <span class="fu">colData</span>(<span class="no">sce</span>)$<span class="no">slingshot</span>$<span class="no">cellWeights.V1</span>,
-                   <span class="kw">conditions</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="fu">colData</span>(<span class="no">sce</span>)$<span class="no">treatment_id</span>),
+                   <span class="kw">conditions</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="fu">colData</span>(<span class="no">sce</span>)$<span class="no">pheno</span>$<span class="no">treatment_id</span>),
                    <span class="kw">nGenes</span> <span class="kw">=</span> <span class="fl">300</span>,
                    <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>:<span class="fl">7</span>)</pre></body></html></div>
-<p><strong>ADD FIGURE</strong></p>
+<p><img src="../data/evaluateKResult.png"><!-- --></p>
 </div>
 <div id="fit-gam" class="section level3">
 <h3 class="hasAnchor">
 <a href="#fit-gam" class="anchor"></a>Fit GAM</h3>
 <p>Next, we fit the NB-GAMs using 5 knots, based on the pseudotime and cell-level weights estimated by Slingshot. We use the <code>conditions</code> argument to fit separate smoothers for each condition.</p>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">3</span>)
+<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">3</span>)
 <span class="no">sce</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/fitGAM.html">fitGAM</a></span>(<span class="kw">counts</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="fu">assays</span>(<span class="no">sce</span>)$<span class="no">counts</span>),
               <span class="kw">pseudotime</span> <span class="kw">=</span> <span class="fu">colData</span>(<span class="no">sce</span>)$<span class="no">slingshot</span>$<span class="no">pseudotime</span>,
               <span class="kw">cellWeights</span> <span class="kw">=</span> <span class="fu">colData</span>(<span class="no">sce</span>)$<span class="no">slingshot</span>$<span class="no">cellWeights.V1</span>,
-              <span class="kw">conditions</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="fu">colData</span>(<span class="no">sce</span>)$<span class="no">treatment_id</span>),
+              <span class="kw">conditions</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="fu">colData</span>(<span class="no">sce</span>)$<span class="no">pheno</span>$<span class="no">treatment_id</span>),
               <span class="kw">nknots</span> <span class="kw">=</span> <span class="fl">5</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="fu">rowData</span>(<span class="no">sce</span>)$<span class="no">tradeSeq</span>$<span class="no">converged</span>)</pre></body></html></div>
 </div>
@@ -367,7 +368,7 @@
 <p>To assess significant changes in gene expression as a function of pseudotime within each lineage, we use the <code>associationTest</code>, which tests the null hypothesis that gene expression is not a function of pseudotime, i.e., whether the estimated smoothers are significantly varying as a function of pseudotime within each lineage. The <code>lineages=TRUE</code> argument specifies that we would like the results for each lineage separately, asides from the default global test, which tests for significant associations across all lineages in the trajectory simultaneously. Further, we specify a log2 fold change cut-off to test against using the <code>l2fc</code> argument.</p>
 <p>On a lineage-specific basis, there are over twice as much DE genes in the mock lineage (2398) as compared to the TGFB lineage (1013). Many of the DE genes in the TGFB condition are also DE in the mock condition, around 80%.</p>
 <p>The authors of the original paper found <span class="math inline">\(1105\)</span> DE genes for the mock condition on a FDR level of <span class="math inline">\(1e-10\)</span> and a cut-off of 1 on the absolute value of the log2 fold change.</p>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tradeSeq</span>)
+<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tradeSeq</span>)
 <span class="no">assocRes</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/associationTest.html">associationTest</a></span>(<span class="no">sce</span>, <span class="kw">lineages</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">l2fc</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log2</a></span>(<span class="fl">2</span>))
 <span class="no">mockGenes</span> <span class="kw">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">assocRes</span>)[
   <span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/p.adjust.html">p.adjust</a></span>(<span class="no">assocRes</span>$<span class="no">pvalue_lineage1_conditionMock</span>, <span class="st">"fdr"</span>) <span class="kw">&lt;=</span> <span class="fl">0.05</span>)
@@ -378,29 +379,29 @@
 
 <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">mockGenes</span>)</pre></body></html></div>
 <pre><code>## [1] 2398</code></pre>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">tgfbGenes</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">tgfbGenes</span>)</pre></body></html></div>
 <pre><code>## [1] 1013</code></pre>
-<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="kw pkg">UpSetR</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/UpSetR/man/upset.html">upset</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/UpSetR/man/fromList.html">fromList</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">mock</span> <span class="kw">=</span> <span class="no">mockGenes</span>, <span class="kw">tgfb</span> <span class="kw">=</span> <span class="no">tgfbGenes</span>)))</pre></body></html></div>
-<p><img src="workshopTrajectories_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
+<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="kw pkg">UpSetR</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/UpSetR/man/upset.html">upset</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/UpSetR/man/fromList.html">fromList</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">mock</span> <span class="kw">=</span> <span class="no">mockGenes</span>, <span class="kw">tgfb</span> <span class="kw">=</span> <span class="no">tgfbGenes</span>)))</pre></body></html></div>
+<p><img src="workshopTrajectories_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 <div id="visualization-of-de-genes" class="section level4">
 <h4 class="hasAnchor">
 <a href="#visualization-of-de-genes" class="anchor"></a>Visualization of DE genes</h4>
 <p>Below we visualize and cluster the genes whose expression vary over pseudotime, using the smoothed expression patterns As was also observed in the original manuscript, genes are mainly upregulated at the start- or endpoints of the lineage.</p>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="co">### based on mean smoother</span>
+<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="co">### based on mean smoother</span>
 <span class="no">yhatSmooth</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/predictSmooth.html">predictSmooth</a></span>(<span class="no">sce</span>, <span class="kw">gene</span> <span class="kw">=</span> <span class="no">mockGenes</span>, <span class="kw">nPoints</span> <span class="kw">=</span> <span class="fl">50</span>, <span class="kw">tidy</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
 <span class="no">heatSmooth</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html">pheatmap</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="no">yhatSmooth</span>[, <span class="fl">1</span>:<span class="fl">50</span>]))),
                        <span class="kw">cluster_cols</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
                        <span class="kw">show_rownames</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
                        <span class="kw">show_colnames</span> <span class="kw">=</span> <span class="fl">FALSE</span>)</pre></body></html></div>
-<p><img src="workshopTrajectories_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
-<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="co">## the hierarchical trees constructed here, can also be used for </span>
+<p><img src="workshopTrajectories_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="co">## the hierarchical trees constructed here, can also be used for </span>
 <span class="co">## clustering of the genes according to their average expression pattern.</span>
 <span class="no">cl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/cutree.html">cutree</a></span>(<span class="no">heatSmooth</span>$<span class="no">tree_row</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">6</span>))
 <span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="no">cl</span>)</pre></body></html></div>
 <pre><code>## cl
 ##   1   2   3   4   5   6 
 ## 269 778 197 740 338  76</code></pre>
-<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="no">conditions</span> <span class="kw">&lt;-</span> <span class="fu">colData</span>(<span class="no">sce</span>)$<span class="no">pheno</span>$<span class="no">treatment_id</span>
+<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="no">conditions</span> <span class="kw">&lt;-</span> <span class="fu">colData</span>(<span class="no">sce</span>)$<span class="no">pheno</span>$<span class="no">treatment_id</span>
 <span class="no">pt1</span> <span class="kw">&lt;-</span> <span class="fu">colData</span>(<span class="no">sce</span>)$<span class="no">slingshot</span>$<span class="no">pseudotime</span>
 
 <span class="co">### based on fitted values (plotting takes a while to run)</span>
@@ -416,7 +417,7 @@
 <h4 class="hasAnchor">
 <a href="#gene-set-enrichment-analysis-on-genes-from-the-mock-condition" class="anchor"></a>Gene set enrichment analysis on genes from the Mock condition</h4>
 <p>Gene set enrichment analysis on the DE genes within the mock condition confirms the biology on epithelial cell differentiation.</p>
-<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="co">## C5 category is according to gene ontology grouping: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4707969/pdf/nihms-743907.pdf</span>
+<div class="sourceCode" id="cb28"><html><body><pre class="r"><span class="co">## C5 category is according to gene ontology grouping: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4707969/pdf/nihms-743907.pdf</span>
 <span class="no">geneSets</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/msigdbr/man/msigdbr.html">msigdbr</a></span>(<span class="kw">species</span> <span class="kw">=</span> <span class="st">"Mus musculus"</span>, <span class="kw">category</span> <span class="kw">=</span> <span class="st">"C5"</span>, <span class="kw">subcategory</span> <span class="kw">=</span> <span class="st">"BP"</span>)
 <span class="co">### filter background to only include genes that we assessed.</span>
 <span class="no">geneSets</span>$<span class="no">gene_symbol</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/chartr.html">toupper</a></span>(<span class="no">geneSets</span>$<span class="no">gene_symbol</span>)
@@ -431,9 +432,14 @@
 ## call.</code></pre>
 <pre><code>## Warning in preparePathwaysAndStats(pathways, stats, minSize, maxSize, gseaParam, : There are ties in the preranked stats (0.01% of the list).
 ## The order of those tied genes will be arbitrary, which may produce unexpected results.</code></pre>
-<div class="sourceCode" id="cb30"><html><body><pre class="r"><span class="no">ooEA</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">eaRes</span>$<span class="no">pval</span>, <span class="kw">decreasing</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
+<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="no">ooEA</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">eaRes</span>$<span class="no">pval</span>, <span class="kw">decreasing</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
 <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">eaRes</span>[<span class="no">ooEA</span>, <span class="fl">1</span>:<span class="fl">3</span>], <span class="kw">n</span> <span class="kw">=</span> <span class="fl">20</span>))</pre></body></html></div>
 <table class="table">
+<colgroup>
+<col width="74%">
+<col width="12%">
+<col width="12%">
+</colgroup>
 <thead><tr class="header">
 <th align="left">pathway</th>
 <th align="right">pval</th>
@@ -441,104 +447,104 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">GO_EPIDERMIS_DEVELOPMENT</td>
-<td align="right">0.0000200</td>
-<td align="right">0.0629747</td>
-</tr>
-<tr class="even">
 <td align="left">GO_MITOTIC_CELL_CYCLE</td>
-<td align="right">0.0000400</td>
-<td align="right">0.0629747</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_EPITHELIAL_CELL_DIFFERENTIATION</td>
-<td align="right">0.0000600</td>
-<td align="right">0.0629747</td>
+<td align="right">0.0000200</td>
+<td align="right">0.0787184</td>
 </tr>
 <tr class="even">
-<td align="left">GO_CELL_CYCLE</td>
-<td align="right">0.0000800</td>
-<td align="right">0.0629747</td>
+<td align="left">GO_EPITHELIUM_DEVELOPMENT</td>
+<td align="right">0.0000400</td>
+<td align="right">0.0787184</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_EPITHELIUM_DEVELOPMENT</td>
-<td align="right">0.0000800</td>
-<td align="right">0.0629747</td>
+<td align="left">GO_CELL_CYCLE</td>
+<td align="right">0.0001000</td>
+<td align="right">0.1023340</td>
+</tr>
+<tr class="even">
+<td align="left">GO_EPITHELIAL_CELL_DIFFERENTIATION</td>
+<td align="right">0.0001200</td>
+<td align="right">0.1023340</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_EPIDERMIS_DEVELOPMENT</td>
+<td align="right">0.0001400</td>
+<td align="right">0.1023340</td>
 </tr>
 <tr class="even">
 <td align="left">GO_PROTEOLYSIS</td>
-<td align="right">0.0001400</td>
-<td align="right">0.0918382</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_SKIN_DEVELOPMENT</td>
 <td align="right">0.0001800</td>
-<td align="right">0.0962114</td>
-</tr>
-<tr class="even">
-<td align="left">GO_NEGATIVE_REGULATION_OF_CELLULAR_COMPONENT_ORGANIZATION</td>
-<td align="right">0.0002000</td>
-<td align="right">0.0962114</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_MITOTIC_NUCLEAR_DIVISION</td>
-<td align="right">0.0002200</td>
-<td align="right">0.0962114</td>
-</tr>
-<tr class="even">
-<td align="left">GO_ORGANELLE_FISSION</td>
-<td align="right">0.0002600</td>
-<td align="right">0.1001871</td>
+<td align="right">0.1023340</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_CELL_CYCLE_PROCESS</td>
-<td align="right">0.0002800</td>
-<td align="right">0.1001871</td>
+<td align="right">0.0002200</td>
+<td align="right">0.1023340</td>
 </tr>
 <tr class="even">
-<td align="left">GO_EPIDERMAL_CELL_DIFFERENTIATION</td>
-<td align="right">0.0003400</td>
-<td align="right">0.1115178</td>
+<td align="left">GO_NEGATIVE_REGULATION_OF_CELLULAR_COMPONENT_ORGANIZATION</td>
+<td align="right">0.0002200</td>
+<td align="right">0.1023340</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_REGULATION_OF_MODIFICATION_OF_SYNAPTIC_STRUCTURE</td>
-<td align="right">0.0005214</td>
-<td align="right">0.1426771</td>
+<td align="left">GO_MITOTIC_NUCLEAR_DIVISION</td>
+<td align="right">0.0002400</td>
+<td align="right">0.1023340</td>
 </tr>
 <tr class="even">
-<td align="left">GO_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
-<td align="right">0.0005400</td>
-<td align="right">0.1426771</td>
+<td align="left">GO_SKIN_DEVELOPMENT</td>
+<td align="right">0.0002600</td>
+<td align="right">0.1023340</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_CYTOSKELETON_ORGANIZATION</td>
-<td align="right">0.0005600</td>
-<td align="right">0.1426771</td>
+<td align="right">0.0003000</td>
+<td align="right">0.1049579</td>
 </tr>
 <tr class="even">
-<td align="left">GO_REGULATION_OF_NUCLEAR_DIVISION</td>
-<td align="right">0.0005800</td>
-<td align="right">0.1426771</td>
+<td align="left">GO_ORGANELLE_FISSION</td>
+<td align="right">0.0003200</td>
+<td align="right">0.1049579</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_KERATINOCYTE_DIFFERENTIATION</td>
-<td align="right">0.0006800</td>
-<td align="right">0.1574369</td>
+<td align="left">GO_REGULATION_OF_MODIFICATION_OF_SYNAPTIC_STRUCTURE</td>
+<td align="right">0.0004009</td>
+<td align="right">0.1213820</td>
+</tr>
+<tr class="even">
+<td align="left">GO_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
+<td align="right">0.0004400</td>
+<td align="right">0.1237004</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_EPIDERMAL_CELL_DIFFERENTIATION</td>
+<td align="right">0.0004800</td>
+<td align="right">0.1259495</td>
 </tr>
 <tr class="even">
 <td align="left">GO_REGULATION_OF_CHROMOSOME_ORGANIZATION</td>
-<td align="right">0.0007600</td>
-<td align="right">0.1574369</td>
+<td align="right">0.0006600</td>
+<td align="right">0.1461914</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_CHROMOSOME_ORGANIZATION</td>
+<td align="right">0.0006800</td>
+<td align="right">0.1461914</td>
+</tr>
+<tr class="even">
+<td align="left">GO_KERATINOCYTE_DIFFERENTIATION</td>
+<td align="right">0.0007200</td>
+<td align="right">0.1461914</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_NEGATIVE_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
-<td align="right">0.0007800</td>
-<td align="right">0.1574369</td>
+<td align="right">0.0007400</td>
+<td align="right">0.1461914</td>
 </tr>
 <tr class="even">
-<td align="left">GO_CELL_DIVISION</td>
-<td align="right">0.0008000</td>
-<td align="right">0.1574369</td>
+<td align="left">GO_CELLULAR_PROTEIN_CATABOLIC_PROCESS</td>
+<td align="right">0.0007800</td>
+<td align="right">0.1461914</td>
 </tr>
 </tbody>
 </table>
@@ -549,51 +555,51 @@
 <a href="#differential-expression-between-conditions" class="anchor"></a>Differential expression between conditions</h3>
 <p>In the following sections, we will investigate differential expression for each gene, between the two conditions.</p>
 <p>We will first make exploratory data analysis visualizations to take a look at the expression patterns of genes that were also discussed in the original manuscript. The paper mentions that CDH1 and CRB3 should be expressed in similar kinetics. Note that the lower slope of CDH1 is also observed in the paper.</p>
-<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/plotSmoothers.html">plotSmoothers</a></span>(<span class="no">sce</span>, <span class="fu">assays</span>(<span class="no">sce</span>)$<span class="no">counts</span>, <span class="kw">gene</span> <span class="kw">=</span> <span class="st">"CDH1"</span>, <span class="kw">alpha</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">border</span> <span class="kw">=</span> <span class="fl">TRUE</span>) + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"CDH1"</span>)</pre></body></html></div>
-<p><img src="workshopTrajectories_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
-<div class="sourceCode" id="cb32"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/plotSmoothers.html">plotSmoothers</a></span>(<span class="no">sce</span>, <span class="fu">assays</span>(<span class="no">sce</span>)$<span class="no">counts</span>, <span class="kw">gene</span> <span class="kw">=</span> <span class="st">"CRB3"</span>, <span class="kw">alpha</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">border</span> <span class="kw">=</span> <span class="fl">TRUE</span>) + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"CRB3"</span>)</pre></body></html></div>
-<p><img src="workshopTrajectories_files/figure-html/unnamed-chunk-9-2.png" width="700"></p>
-<p>They also mention that ‘only cells treated with TGF-Beta and positioned at the outer extreme of the trajectory expressed robust levels of FN1 and CDH2’.</p>
-<div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/plotSmoothers.html">plotSmoothers</a></span>(<span class="no">sce</span>, <span class="fu">assays</span>(<span class="no">sce</span>)$<span class="no">counts</span>, <span class="kw">gene</span> <span class="kw">=</span> <span class="st">"FN1"</span>, <span class="kw">alpha</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">border</span> <span class="kw">=</span> <span class="fl">TRUE</span>) + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"FN1"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb32"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/plotSmoothers.html">plotSmoothers</a></span>(<span class="no">sce</span>, <span class="fu">assays</span>(<span class="no">sce</span>)$<span class="no">counts</span>, <span class="kw">gene</span> <span class="kw">=</span> <span class="st">"CDH1"</span>, <span class="kw">alpha</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">border</span> <span class="kw">=</span> <span class="fl">TRUE</span>) + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"CDH1"</span>)</pre></body></html></div>
 <p><img src="workshopTrajectories_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
-<div class="sourceCode" id="cb34"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/plotSmoothers.html">plotSmoothers</a></span>(<span class="no">sce</span>, <span class="fu">assays</span>(<span class="no">sce</span>)$<span class="no">counts</span>, <span class="kw">gene</span> <span class="kw">=</span> <span class="st">"CDH2"</span>, <span class="kw">alpha</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">border</span> <span class="kw">=</span> <span class="fl">TRUE</span>) + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"CDH2"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/plotSmoothers.html">plotSmoothers</a></span>(<span class="no">sce</span>, <span class="fu">assays</span>(<span class="no">sce</span>)$<span class="no">counts</span>, <span class="kw">gene</span> <span class="kw">=</span> <span class="st">"CRB3"</span>, <span class="kw">alpha</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">border</span> <span class="kw">=</span> <span class="fl">TRUE</span>) + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"CRB3"</span>)</pre></body></html></div>
 <p><img src="workshopTrajectories_files/figure-html/unnamed-chunk-10-2.png" width="700"></p>
+<p>They also mention that ‘only cells treated with TGF-Beta and positioned at the outer extreme of the trajectory expressed robust levels of FN1 and CDH2’.</p>
+<div class="sourceCode" id="cb34"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/plotSmoothers.html">plotSmoothers</a></span>(<span class="no">sce</span>, <span class="fu">assays</span>(<span class="no">sce</span>)$<span class="no">counts</span>, <span class="kw">gene</span> <span class="kw">=</span> <span class="st">"FN1"</span>, <span class="kw">alpha</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">border</span> <span class="kw">=</span> <span class="fl">TRUE</span>) + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"FN1"</span>)</pre></body></html></div>
+<p><img src="workshopTrajectories_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+<div class="sourceCode" id="cb35"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/plotSmoothers.html">plotSmoothers</a></span>(<span class="no">sce</span>, <span class="fu">assays</span>(<span class="no">sce</span>)$<span class="no">counts</span>, <span class="kw">gene</span> <span class="kw">=</span> <span class="st">"CDH2"</span>, <span class="kw">alpha</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">border</span> <span class="kw">=</span> <span class="fl">TRUE</span>) + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"CDH2"</span>)</pre></body></html></div>
+<p><img src="workshopTrajectories_files/figure-html/unnamed-chunk-11-2.png" width="700"></p>
 <div id="differential-expression-analysis" class="section level4">
 <h4 class="hasAnchor">
 <a href="#differential-expression-analysis" class="anchor"></a>Differential expression analysis</h4>
 <p>To test differential expression between conditions, we use the <code>conditionTest</code> function implemented in <code>tradeSeq</code>. This function tests the null hypothesis that genes have identical expression patterns in each condition. We discover <span class="math inline">\(1993\)</span> genes that are DE with a fold change higher than <span class="math inline">\(2\)</span> or lower than <span class="math inline">\(1/2\)</span>.</p>
-<div class="sourceCode" id="cb35"><html><body><pre class="r"><span class="no">condRes</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/conditionTest.html">conditionTest</a></span>(<span class="no">sce</span>, <span class="kw">l2fc</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log2</a></span>(<span class="fl">2</span>))
+<div class="sourceCode" id="cb36"><html><body><pre class="r"><span class="no">condRes</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/conditionTest.html">conditionTest</a></span>(<span class="no">sce</span>, <span class="kw">l2fc</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log2</a></span>(<span class="fl">2</span>))
 <span class="no">condRes</span>$<span class="no">padj</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/p.adjust.html">p.adjust</a></span>(<span class="no">condRes</span>$<span class="no">pvalue</span>, <span class="st">"fdr"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="no">condRes</span>$<span class="no">padj</span> <span class="kw">&lt;=</span> <span class="fl">0.05</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
 <pre><code>## [1] 0.1890175</code></pre>
-<div class="sourceCode" id="cb37"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">condRes</span>$<span class="no">padj</span> <span class="kw">&lt;=</span> <span class="fl">0.05</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb38"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">condRes</span>$<span class="no">padj</span> <span class="kw">&lt;=</span> <span class="fl">0.05</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
 <pre><code>## [1] 1993</code></pre>
-<div class="sourceCode" id="cb39"><html><body><pre class="r"><span class="no">conditionGenes</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">condRes</span>)[<span class="no">condRes</span>$<span class="no">padj</span> <span class="kw">&lt;=</span> <span class="fl">0.05</span>]
+<div class="sourceCode" id="cb40"><html><body><pre class="r"><span class="no">conditionGenes</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">condRes</span>)[<span class="no">condRes</span>$<span class="no">padj</span> <span class="kw">&lt;=</span> <span class="fl">0.05</span>]
 <span class="no">conditionGenes</span> <span class="kw">&lt;-</span> <span class="no">conditionGenes</span>[!<span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span>(<span class="no">conditionGenes</span>)]</pre></body></html></div>
 </div>
 <div id="visualize-most-and-least-significant-gene" class="section level4">
 <h4 class="hasAnchor">
 <a href="#visualize-most-and-least-significant-gene" class="anchor"></a>Visualize most and least significant gene</h4>
-<div class="sourceCode" id="cb40"><html><body><pre class="r"><span class="co"># plot genes</span>
+<div class="sourceCode" id="cb41"><html><body><pre class="r"><span class="co"># plot genes</span>
 <span class="no">oo</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">condRes</span>$<span class="no">waldStat</span>, <span class="kw">decreasing</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
 
 <span class="co"># most significant gene</span>
 <span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/plotSmoothers.html">plotSmoothers</a></span>(<span class="no">sce</span>, <span class="fu">assays</span>(<span class="no">sce</span>)$<span class="no">counts</span>,
               <span class="kw">gene</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="fu">assays</span>(<span class="no">sce</span>)$<span class="no">counts</span>)[<span class="no">oo</span>[<span class="fl">1</span>]],
               <span class="kw">alpha</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">border</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
-<p><img src="workshopTrajectories_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
-<div class="sourceCode" id="cb41"><html><body><pre class="r"><span class="co"># least significant gene</span>
+<p><img src="workshopTrajectories_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<div class="sourceCode" id="cb42"><html><body><pre class="r"><span class="co"># least significant gene</span>
 <span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/plotSmoothers.html">plotSmoothers</a></span>(<span class="no">sce</span>, <span class="fu">assays</span>(<span class="no">sce</span>)$<span class="no">counts</span>,
               <span class="kw">gene</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="fu">assays</span>(<span class="no">sce</span>)$<span class="no">counts</span>)[<span class="no">oo</span>[<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">sce</span>)]],
               <span class="kw">alpha</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">border</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
-<p><img src="workshopTrajectories_files/figure-html/unnamed-chunk-12-2.png" width="700"></p>
+<p><img src="workshopTrajectories_files/figure-html/unnamed-chunk-13-2.png" width="700"></p>
 </div>
 </div>
 <div id="heatmaps-of-genes-de-between-conditions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#heatmaps-of-genes-de-between-conditions" class="anchor"></a>Heatmaps of genes DE between conditions</h3>
 <p>Below we show heatmaps of the genes DE between conditions. The DE genes in the heatmaps are ordered according to a hierarchical clustering on the TGF-Beta condition.</p>
-<div class="sourceCode" id="cb42"><html><body><pre class="r"><span class="co">### based on mean smoother</span>
+<div class="sourceCode" id="cb43"><html><body><pre class="r"><span class="co">### based on mean smoother</span>
 <span class="no">yhatSmooth</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/predictSmooth.html">predictSmooth</a></span>(<span class="no">sce</span>, <span class="kw">gene</span> <span class="kw">=</span> <span class="no">conditionGenes</span>, <span class="kw">nPoints</span> <span class="kw">=</span> <span class="fl">50</span>, <span class="kw">tidy</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
 <span class="no">heatSmooth_TGF</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html">pheatmap</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="no">yhatSmooth</span>[, <span class="fl">51</span>:<span class="fl">100</span>]))),
   <span class="kw">cluster_cols</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
@@ -608,13 +614,13 @@
 )
 
 <span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html">grid.arrange</a></span>(<span class="no">heatSmooth_TGF</span><span class="kw">[[</span><span class="fl">4</span>]], <span class="no">matchingHeatmap_mock</span><span class="kw">[[</span><span class="fl">4</span>]], <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">2</span>)</pre></body></html></div>
-<p><img src="workshopTrajectories_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<p><img src="workshopTrajectories_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
 </div>
 <div id="gene-set-enrichment-analysis" class="section level3">
 <h3 class="hasAnchor">
 <a href="#gene-set-enrichment-analysis" class="anchor"></a>Gene set enrichment analysis</h3>
 <p>Gene set enrichment analysis on genes that are differentially expressed between conditions finds evidence for cell motility, cell junctions/adhesion and gastrulation. The original paper also focuses on the KRAS signaling pathway, which induces cell migration, amongst others. Other related processes include morphogenesis, gastrulation and cell adhesion.</p>
-<div class="sourceCode" id="cb43"><html><body><pre class="r"><span class="no">statsCond</span> <span class="kw">&lt;-</span> <span class="no">condRes</span>$<span class="no">waldStat</span>
+<div class="sourceCode" id="cb44"><html><body><pre class="r"><span class="no">statsCond</span> <span class="kw">&lt;-</span> <span class="no">condRes</span>$<span class="no">waldStat</span>
 <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">statsCond</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">condRes</span>)
 <span class="no">eaRes</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/fgsea/man/fgsea.html">fgsea</a></span>(<span class="kw">pathways</span> <span class="kw">=</span> <span class="no">m_list</span>, <span class="kw">stats</span> <span class="kw">=</span> <span class="no">statsCond</span>, <span class="kw">nperm</span> <span class="kw">=</span> <span class="fl">5e4</span>, <span class="kw">minSize</span> <span class="kw">=</span> <span class="fl">10</span>)</pre></body></html></div>
 <pre><code>## Warning in fgsea(pathways = m_list, stats = statsCond, nperm = 50000,
@@ -625,9 +631,14 @@
 ## The order of those tied genes will be arbitrary, which may produce unexpected results.</code></pre>
 <pre><code>## Warning in fgseaSimple(...): There were 1 pathways for which P-values were not
 ## calculated properly due to unbalanced gene-level statistic values</code></pre>
-<div class="sourceCode" id="cb47"><html><body><pre class="r"><span class="no">ooEA</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">eaRes</span>$<span class="no">pval</span>, <span class="kw">decreasing</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
+<div class="sourceCode" id="cb48"><html><body><pre class="r"><span class="no">ooEA</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">eaRes</span>$<span class="no">pval</span>, <span class="kw">decreasing</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
 <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">eaRes</span>[<span class="no">ooEA</span>, <span class="fl">1</span>:<span class="fl">3</span>], <span class="kw">n</span> <span class="kw">=</span> <span class="fl">20</span>))</pre></body></html></div>
 <table class="table">
+<colgroup>
+<col width="75%">
+<col width="12%">
+<col width="12%">
+</colgroup>
 <thead><tr class="header">
 <th align="left">pathway</th>
 <th align="right">pval</th>
@@ -651,88 +662,88 @@
 </tr>
 <tr class="even">
 <td align="left">GO_ANATOMICAL_STRUCTURE_FORMATION_INVOLVED_IN_MORPHOGENESIS</td>
-<td align="right">0.0001600</td>
-<td align="right">0.1575568</td>
+<td align="right">0.0000800</td>
+<td align="right">0.0787784</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_TRANSCRIPTION_BY_RNA_POLYMERASE_III</td>
-<td align="right">0.0002000</td>
-<td align="right">0.1575568</td>
+<td align="right">0.0001200</td>
+<td align="right">0.0945341</td>
 </tr>
 <tr class="even">
 <td align="left">GO_REGULATION_OF_CELL_ADHESION</td>
-<td align="right">0.0003200</td>
-<td align="right">0.1800650</td>
+<td align="right">0.0002200</td>
+<td align="right">0.1444271</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_REGULATION_OF_MITOCHONDRIAL_GENE_EXPRESSION</td>
-<td align="right">0.0003200</td>
-<td align="right">0.1800650</td>
+<td align="right">0.0005000</td>
+<td align="right">0.2813515</td>
 </tr>
 <tr class="even">
 <td align="left">GO_EXTRACELLULAR_STRUCTURE_ORGANIZATION</td>
-<td align="right">0.0006800</td>
-<td align="right">0.3348083</td>
+<td align="right">0.0006600</td>
+<td align="right">0.3249610</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_REGULATION_OF_CELLULAR_COMPONENT_MOVEMENT</td>
-<td align="right">0.0010800</td>
-<td align="right">0.4529759</td>
+<td align="left">GO_MITOCHONDRIAL_RNA_METABOLIC_PROCESS</td>
+<td align="right">0.0008600</td>
+<td align="right">0.3763858</td>
 </tr>
 <tr class="even">
-<td align="left">GO_MITOCHONDRIAL_RNA_METABOLIC_PROCESS</td>
-<td align="right">0.0012200</td>
-<td align="right">0.4529759</td>
+<td align="left">GO_REGULATION_OF_CELLULAR_COMPONENT_MOVEMENT</td>
+<td align="right">0.0010400</td>
+<td align="right">0.4096478</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_REGULATION_OF_CELL_POPULATION_PROLIFERATION</td>
-<td align="right">0.0013600</td>
-<td align="right">0.4529759</td>
+<td align="right">0.0012000</td>
+<td align="right">0.4263303</td>
 </tr>
 <tr class="even">
-<td align="left">GO_N_TERMINAL_PROTEIN_AMINO_ACID_MODIFICATION</td>
-<td align="right">0.0013800</td>
-<td align="right">0.4529759</td>
-</tr>
-<tr class="odd">
 <td align="left">GO_CARDIOVASCULAR_SYSTEM_DEVELOPMENT</td>
-<td align="right">0.0016600</td>
-<td align="right">0.4578996</td>
-</tr>
-<tr class="even">
-<td align="left">GO_CIRCULATORY_SYSTEM_DEVELOPMENT</td>
-<td align="right">0.0016600</td>
-<td align="right">0.4578996</td>
+<td align="right">0.0013600</td>
+<td align="right">0.4263303</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_CELL_JUNCTION_ORGANIZATION</td>
-<td align="right">0.0018000</td>
-<td align="right">0.4578996</td>
+<td align="right">0.0015200</td>
+<td align="right">0.4263303</td>
 </tr>
 <tr class="even">
-<td align="left">GO_TUBE_DEVELOPMENT</td>
-<td align="right">0.0018600</td>
-<td align="right">0.4578996</td>
+<td align="left">GO_N_TERMINAL_PROTEIN_AMINO_ACID_MODIFICATION</td>
+<td align="right">0.0015600</td>
+<td align="right">0.4263303</td>
 </tr>
 <tr class="odd">
+<td align="left">GO_CIRCULATORY_SYSTEM_DEVELOPMENT</td>
+<td align="right">0.0017000</td>
+<td align="right">0.4263303</td>
+</tr>
+<tr class="even">
 <td align="left">GO_GASTRULATION</td>
-<td align="right">0.0019800</td>
-<td align="right">0.4587685</td>
+<td align="right">0.0017800</td>
+<td align="right">0.4263303</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_TUBE_DEVELOPMENT</td>
+<td align="right">0.0018400</td>
+<td align="right">0.4263303</td>
+</tr>
+<tr class="even">
+<td align="left">GO_CELL_JUNCTION_ASSEMBLY</td>
+<td align="right">0.0023000</td>
+<td align="right">0.4809630</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_POSITIVE_REGULATION_OF_MULTICELLULAR_ORGANISMAL_PROCESS</td>
+<td align="right">0.0023200</td>
+<td align="right">0.4809630</td>
 </tr>
 <tr class="even">
 <td align="left">GO_MOTOR_NEURON_AXON_GUIDANCE</td>
-<td align="right">0.0025000</td>
-<td align="right">0.5356933</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_CELL_JUNCTION_ASSEMBLY</td>
-<td align="right">0.0026199</td>
-<td align="right">0.5356933</td>
-</tr>
-<tr class="even">
-<td align="left">GO_POSITIVE_REGULATION_OF_MULTICELLULAR_ORGANISMAL_PROCESS</td>
-<td align="right">0.0027199</td>
-<td align="right">0.5356933</td>
+<td align="right">0.0026599</td>
+<td align="right">0.5219071</td>
 </tr>
 </tbody>
 </table>
@@ -744,7 +755,7 @@
 <a href="#final-notes" class="anchor"></a>Final notes</h1>
 <p>A compiled version of the vignette is available on the <a href="https://kstreet13.github.io/bioc2020trajectories/articles/workshopTrajectories.html">workshop website</a>.</p>
 <p>If you have questions that you could not ask during the workshop, feel free to open an issue on the github repository <a href="https://github.com/kstreet13/bioc2020trajectories/issues">here</a>.</p>
-<div class="sourceCode" id="cb48"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span>()</pre></body></html></div>
+<div class="sourceCode" id="cb49"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span>()</pre></body></html></div>
 <pre><code>## R version 4.0.0 (2020-04-24)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 18.04.4 LTS
@@ -766,7 +777,7 @@
 ## 
 ## other attached packages:
 ##  [1] tradeSeq_1.3.13             gridExtra_2.3              
-##  [3] ggplot2_3.3.2               knitr_1.28                 
+##  [3] ggplot2_3.3.2               knitr_1.29                 
 ##  [5] fgsea_1.15.0                msigdbr_7.1.1              
 ##  [7] pheatmap_1.0.12             UpSetR_1.4.0               
 ##  [9] viridis_0.5.1               viridisLite_0.3.0          
@@ -774,7 +785,7 @@
 ## [13] SingleCellExperiment_1.11.5 SummarizedExperiment_1.19.5
 ## [15] DelayedArray_0.15.5         matrixStats_0.56.0         
 ## [17] Matrix_1.2-18               Biobase_2.49.0             
-## [19] GenomicRanges_1.41.5        GenomeInfoDb_1.25.2        
+## [19] GenomicRanges_1.41.5        GenomeInfoDb_1.25.4        
 ## [21] IRanges_2.23.10             S4Vectors_0.27.12          
 ## [23] BiocGenerics_0.35.4         slingshot_1.7.0            
 ## [25] princurve_2.1.4            
@@ -782,12 +793,12 @@
 ## loaded via a namespace (and not attached):
 ##  [1] Rtsne_0.15                    VGAM_1.1-3                   
 ##  [3] colorspace_1.4-1              ellipsis_0.3.1               
-##  [5] rprojroot_1.3-2               XVector_0.29.2               
+##  [5] rprojroot_1.3-2               XVector_0.29.3               
 ##  [7] fs_1.4.1                      farver_2.0.3                 
 ##  [9] ggrepel_0.8.2                 bit64_0.9-7                  
-## [11] splines_4.0.0                 docopt_0.6.1                 
+## [11] splines_4.0.0                 docopt_0.7.1                 
 ## [13] cluster_2.1.0                 dbplyr_1.4.4                 
-## [15] bioc2020trajectories_0.0.0.91 HDF5Array_1.17.2             
+## [15] bioc2020trajectories_0.0.0.91 HDF5Array_1.17.3             
 ## [17] compiler_4.0.0                httr_1.4.1                   
 ## [19] backports_1.1.8               assertthat_0.2.1             
 ## [21] limma_3.45.7                  htmltools_0.5.0              
