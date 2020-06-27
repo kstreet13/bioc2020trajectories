@@ -296,12 +296,14 @@ set.seed(3)
 icMat <- evaluateK(counts = as.matrix(assays(sce)$counts),
                    pseudotime = colData(sce)$slingshot$pseudotime,
                    cellWeights = colData(sce)$slingshot$cellWeights.V1,
-                   conditions = factor(colData(sce)$treatment_id),
+                   conditions = factor(colData(sce)$pheno$treatment_id),
                    nGenes = 300,
                    k = 3:7)
 ```
 
-**ADD FIGURE**
+```{r, echo=FALSE}
+knitr::include_graphics("../data/evaluateKResult.png")
+```
 
 ### Fit GAM
 
@@ -312,7 +314,7 @@ set.seed(3)
 sce <- fitGAM(counts = as.matrix(assays(sce)$counts),
               pseudotime = colData(sce)$slingshot$pseudotime,
               cellWeights = colData(sce)$slingshot$cellWeights.V1,
-              conditions = factor(colData(sce)$treatment_id),
+              conditions = factor(colData(sce)$pheno$treatment_id),
               nknots = 5)
 mean(rowData(sce)$tradeSeq$converged)
 ```
