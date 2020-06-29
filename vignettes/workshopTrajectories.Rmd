@@ -305,6 +305,10 @@ icMat <- evaluateK(counts = as.matrix(assays(sce)$counts),
 knitr::include_graphics("../data/evaluateKResult.png")
 ```
 
+The plot above shows the graphical output from running `evaluateK`. The left panel shows the distribution of gene-level AIC values as compared to their average AIC over the range of `k`. The second and third panel plot the average AIC and relative AIC with respect to the lowest value of `k` (i.e., 3), respectively, as a function of `k`. Finally, the right panel plots the number of genes whose AIC is lowest at a particular value of `k`.
+
+Choosing an appropriate value of `k` can be seen as analogous to choosing the number of principal components based on a scree plot: we look for an 'elbow point', where the decrease starts attenuating. Here, we choose `k=5` to allow for flexible, yet simple, functions while limiting the computational burden. In general, we found the influence of choosing the exact value of `k` to be rather limited, unless `k` is arbitrarily small or large. In our evaluations, most datasets fall within the range of $4$ to $8$ knots.
+
 ### Fit GAM
 
 Next, we fit the NB-GAMs using 5 knots, based on the pseudotime and cell-level weights estimated by Slingshot. We use the `conditions` argument to fit separate smoothers for each condition.
