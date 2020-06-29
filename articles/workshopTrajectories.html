@@ -348,6 +348,8 @@
                    <span class="kw">nGenes</span> <span class="kw">=</span> <span class="fl">300</span>,
                    <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>:<span class="fl">7</span>)</pre></body></html></div>
 <p><img src="../data/evaluateKResult.png"><!-- --></p>
+<p>The plot above shows the graphical output from running <code>evaluateK</code>. The left panel shows the distribution of gene-level AIC values as compared to their average AIC over the range of <code>k</code>. The second and third panel plot the average AIC and relative AIC with respect to the lowest value of <code>k</code> (i.e., 3), respectively, as a function of <code>k</code>. Finally, the right panel plots the number of genes whose AIC is lowest at a particular value of <code>k</code>.</p>
+<p>Choosing an appropriate value of <code>k</code> can be seen as analogous to choosing the number of principal components based on a scree plot: we look for an ‘elbow point’, where the decrease starts attenuating. Here, we choose <code>k=5</code> to allow for flexible, yet simple, functions while limiting the computational burden. In general, we found the influence of choosing the exact value of <code>k</code> to be rather limited, unless <code>k</code> is arbitrarily small or large. In our evaluations, most datasets fall within the range of <span class="math inline">\(4\)</span> to <span class="math inline">\(8\)</span> knots.</p>
 </div>
 <div id="fit-gam" class="section level3">
 <h3 class="hasAnchor">
@@ -452,99 +454,99 @@
 <td align="right">0.0787184</td>
 </tr>
 <tr class="even">
-<td align="left">GO_EPITHELIUM_DEVELOPMENT</td>
+<td align="left">GO_EPIDERMIS_DEVELOPMENT</td>
 <td align="right">0.0000400</td>
+<td align="right">0.0787184</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_EPITHELIAL_CELL_DIFFERENTIATION</td>
+<td align="right">0.0000800</td>
+<td align="right">0.0787184</td>
+</tr>
+<tr class="even">
+<td align="left">GO_MITOTIC_NUCLEAR_DIVISION</td>
+<td align="right">0.0000800</td>
 <td align="right">0.0787184</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_CELL_CYCLE</td>
 <td align="right">0.0001000</td>
-<td align="right">0.1023340</td>
-</tr>
-<tr class="even">
-<td align="left">GO_EPITHELIAL_CELL_DIFFERENTIATION</td>
-<td align="right">0.0001200</td>
-<td align="right">0.1023340</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_EPIDERMIS_DEVELOPMENT</td>
-<td align="right">0.0001400</td>
-<td align="right">0.1023340</td>
-</tr>
-<tr class="even">
-<td align="left">GO_PROTEOLYSIS</td>
-<td align="right">0.0001800</td>
-<td align="right">0.1023340</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_CELL_CYCLE_PROCESS</td>
-<td align="right">0.0002200</td>
-<td align="right">0.1023340</td>
-</tr>
-<tr class="even">
-<td align="left">GO_NEGATIVE_REGULATION_OF_CELLULAR_COMPONENT_ORGANIZATION</td>
-<td align="right">0.0002200</td>
-<td align="right">0.1023340</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_MITOTIC_NUCLEAR_DIVISION</td>
-<td align="right">0.0002400</td>
-<td align="right">0.1023340</td>
+<td align="right">0.0787184</td>
 </tr>
 <tr class="even">
 <td align="left">GO_SKIN_DEVELOPMENT</td>
-<td align="right">0.0002600</td>
-<td align="right">0.1023340</td>
+<td align="right">0.0001400</td>
+<td align="right">0.0899639</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_CYTOSKELETON_ORGANIZATION</td>
-<td align="right">0.0003000</td>
+<td align="left">GO_EPITHELIUM_DEVELOPMENT</td>
+<td align="right">0.0001600</td>
+<td align="right">0.0899639</td>
+</tr>
+<tr class="even">
+<td align="left">GO_PROTEOLYSIS</td>
+<td align="right">0.0002200</td>
+<td align="right">0.1049579</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_ORGANELLE_FISSION</td>
+<td align="right">0.0002400</td>
 <td align="right">0.1049579</td>
 </tr>
 <tr class="even">
-<td align="left">GO_ORGANELLE_FISSION</td>
-<td align="right">0.0003200</td>
-<td align="right">0.1049579</td>
+<td align="left">GO_NEGATIVE_REGULATION_OF_CELLULAR_COMPONENT_ORGANIZATION</td>
+<td align="right">0.0002800</td>
+<td align="right">0.1076339</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_REGULATION_OF_MODIFICATION_OF_SYNAPTIC_STRUCTURE</td>
-<td align="right">0.0004009</td>
-<td align="right">0.1213820</td>
+<td align="right">0.0003008</td>
+<td align="right">0.1076339</td>
 </tr>
 <tr class="even">
-<td align="left">GO_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
-<td align="right">0.0004400</td>
-<td align="right">0.1237004</td>
+<td align="left">GO_CELL_CYCLE_PROCESS</td>
+<td align="right">0.0003400</td>
+<td align="right">0.1115178</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_EPIDERMAL_CELL_DIFFERENTIATION</td>
-<td align="right">0.0004800</td>
-<td align="right">0.1259495</td>
+<td align="right">0.0003800</td>
+<td align="right">0.1150500</td>
+</tr>
+<tr class="even">
+<td align="left">GO_CYTOSKELETON_ORGANIZATION</td>
+<td align="right">0.0005200</td>
+<td align="right">0.1443171</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
+<td align="right">0.0005800</td>
+<td align="right">0.1443171</td>
+</tr>
+<tr class="even">
+<td align="left">GO_KERATINOCYTE_DIFFERENTIATION</td>
+<td align="right">0.0006200</td>
+<td align="right">0.1443171</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_NEGATIVE_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
+<td align="right">0.0006400</td>
+<td align="right">0.1443171</td>
 </tr>
 <tr class="even">
 <td align="left">GO_REGULATION_OF_CHROMOSOME_ORGANIZATION</td>
 <td align="right">0.0006600</td>
-<td align="right">0.1461914</td>
+<td align="right">0.1443171</td>
 </tr>
 <tr class="odd">
+<td align="left">GO_REGULATION_OF_NUCLEAR_DIVISION</td>
+<td align="right">0.0007600</td>
+<td align="right">0.1574369</td>
+</tr>
+<tr class="even">
 <td align="left">GO_CHROMOSOME_ORGANIZATION</td>
-<td align="right">0.0006800</td>
-<td align="right">0.1461914</td>
-</tr>
-<tr class="even">
-<td align="left">GO_KERATINOCYTE_DIFFERENTIATION</td>
-<td align="right">0.0007200</td>
-<td align="right">0.1461914</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_NEGATIVE_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
-<td align="right">0.0007400</td>
-<td align="right">0.1461914</td>
-</tr>
-<tr class="even">
-<td align="left">GO_CELLULAR_PROTEIN_CATABOLIC_PROCESS</td>
-<td align="right">0.0007800</td>
-<td align="right">0.1461914</td>
+<td align="right">0.0009800</td>
+<td align="right">0.1911733</td>
 </tr>
 </tbody>
 </table>
@@ -648,17 +650,17 @@
 <tr class="odd">
 <td align="left">GO_BIOLOGICAL_ADHESION</td>
 <td align="right">0.0000200</td>
-<td align="right">0.0262595</td>
+<td align="right">0.0393892</td>
 </tr>
 <tr class="even">
-<td align="left">GO_CELL_MOTILITY</td>
-<td align="right">0.0000200</td>
-<td align="right">0.0262595</td>
-</tr>
-<tr class="odd">
 <td align="left">GO_LOCOMOTION</td>
 <td align="right">0.0000200</td>
-<td align="right">0.0262595</td>
+<td align="right">0.0393892</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_CELL_MOTILITY</td>
+<td align="right">0.0000400</td>
+<td align="right">0.0525189</td>
 </tr>
 <tr class="even">
 <td align="left">GO_ANATOMICAL_STRUCTURE_FORMATION_INVOLVED_IN_MORPHOGENESIS</td>
@@ -666,84 +668,84 @@
 <td align="right">0.0787784</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_TRANSCRIPTION_BY_RNA_POLYMERASE_III</td>
-<td align="right">0.0001200</td>
-<td align="right">0.0945341</td>
+<td align="left">GO_REGULATION_OF_CELL_ADHESION</td>
+<td align="right">0.0002000</td>
+<td align="right">0.1312974</td>
 </tr>
 <tr class="even">
-<td align="left">GO_REGULATION_OF_CELL_ADHESION</td>
-<td align="right">0.0002200</td>
-<td align="right">0.1444271</td>
+<td align="left">GO_TRANSCRIPTION_BY_RNA_POLYMERASE_III</td>
+<td align="right">0.0002000</td>
+<td align="right">0.1312974</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_REGULATION_OF_MITOCHONDRIAL_GENE_EXPRESSION</td>
-<td align="right">0.0005000</td>
-<td align="right">0.2813515</td>
+<td align="left">GO_EXTRACELLULAR_STRUCTURE_ORGANIZATION</td>
+<td align="right">0.0003600</td>
+<td align="right">0.2025731</td>
 </tr>
 <tr class="even">
-<td align="left">GO_EXTRACELLULAR_STRUCTURE_ORGANIZATION</td>
-<td align="right">0.0006600</td>
-<td align="right">0.3249610</td>
+<td align="left">GO_REGULATION_OF_MITOCHONDRIAL_GENE_EXPRESSION</td>
+<td align="right">0.0004200</td>
+<td align="right">0.2067934</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_MITOCHONDRIAL_RNA_METABOLIC_PROCESS</td>
-<td align="right">0.0008600</td>
-<td align="right">0.3763858</td>
+<td align="right">0.0011200</td>
+<td align="right">0.3892581</td>
 </tr>
 <tr class="even">
 <td align="left">GO_REGULATION_OF_CELLULAR_COMPONENT_MOVEMENT</td>
-<td align="right">0.0010400</td>
-<td align="right">0.4096478</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_REGULATION_OF_CELL_POPULATION_PROLIFERATION</td>
-<td align="right">0.0012000</td>
-<td align="right">0.4263303</td>
-</tr>
-<tr class="even">
-<td align="left">GO_CARDIOVASCULAR_SYSTEM_DEVELOPMENT</td>
-<td align="right">0.0013600</td>
-<td align="right">0.4263303</td>
+<td align="right">0.0011400</td>
+<td align="right">0.3892581</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_CELL_JUNCTION_ORGANIZATION</td>
-<td align="right">0.0015200</td>
-<td align="right">0.4263303</td>
+<td align="right">0.0012400</td>
+<td align="right">0.3892581</td>
 </tr>
 <tr class="even">
-<td align="left">GO_N_TERMINAL_PROTEIN_AMINO_ACID_MODIFICATION</td>
-<td align="right">0.0015600</td>
-<td align="right">0.4263303</td>
+<td align="left">GO_REGULATION_OF_CELL_POPULATION_PROLIFERATION</td>
+<td align="right">0.0013200</td>
+<td align="right">0.3892581</td>
 </tr>
 <tr class="odd">
+<td align="left">GO_CARDIOVASCULAR_SYSTEM_DEVELOPMENT</td>
+<td align="right">0.0013600</td>
+<td align="right">0.3892581</td>
+</tr>
+<tr class="even">
 <td align="left">GO_CIRCULATORY_SYSTEM_DEVELOPMENT</td>
-<td align="right">0.0017000</td>
-<td align="right">0.4263303</td>
+<td align="right">0.0014200</td>
+<td align="right">0.3892581</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_CELL_JUNCTION_ASSEMBLY</td>
+<td align="right">0.0015000</td>
+<td align="right">0.3892581</td>
 </tr>
 <tr class="even">
 <td align="left">GO_GASTRULATION</td>
-<td align="right">0.0017800</td>
-<td align="right">0.4263303</td>
+<td align="right">0.0016600</td>
+<td align="right">0.3892581</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_TUBE_DEVELOPMENT</td>
-<td align="right">0.0018400</td>
-<td align="right">0.4263303</td>
+<td align="left">GO_N_TERMINAL_PROTEIN_AMINO_ACID_MODIFICATION</td>
+<td align="right">0.0016800</td>
+<td align="right">0.3892581</td>
 </tr>
 <tr class="even">
-<td align="left">GO_CELL_JUNCTION_ASSEMBLY</td>
-<td align="right">0.0023000</td>
-<td align="right">0.4809630</td>
+<td align="left">GO_TUBE_DEVELOPMENT</td>
+<td align="right">0.0019600</td>
+<td align="right">0.4289048</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_POSITIVE_REGULATION_OF_MULTICELLULAR_ORGANISMAL_PROCESS</td>
-<td align="right">0.0023200</td>
-<td align="right">0.4809630</td>
+<td align="right">0.0023600</td>
+<td align="right">0.4892555</td>
 </tr>
 <tr class="even">
 <td align="left">GO_MOTOR_NEURON_AXON_GUIDANCE</td>
-<td align="right">0.0026599</td>
-<td align="right">0.5219071</td>
+<td align="right">0.0027399</td>
+<td align="right">0.5261273</td>
 </tr>
 </tbody>
 </table>
@@ -782,10 +784,10 @@
 ##  [7] pheatmap_1.0.12             UpSetR_1.4.0               
 ##  [9] viridis_0.5.1               viridisLite_0.3.0          
 ## [11] scales_1.1.1                RColorBrewer_1.1-2         
-## [13] SingleCellExperiment_1.11.5 SummarizedExperiment_1.19.5
-## [15] DelayedArray_0.15.5         matrixStats_0.56.0         
+## [13] SingleCellExperiment_1.11.6 SummarizedExperiment_1.19.5
+## [15] DelayedArray_0.15.6         matrixStats_0.56.0         
 ## [17] Matrix_1.2-18               Biobase_2.49.0             
-## [19] GenomicRanges_1.41.5        GenomeInfoDb_1.25.4        
+## [19] GenomicRanges_1.41.5        GenomeInfoDb_1.25.5        
 ## [21] IRanges_2.23.10             S4Vectors_0.27.12          
 ## [23] BiocGenerics_0.35.4         slingshot_1.7.0            
 ## [25] princurve_2.1.4            
