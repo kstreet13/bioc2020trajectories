@@ -12,7 +12,7 @@ Depends: R (>= 3.5.0)
 Encoding: UTF-8
 LazyData: true
 License: CC BY 4.0  + file LICENSE
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Suggests: 
     knitr,
     RColorBrewer,

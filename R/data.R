@@ -11,5 +11,5 @@
 #' A \code{\link{data.frame}} for the calendar
 #'
 #' @format Can be re-obtained from the image
-#' @usage data(calendar)
+#' @usage data("calendar")
 "calendar"
