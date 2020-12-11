@@ -5,3 +5,11 @@
 #' @format Can be re-obtained by runing first chunk of the vignette.
 #' @usage data(sce)
 "sce"
+
+#' Calendar
+#'
+#' A \code{\link{data.frame}} for the calendar
+#'
+#' @format Can be re-obtained from the image
+#' @usage data(calendar)
+"calendar"

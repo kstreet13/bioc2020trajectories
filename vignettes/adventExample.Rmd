@@ -1,0 +1,147 @@
+---
+title: "Trajectory inference across conditions: toy example"
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
+    toc_depth: 3
+    fig_width: 5
+vignette: >
+  %\VignetteIndexEntry{bioc2020trajectories}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding[utf8]{inputenc}
+---
+
+# Overviews
+
+## Instructor(s) name(s) and contact information
+
+ - Kelly Street (kstreet@ds.dfci.harvard.edu)
+ - Koen Van den Berge (koenvdberge@berkeley.edu)
+ - Hector Roux de Bézieux (hector.rouxdebezieux@berkeley.edu)
+
+## Workshop Description
+
+In single-cell RNA-sequencing (scRNA-seq), gene expression is assessed at the level of single cells. In dynamic biological systems, it may not be appropriate to assign cells to discrete groups, but rather a continuum of cell states may be observed, e.g. the differentiation of a stem cell population into mature cell types. This is often represented as a trajectory in a reduced dimension of the scRNA-seq dataset.
+
+Many methods have been suggested for trajectory inference. However, in this setting, it is often unclear how one should handle multiple biological groups or conditions, e.g. constructing and comparing the differentiation trajectory of a wild type versus a knock-out stem cell population.
+
+In this workshop, we will explore methods for comparing multiple conditions in a trajectory inference analysis. We start by integrating datasets from multiple conditions into a single trajectory. By comparing the conditions along the trajectory's path, we can detect large-scale changes, indicative of differential progression. We also demonstrate how to detect subtler changes by finding genes that exhibit different behaviors between these conditions along a differentiation path.
+ 
+## Goal of this vignette
+
+This vignette is meant as a soft introduction to our main vignette "Trajectory inference across conditions: differential expression and differential progression" and should be taken with the implied levity. A compiled version of the main vignette is available on the [workshop website](https://kstreet13.github.io/bioc2020trajectories/articles/workshopTrajectories.html).
+
+```{r}
+suppressPackageStartupMessages({
+  library(knitr);  library(ggplot2)
+})
+```
+
+# Setting
+
+Late November, I bought an advent calendar with my partner and we realized we were facing a very challenging situation: how to properly partition the daily chocolates? Given the inherent difficulties of cutting a piece of hard chocolate into two equal blocks, we quickly settled on alternate days: I would get the treat on odd days and they’ll be eating the chocolate on even days. 
+
+Below is a picture of our event calendar 
+
+```{r, out.width = "50%", fig.pos="h", fig.align='center', echo = FALSE}
+knitr::include_graphics("advent.png")
+```
+
+We will use the 2D representation of the calendar as a proxy example for our workflow. A mock calendar data is available with the package:
+
+```{r}
+data("calendar", package = "bioc2020trajectories")
+head(calendar)
+```
+
+# Differential topology (of the odd and even slots in the calendar)
+
+We can first see the display of the calendar, colored by odd or even attribution.
+
+```{r, fig.align='center'}
+calendar$is_even <- (calendar$Day %% 2) == 0
+ggplot(calendar, aes(x = x, y = y, fill = is_even)) +
+  geom_tile(width = .8, height = .8) +
+  scale_fill_brewer(type = "qual") +
+  theme_void()
+```
+
+It's hard to judge if the distribution of coordinates is truly independent from the labels. To help assess it visually, we devised an __imbalance score__. 
+
+```{r, fig.align='center'}
+rd <- as.matrix(as.data.frame(calendar[, 2:3]))
+scores <- bioc2020trajectories::imbalance_score(rd = rd, cl = calendar$is_even,
+                                                k = 8, smooth = 3)
+calendar$scores <- scores$scaled_scores
+
+ggplot(calendar, aes(x = x, y = y, fill = scores)) +
+  geom_tile(width = .8, height = .8) +
+  scale_fill_viridis_c() +
+  theme_void()
+```
+
+The scores are definitely not distributed independently from the coordinates: the manufacturer of the calendar may not have used a random process to assign the numbers. Note however that our imbalance score is definitively not the most appropriate tool in this specific setting (where $n=24$).
+
+# Differential progression (of days where we eat a chocolate)
+
+Of course, we know how days work so we know that the distribution of days between us is going to be the same. However, we can still compare it to pursue the comparison
+
+```{r, fig.align='center', fig.height=4}
+ggplot(calendar, aes(x = Day, fill = is_even)) +
+  geom_density(alpha = .5) +
+  theme_minimal() +
+  scale_fill_brewer(type = "qual")
+```
+
+This seems about right. We can check if the two distributions are indeed identical using the *Kolmogorov-Smirnov* test.
+
+```{r}
+ks.test(
+  x = calendar$Day[calendar$is_even],
+  y = calendar$Day[!calendar$is_even]
+)
+```
+
+We do indeed fail to reject the null.
+
+# Differential (chocolated) expression
+
+Now that we looked at the global differences, we can also focus on more granular differences, as days progressed. 
+
+## Weight of the chocolate
+
+The first thing we can look at is the weight of the chocolate as the days progressed. For genes, we would use a more complex Negative Binomial - Generalized Additive Model (NB-GAM) to estimate the mean gene expression along pseudotime. 
+
+
+```{r}
+ggplot(calendar, aes(x = Day, y = choco_weight, col = is_even)) +
+  geom_point(size = 4) +
+  theme_minimal() +
+  geom_smooth(method = "gam") +
+  scale_color_brewer(type = "qual")
+```
+
+Here we can just do a gam model with gaussian noise. We won't get into testing here but we can visually see that the confidence interval of the two fit always overlap, which suggests that there is no difference between us in regard to chocolate!!
+
+## Percent of cocoa in the chocolate
+
+Everyone has their own tastes with regard to chocolate but, for an advent calendar, in my opinion, diversity is key. Let's see if that's the case for both of us.
+
+```{r}
+ggplot(calendar, aes(x = Day, y = pct_cocoa, col = is_even)) +
+  geom_point(size = 4) +
+  theme_minimal() +
+  geom_smooth(method = "gam") +
+  scale_color_brewer(type = "qual")
+```
+
+While the percentage of cocoa seems constant across the days, there is a clear difference between the odd and even days. Well, it's all for the best, I prefer the higher cocoa content anyway!!
+
+# Final notes
+
+This is just a toy example, of course. For a more rigorous, serious and probably helpful workflow, please go the the [main page of the workshop](https://kstreet13.github.io/bioc2020trajectories/articles/workshopTrajectories.html).
+
+```{r}
+sessionInfo()
+```
