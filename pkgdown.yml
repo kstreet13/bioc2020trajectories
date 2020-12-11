@@ -3,7 +3,7 @@ pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   workshopTrajectories: workshopTrajectories.html
-last_built: 2020-12-11T11:25Z
+last_built: 2020-12-11T13:43Z
 urls:
   reference: https://kstreet13.github.io/bioc2020trajectories/reference
   article: https://kstreet13.github.io/bioc2020trajectories/articles
