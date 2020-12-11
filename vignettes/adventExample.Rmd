@@ -7,7 +7,7 @@ output:
     toc_depth: 3
     fig_width: 5
 vignette: >
-  %\VignetteIndexEntry{bioc2020trajectories}
+  %\VignetteIndexEntry{Toy Example}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding[utf8]{inputenc}
 ---
