@@ -463,13 +463,14 @@ Below we show heatmaps of the genes DE between conditions. The DE genes in the h
 ```{r, eval=TRUE}
 ### based on mean smoother
 yhatSmooth <- predictSmooth(sce, gene = conditionGenes, nPoints = 50, tidy = FALSE)
-heatSmooth_TGF <- pheatmap(t(scale(t(yhatSmooth[, 51:100]))),
+yhatSmoothScaled <- t(scale(t(yhatSmooth)))
+heatSmooth_TGF <- pheatmap(yhatSmoothScaled[, 51:100],
   cluster_cols = FALSE,
   show_rownames = FALSE, show_colnames = FALSE, main = "TGF-Beta", legend = FALSE,
   silent = TRUE
 )
 
-matchingHeatmap_mock <- pheatmap(t(scale(t(yhatSmooth[heatSmooth_TGF$tree_row$order, 1:50]))),
+matchingHeatmap_mock <- pheatmap(yhatSmoothScaled[heatSmooth_TGF$tree_row$order, 1:50],
   cluster_cols = FALSE, cluster_rows = FALSE,
   show_rownames = FALSE, show_colnames = FALSE, main = "Mock",
   legend = FALSE, silent = TRUE
