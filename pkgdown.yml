@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   adventExample: adventExample.html
   workshopTrajectories: workshopTrajectories.html
-last_built: 2020-12-11T19:13Z
+last_built: 2020-12-14T23:51Z
 urls:
   reference: https://kstreet13.github.io/bioc2020trajectories/reference
   article: https://kstreet13.github.io/bioc2020trajectories/articles

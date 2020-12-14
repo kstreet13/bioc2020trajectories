@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -65,7 +65,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/kstreet13/bioc2020trajectories">
-    <span class="fa fa-github"></span>
+    <span class="fas fa-github"></span>
      
   </a>
 </li>
@@ -79,8 +79,7 @@
 
       
 
-      </header><script src="adventExample_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="adventExample_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
-<script src="adventExample_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
+      </header><script src="adventExample_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Trajectory inference across conditions: toy example</h1>
@@ -118,8 +117,10 @@
 <p>This vignette is meant as a soft introduction to our main vignette “Trajectory inference across conditions: differential expression and differential progression” and should be taken with the implied levity. A compiled version of the main vignette is available on the <a href="https://kstreet13.github.io/bioc2020trajectories/articles/workshopTrajectories.html">workshop website</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="op">{</span>
-  <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/">knitr</a></span><span class="op">)</span>;  <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/">knitr</a></span><span class="op">)</span>
 <span class="op">}</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 <div id="setting" class="section level1">
@@ -127,34 +128,33 @@
 <a href="#setting" class="anchor"></a>Setting</h1>
 <p>Late November, I bought an advent calendar with my partner and we realized we were facing a very challenging situation: how to properly partition the daily chocolates? Given the inherent difficulties of cutting a piece of hard chocolate into two equal blocks, we quickly settled on alternate days: I would get the treat on odd days and they’ll be eating the chocolate on even days.</p>
 <p>Below is a picture of our event calendar</p>
-<p><img src="advent.png" width="50%" style="display: block; margin: auto;"></p>
 <p>We will use the 2D representation of the calendar as a proxy example for our workflow. A mock calendar data is available with the package:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"calendar"</span>, package <span class="op">=</span> <span class="st">"bioc2020trajectories"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">calendar</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 6 x 7
-##     Day     x     y choco_weight pct_cocoa is_even  scores
-##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;     &lt;dbl&gt; &lt;lgl&gt;     &lt;dbl&gt;
-## 1     2     1     1         4.3      0.602 TRUE    -0.115 
-## 2    16     2     1         7.33     0.650 TRUE     0.0158
-## 3    12     3     1         4.84     0.769 TRUE     0.0621
-## 4    22     4     1         6.23     0.810 TRUE     0.0237
-## 5     8     1     2         6.56     0.811 TRUE     0.320 
-## 6     9     2     2         5.43     0.746 FALSE    0.521</code></pre>
+<pre><code>## # A tibble: 6 x 5
+##     Day     x     y choco_weight pct_cocoa
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;     &lt;dbl&gt;
+## 1     2     1     1         4.3      0.602
+## 2    16     2     1         7.33     0.650
+## 3    12     3     1         4.84     0.769
+## 4    22     4     1         6.23     0.810
+## 5     8     1     2         6.56     0.811
+## 6     9     2     2         5.43     0.746</code></pre>
 </div>
 <div id="differential-topology-of-the-odd-and-even-slots-in-the-calendar" class="section level1">
 <h1 class="hasAnchor">
 <a href="#differential-topology-of-the-odd-and-even-slots-in-the-calendar" class="anchor"></a>Differential topology (of the odd and even slots in the calendar)</h1>
 <p>We can first see the display of the calendar, colored by odd or even attribution.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">calendar</span><span class="op">$</span><span class="va">is_even</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">calendar</span><span class="op">$</span><span class="va">Day</span> <span class="op">%%</span> <span class="fl">2</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span>
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">calendar</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, fill <span class="op">=</span> <span class="va">is_even</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html">geom_tile</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">.8</span>, height <span class="op">=</span> <span class="fl">.8</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html">scale_fill_brewer</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"qual"</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="adventExample_files/figure-html/unnamed-chunk-4-1.png" width="700" style="display: block; margin: auto;"></p>
+<p><img src="adventExample_files/figure-html/unnamed-chunk-5-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>It’s hard to judge if the distribution of coordinates is truly independent from the labels. To help assess it visually, we devised an <strong>imbalance score</strong>.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">rd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">calendar</span><span class="op">[</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
 <span class="va">scores</span> <span class="op">&lt;-</span> <span class="fu">bioc2020trajectories</span><span class="fu">::</span><span class="fu"><a href="../reference/imbalance_score.html">imbalance_score</a></span><span class="op">(</span>rd <span class="op">=</span> <span class="va">rd</span>, cl <span class="op">=</span> <span class="va">calendar</span><span class="op">$</span><span class="va">is_even</span>,
                                                 k <span class="op">=</span> <span class="fl">8</span>, smooth <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></code></pre></div>
@@ -165,28 +165,28 @@
 <pre><code>## Warning: replacing previous import 'igraph::simplify' by 'purrr::simplify' when
 ## loading 'bioc2020trajectories'</code></pre>
 <pre><code>## Warning in smooth.construct.tp.smooth.spec(object, dk$data, dk$knots): basis dimension, k, increased to minimum possible</code></pre>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">calendar</span><span class="op">$</span><span class="va">scores</span> <span class="op">&lt;-</span> <span class="va">scores</span><span class="op">$</span><span class="va">scaled_scores</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">calendar</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, fill <span class="op">=</span> <span class="va">scores</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html">geom_tile</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">.8</span>, height <span class="op">=</span> <span class="fl">.8</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_fill_viridis_c</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="adventExample_files/figure-html/unnamed-chunk-5-1.png" width="700" style="display: block; margin: auto;"></p>
+<p><img src="adventExample_files/figure-html/unnamed-chunk-6-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>The scores are definitely not distributed independently from the coordinates: the manufacturer of the calendar may not have used a random process to assign the numbers. Note however that our imbalance score is definitively not the most appropriate tool in this specific setting (where <span class="math inline">\(n=24\)</span>).</p>
 </div>
 <div id="differential-progression-of-days-where-we-eat-a-chocolate" class="section level1">
 <h1 class="hasAnchor">
 <a href="#differential-progression-of-days-where-we-eat-a-chocolate" class="anchor"></a>Differential progression (of days where we eat a chocolate)</h1>
 <p>Of course, we know how days work so we know that the distribution of days between us is going to be the same. However, we can still compare it to pursue the comparison</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">calendar</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Day</span>, fill <span class="op">=</span> <span class="va">is_even</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html">scale_fill_brewer</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"qual"</span><span class="op">)</span></code></pre></div>
-<p><img src="adventExample_files/figure-html/unnamed-chunk-6-1.png" width="700" style="display: block; margin: auto;"></p>
+<p><img src="adventExample_files/figure-html/unnamed-chunk-7-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>This seems about right. We can check if the two distributions are indeed identical using the <em>Kolmogorov-Smirnov</em> test.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/ks.test.html">ks.test</a></span><span class="op">(</span>
   x <span class="op">=</span> <span class="va">calendar</span><span class="op">$</span><span class="va">Day</span><span class="op">[</span><span class="va">calendar</span><span class="op">$</span><span class="va">is_even</span><span class="op">]</span>,
   y <span class="op">=</span> <span class="va">calendar</span><span class="op">$</span><span class="va">Day</span><span class="op">[</span><span class="op">!</span><span class="va">calendar</span><span class="op">$</span><span class="va">is_even</span><span class="op">]</span>
@@ -209,28 +209,28 @@
 <h2 class="hasAnchor">
 <a href="#weight-of-the-chocolate" class="anchor"></a>Weight of the chocolate</h2>
 <p>The first thing we can look at is the weight of the chocolate as the days progressed. For genes, we would use a more complex Negative Binomial - Generalized Additive Model (NB-GAM) to estimate the mean gene expression along pseudotime.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">calendar</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Day</span>, y <span class="op">=</span> <span class="va">choco_weight</span>, col <span class="op">=</span> <span class="va">is_even</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html">geom_smooth</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"gam"</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html">scale_color_brewer</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"qual"</span><span class="op">)</span></code></pre></div>
 <pre><code>## `geom_smooth()` using formula 'y ~ s(x, bs = "cs")'</code></pre>
-<p><img src="adventExample_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="adventExample_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 <p>Here we can just do a gam model with gaussian noise. We won’t get into testing here but we can visually see that the confidence interval of the two fit always overlap, which suggests that there is no difference between us in regard to chocolate!!</p>
 </div>
 <div id="percent-of-cocoa-in-the-chocolate" class="section level2">
 <h2 class="hasAnchor">
 <a href="#percent-of-cocoa-in-the-chocolate" class="anchor"></a>Percent of cocoa in the chocolate</h2>
 <p>Everyone has their own tastes with regard to chocolate but, for an advent calendar, in my opinion, diversity is key. Let’s see if that’s the case for both of us.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">calendar</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Day</span>, y <span class="op">=</span> <span class="va">pct_cocoa</span>, col <span class="op">=</span> <span class="va">is_even</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html">geom_smooth</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"gam"</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html">scale_color_brewer</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"qual"</span><span class="op">)</span></code></pre></div>
 <pre><code>## `geom_smooth()` using formula 'y ~ s(x, bs = "cs")'</code></pre>
-<p><img src="adventExample_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
+<p><img src="adventExample_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 <p>While the percentage of cocoa seems constant across the days, there is a clear difference between the odd and even days. Well, it’s all for the best, I prefer the higher cocoa content anyway!!</p>
 </div>
 </div>
@@ -238,9 +238,9 @@
 <h1 class="hasAnchor">
 <a href="#final-notes" class="anchor"></a>Final notes</h1>
 <p>This is just a toy example, of course. For a more rigorous, serious and probably helpful workflow, please go the the <a href="https://kstreet13.github.io/bioc2020trajectories/articles/workshopTrajectories.html">main page of the workshop</a>.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## R Under development (unstable) (2020-12-04 r79554)
+<pre><code>## R Under development (unstable) (2020-11-02 r79396)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 20.04.1 LTS
 ## 
@@ -270,8 +270,8 @@
 ## [11] GenomeInfoDbData_1.2.4        yaml_2.2.1                   
 ## [13] pillar_1.4.7                  RSQLite_2.2.1                
 ## [15] lattice_0.20-41               glue_1.4.2                   
-## [17] digest_0.6.27                 GenomicRanges_1.43.0         
-## [19] RColorBrewer_1.1-2            XVector_0.31.0               
+## [17] digest_0.6.27                 GenomicRanges_1.43.1         
+## [19] RColorBrewer_1.1-2            XVector_0.31.1               
 ## [21] colorspace_2.0-0              htmltools_0.5.0              
 ## [23] Matrix_1.2-18                 pkgconfig_2.0.3              
 ## [25] bioc2020trajectories_0.0.0.91 zlibbioc_1.37.0              
@@ -279,25 +279,25 @@
 ## [29] RANN_2.6.1                    HDF5Array_1.19.0             
 ## [31] tibble_3.0.4                  mgcv_1.8-33                  
 ## [33] generics_0.1.0                farver_2.0.3                 
-## [35] IRanges_2.25.4                ellipsis_0.3.1               
-## [37] withr_2.3.0                   SummarizedExperiment_1.21.0  
+## [35] IRanges_2.25.5                ellipsis_0.3.1               
+## [37] withr_2.3.0                   SummarizedExperiment_1.21.1  
 ## [39] BiocGenerics_0.37.0           cli_2.2.0                    
 ## [41] slingshot_1.9.1               magrittr_2.0.1               
 ## [43] crayon_1.3.4                  memoise_1.1.0                
 ## [45] evaluate_0.14                 fs_1.5.0                     
-## [47] fansi_0.4.1                   nlme_3.1-150                 
+## [47] fansi_0.4.1                   nlme_3.1-151                 
 ## [49] textshaping_0.2.1             tools_4.1.0                  
 ## [51] lifecycle_0.2.0               matrixStats_0.57.0           
 ## [53] stringr_1.4.0                 Rhdf5lib_1.13.0              
 ## [55] S4Vectors_0.29.6              munsell_0.5.0                
-## [57] DelayedArray_0.17.4           compiler_4.1.0               
-## [59] pkgdown_1.6.1                 GenomeInfoDb_1.27.2          
+## [57] DelayedArray_0.17.5           compiler_4.1.0               
+## [59] pkgdown_1.6.1                 GenomeInfoDb_1.27.3          
 ## [61] systemfonts_0.3.2             rlang_0.4.9                  
 ## [63] rhdf5_2.35.0                  grid_4.1.0                   
 ## [65] RCurl_1.98-1.2                rhdf5filters_1.3.3           
 ## [67] rappdirs_0.3.1                SingleCellExperiment_1.13.3  
 ## [69] igraph_1.2.6                  bitops_1.0-6                 
-## [71] labeling_0.4.2                rmarkdown_2.5                
+## [71] labeling_0.4.2                rmarkdown_2.6                
 ## [73] gtable_0.3.0                  DBI_1.1.0                    
 ## [75] curl_4.3                      R6_2.5.0                     
 ## [77] dplyr_1.0.2                   bit_4.0.4                    
