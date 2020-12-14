@@ -34,10 +34,13 @@ This vignette is meant as a soft introduction to our main vignette "Trajectory i
 
 ```{r}
 suppressPackageStartupMessages({
-  library(knitr);  library(ggplot2)
+  library(knitr)
 })
 ```
 
+```{r}
+library(ggplot2)
+```
 # Setting
 
 Late November, I bought an advent calendar with my partner and we realized we were facing a very challenging situation: how to properly partition the daily chocolates? Given the inherent difficulties of cutting a piece of hard chocolate into two equal blocks, we quickly settled on alternate days: I would get the treat on odd days and they’ll be eating the chocolate on even days. 
