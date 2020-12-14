@@ -1,4 +1,11 @@
 on: [push]
+
+# change this env variable (v...) to manually bust the 
+# cache. Cache busting otherwise occurs with changes in
+# dependencies in the DESCRIPTION file. 
+env:
+  cache-version: v1
+
 jobs:
   job1:
     runs-on: ubuntu-latest
@@ -17,8 +24,8 @@ jobs:
         uses: actions/cache@v1
         with:
           path: /usr/local/lib/R/site-library
-          key: ${{ runner.os }}-r-1-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ runner.os }}-r-1-
+          key: ${{ env.cache-version }}-${{ runner.os }}-r-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ env.cache-version }}-${{ runner.os }}-r-
 
       # This lets us augment with additional dependencies
       - name: Install system dependencies
