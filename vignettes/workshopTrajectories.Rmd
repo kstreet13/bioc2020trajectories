@@ -334,10 +334,13 @@ On a lineage-specific basis, there are over twice as much DE genes in the mock l
 
 The authors of the original paper found $1105$ DE genes for the mock condition on a FDR level of $1e-10$ and a cut-off of 1 on the absolute value of the log2 fold change.
 
+```{r, eval = FALSE}
+rowData(sce)$assocRes <- associationTest(sce, lineages = TRUE, l2fc = log2(2))
+```
 
 ```{r, eval=TRUE}
 library(tradeSeq)
-assocRes <- associationTest(sce, lineages = TRUE, l2fc = log2(2))
+assocRes <- rowData(sce)$assocRes
 mockGenes <-  rownames(assocRes)[
   which(p.adjust(assocRes$pvalue_lineage1_conditionMock, "fdr") <= 0.05)
 ]
