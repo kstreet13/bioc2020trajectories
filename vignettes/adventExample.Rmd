@@ -35,11 +35,9 @@ This vignette is meant as a soft introduction to our main vignette "Trajectory i
 ```{r}
 suppressPackageStartupMessages({
   library(knitr)
+  library(ggplot2)
 })
-```
 
-```{r}
-library(ggplot2)
 ```
 # Setting
 
@@ -48,7 +46,7 @@ Late November, I bought an advent calendar with my partner and we realized we we
 Below is a picture of our event calendar 
 
 ```{r, out.width = "50%", fig.pos="h", fig.align='center', echo = FALSE}
-# knitr::include_graphics("advent.png")
+knitr::include_graphics("advent.png")
 ```
 
 We will use the 2D representation of the calendar as a proxy example for our workflow. A mock calendar data is available with the package:
