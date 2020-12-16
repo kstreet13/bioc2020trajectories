@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">bioc2020trajectories</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.91</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.92</span>
       </span>
     </div>
 
@@ -207,6 +207,7 @@
   <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">pheatmap</span><span class="op">)</span>; <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://igordot.github.io/msigdbr">msigdbr</a></span><span class="op">)</span>
   <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ctlab/fgsea/">fgsea</a></span><span class="op">)</span>; <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/">knitr</a></span><span class="op">)</span>
   <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>; <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">gridExtra</span><span class="op">)</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://statomics.github.io/tradeSeq/index.html">tradeSeq</a></span><span class="op">)</span>
 <span class="op">}</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
@@ -216,14 +217,14 @@
 <div id="dataset" class="section level2">
 <h2 class="hasAnchor">
 <a href="#dataset" class="anchor"></a>Dataset</h2>
-<p>The dataset we will be working with concerns a single-cell RNA-sequencing dataset consisting of two different experiments, which correspond to two treatments. <a href="https://www.nature.com/articles/s41588-019-0489-5">McFaline-Figueroa et al.</a> studied the epithelial-to-mesenchymal transition (EMT), where cells spatially migrate from the epithelium to the mesenchyme during development. This process will be described by a trajectory, reflecting the gene expression changes occurring during this migration. The authors furthermore studied both a control (<code>Mock</code>) condition, and a condition in the absence of transforming growth factor <span class="math inline">\(\beta\)</span> (TGFB).</p>
-<p>In summary, we will be investigating a trajectory consisting of a single lineage that represents the EMT. This lineage is studied in two different conditions; a control condition and a TGFB-absent condition.</p>
+<p>The dataset we will be working with concerns a single-cell RNA-sequencing dataset consisting of two different experiments, which correspond to two treatments. <a href="https://www.nature.com/articles/s41588-019-0489-5">McFaline-Figueroa et al.</a> studied the epithelial-to-mesenchymal transition (EMT), where cells spatially migrate from the epithelium to the mesenchyme during development. This process will be described by a trajectory, reflecting the gene expression changes occurring during this migration. The authors furthermore studied both a control (<code>Mock</code>) condition, and a condition under activation of transforming growth factor <span class="math inline">\(\beta\)</span> (TGFB).</p>
+<p>In summary, we will be investigating a trajectory consisting of a single lineage that represents the EMT. This lineage is studied in two different conditions; a control condition and a TGFB-induced condition.</p>
 </div>
 <div id="integration" class="section level2">
 <h2 class="hasAnchor">
 <a href="#integration" class="anchor"></a>Integration</h2>
 <p>Our dataset contains cells collected from samples undergoing two different treatment conditions which were necessarily collected separately. Hence, we will start with an integration step to combine these two sets of cells, similar to batch correction. Our goal is to remove the technical effects of the different sample collections while preserving any true, biological differences between the two treatment groups.</p>
-<p>Data integration and normalization are complex problems and there are a variety of methods addressing each. Interested participants can explore <a href="https://osca.bioconductor.org/integrating-datasets.html">the corresponding chapter of the Bioconductor Ebook</a>. However, since neither is the main focus of this workshop, we elected to use an existing pipeline for these tasks. The full Seurat data integration workflow with SCTransform normalization is described in <a href="https://satijalab.org/seurat/v3.1/integration.html">this vignette</a>.</p>
+<p>Data integration and normalization are complex problems and there are a variety of methods addressing each. Interested participants can explore <a href="http://bioconductor.org/books/release/OSCA/integrating-datasets.html">the corresponding chapter of the Bioconductor Ebook</a>. However, since neither is the main focus of this workshop, we elected to use an existing pipeline for these tasks. The full Seurat data integration workflow with SCTransform normalization is described in <a href="https://satijalab.org/seurat/v3.1/integration.html">this vignette</a>.</p>
 <p>Since this whole step is quite slow, it will not be run during the workshop but the code is provided below, along with a function to download and preprocess the public data from GEO.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu">bioc2020trajectories</span><span class="fu">::</span><span class="fu"><a href="../reference/importRawData.html">importRawData</a></span><span class="op">(</span><span class="op">)</span>
@@ -339,17 +340,15 @@
 <div id="differential-expression" class="section level2">
 <h2 class="hasAnchor">
 <a href="#differential-expression" class="anchor"></a>Differential expression</h2>
-<p>We will now proceed to discover genes whose expression is associated with the inferred trajectory. We will look for genes that (i) change in gene expression along the trajectory, and (ii) are differentially expressed between the two conditions along the trajectory. The differential expression analysis uses the Bioconductor package <code>tradeSeq</code>. This analysis relies on a new version of <code>tradeSeq</code>, which can be installed from the <a href="https://github.com/statOmics/tradeSeq/tree/conditions">conditions branch</a> on GitHub.</p>
-<p>For each condition (i.e., control and TGF-Beta), a smooth average expression profile along pseudotime will be estimated for each gene, using a negative binomial generalized additive model (NB-GAM). Each differential expression hypothesis of interest will then be translated into testing specific features (a linear combination of the parameters) of this smoothed expression estimate.</p>
+<p>We will now proceed to discover genes whose expression is associated with the inferred trajectory. We will look for genes that (i) change in gene expression along the trajectory, and (ii) are differentially expressed between the two conditions along the trajectory. The differential expression analysis uses the Bioconductor package <code>tradeSeq</code>. This analysis relies on a new version of <code>tradeSeq</code>, which we have recently updated to allow for multiple conditions.</p>
+<p>For each condition (i.e., control and TGF-Beta), a smooth average expression profile along pseudotime will be estimated for each gene, using a negative binomial generalized additive model (NB-GAM). Each differential expression hypothesis of interest will then be translated into testing specific features (a linear combination of the parameters) of this smoothed expression estimate. See <a href="https://www.maths.ed.ac.uk/~swood34/mgcv/">here</a> for more information on smoothers and the <code>mgcv</code> package which we are using to estimate the smoothers.</p>
 <p>The next two paragraphs can be time-consuming so we will not run them during the workshop, however, their output is already present in the data object that was loaded at the start of this workshop. They can be easily parallelized, relying on the <code>BiocParallel</code> bioconductor package. See <a href="https://statomics.github.io/tradeSeq/articles/fitGAM.html#parallel-computing-1">here</a> for more details.</p>
 <div id="select-number-of-knots" class="section level3">
 <h3 class="hasAnchor">
 <a href="#select-number-of-knots" class="anchor"></a>Select number of knots</h3>
 <p>Before we can fit these smoothed expression profiles, we need to get a sense of how complex the expression patterns are in this dataset. This is translated into selecting a number of knots for the NB-GAMs, where a higher number of knots allows for more complex expression patterns. Here, we pick <span class="math inline">\(5\)</span> knots.</p>
-<p>See <a href="https://people.maths.bris.ac.uk/~sw15190/mgcv/">here</a> for more information on smoothers.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://statomics.github.io/tradeSeq/index.html">tradeSeq</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>
 <span class="va">icMat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/evaluateK.html">evaluateK</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="fu">assays</span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">$</span><span class="va">counts</span><span class="op">)</span>,
                    pseudotime <span class="op">=</span> <span class="fu">colData</span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">$</span><span class="va">slingshot</span><span class="op">$</span><span class="va">pseudotime</span>,
                    cellWeights <span class="op">=</span> <span class="fu">colData</span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">$</span><span class="va">slingshot</span><span class="op">$</span><span class="va">cellWeights.V1</span>,
@@ -469,104 +468,104 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">GO_EPIDERMIS_DEVELOPMENT</td>
-<td align="right">0.0000400</td>
-<td align="right">0.0792184</td>
-</tr>
-<tr class="even">
 <td align="left">GO_CELL_CYCLE</td>
 <td align="right">0.0000600</td>
-<td align="right">0.0792184</td>
+<td align="right">0.1029839</td>
+</tr>
+<tr class="even">
+<td align="left">GO_EPIDERMIS_DEVELOPMENT</td>
+<td align="right">0.0000800</td>
+<td align="right">0.1029839</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_MITOTIC_CELL_CYCLE</td>
 <td align="right">0.0000800</td>
-<td align="right">0.0792184</td>
+<td align="right">0.1029839</td>
+</tr>
+<tr class="even">
+<td align="left">GO_SKIN_DEVELOPMENT</td>
+<td align="right">0.0001200</td>
+<td align="right">0.1029839</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_EPITHELIUM_DEVELOPMENT</td>
+<td align="right">0.0001400</td>
+<td align="right">0.1029839</td>
+</tr>
+<tr class="even">
+<td align="left">GO_EPITHELIAL_CELL_DIFFERENTIATION</td>
+<td align="right">0.0001800</td>
+<td align="right">0.1029839</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_REGULATION_OF_MODIFICATION_OF_SYNAPTIC_STRUCTURE</td>
+<td align="right">0.0002003</td>
+<td align="right">0.1029839</td>
 </tr>
 <tr class="even">
 <td align="left">GO_REGULATION_OF_CHROMOSOME_ORGANIZATION</td>
-<td align="right">0.0000800</td>
-<td align="right">0.0792184</td>
+<td align="right">0.0002200</td>
+<td align="right">0.1029839</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_SKIN_DEVELOPMENT</td>
-<td align="right">0.0001200</td>
-<td align="right">0.0891207</td>
-</tr>
-<tr class="even">
 <td align="left">GO_MITOTIC_NUCLEAR_DIVISION</td>
-<td align="right">0.0001400</td>
-<td align="right">0.0891207</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_EPITHELIAL_CELL_DIFFERENTIATION</td>
-<td align="right">0.0001600</td>
-<td align="right">0.0891207</td>
-</tr>
-<tr class="even">
-<td align="left">GO_EPITHELIUM_DEVELOPMENT</td>
-<td align="right">0.0001800</td>
-<td align="right">0.0891207</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_NEGATIVE_REGULATION_OF_CELLULAR_COMPONENT_ORGANIZATION</td>
-<td align="right">0.0002400</td>
-<td align="right">0.1008234</td>
-</tr>
-<tr class="even">
-<td align="left">GO_PROTEOLYSIS</td>
 <td align="right">0.0002600</td>
-<td align="right">0.1008234</td>
+<td align="right">0.1029839</td>
+</tr>
+<tr class="even">
+<td align="left">GO_NEGATIVE_REGULATION_OF_CELLULAR_COMPONENT_ORGANIZATION</td>
+<td align="right">0.0002600</td>
+<td align="right">0.1029839</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_EPIDERMAL_CELL_DIFFERENTIATION</td>
-<td align="right">0.0002800</td>
-<td align="right">0.1008234</td>
+<td align="left">GO_PROTEOLYSIS</td>
+<td align="right">0.0003000</td>
+<td align="right">0.1056246</td>
 </tr>
 <tr class="even">
 <td align="left">GO_ORGANELLE_FISSION</td>
 <td align="right">0.0003200</td>
-<td align="right">0.1020032</td>
+<td align="right">0.1056246</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_EPIDERMAL_CELL_DIFFERENTIATION</td>
+<td align="right">0.0004400</td>
+<td align="right">0.1340619</td>
+</tr>
+<tr class="even">
+<td align="left">GO_CELL_CYCLE_PROCESS</td>
+<td align="right">0.0005200</td>
+<td align="right">0.1452338</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_REGULATION_OF_NUCLEAR_DIVISION</td>
-<td align="right">0.0003600</td>
-<td align="right">0.1020032</td>
-</tr>
-<tr class="even">
-<td align="left">GO_REGULATION_OF_MODIFICATION_OF_SYNAPTIC_STRUCTURE</td>
-<td align="right">0.0003605</td>
-<td align="right">0.1020032</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_CELL_CYCLE_PROCESS</td>
-<td align="right">0.0004400</td>
-<td align="right">0.1089253</td>
+<td align="right">0.0005600</td>
+<td align="right">0.1452338</td>
 </tr>
 <tr class="even">
 <td align="left">GO_NEGATIVE_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
-<td align="right">0.0004400</td>
-<td align="right">0.1089253</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_CHROMOSOME_ORGANIZATION</td>
-<td align="right">0.0004800</td>
-<td align="right">0.1118378</td>
-</tr>
-<tr class="even">
-<td align="left">GO_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
-<td align="right">0.0006200</td>
-<td align="right">0.1364317</td>
+<td align="right">0.0006000</td>
+<td align="right">0.1452338</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_KERATINOCYTE_DIFFERENTIATION</td>
-<td align="right">0.0006600</td>
-<td align="right">0.1375899</td>
+<td align="right">0.0006400</td>
+<td align="right">0.1452338</td>
 </tr>
 <tr class="even">
-<td align="left">GO_CELL_DIVISION</td>
-<td align="right">0.0009200</td>
+<td align="left">GO_CHROMOSOME_ORGANIZATION</td>
+<td align="right">0.0006600</td>
+<td align="right">0.1452338</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
+<td align="right">0.0007600</td>
 <td align="right">0.1584368</td>
+</tr>
+<tr class="even">
+<td align="left">GO_CHROMOSOME_SEGREGATION</td>
+<td align="right">0.0009000</td>
+<td align="right">0.1782414</td>
 </tr>
 </tbody>
 </table>
@@ -668,8 +667,8 @@
 <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">eaRes</span><span class="op">[</span><span class="va">ooEA</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, n <span class="op">=</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="76%">
-<col width="10%">
+<col width="75%">
+<col width="12%">
 <col width="12%">
 </colgroup>
 <thead><tr class="header">
@@ -680,103 +679,103 @@
 <tbody>
 <tr class="odd">
 <td align="left">GO_BIOLOGICAL_ADHESION</td>
-<td align="right">0.00002</td>
-<td align="right">0.0792784</td>
+<td align="right">0.0000200</td>
+<td align="right">0.0528523</td>
 </tr>
 <tr class="even">
-<td align="left">GO_CELL_MOTILITY</td>
-<td align="right">0.00004</td>
-<td align="right">0.0792784</td>
+<td align="left">GO_ANATOMICAL_STRUCTURE_FORMATION_INVOLVED_IN_MORPHOGENESIS</td>
+<td align="right">0.0000400</td>
+<td align="right">0.0528523</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_ANATOMICAL_STRUCTURE_FORMATION_INVOLVED_IN_MORPHOGENESIS</td>
-<td align="right">0.00008</td>
-<td align="right">0.0792784</td>
+<td align="left">GO_CELL_MOTILITY</td>
+<td align="right">0.0000400</td>
+<td align="right">0.0528523</td>
 </tr>
 <tr class="even">
 <td align="left">GO_REGULATION_OF_CELL_ADHESION</td>
-<td align="right">0.00008</td>
-<td align="right">0.0792784</td>
+<td align="right">0.0001600</td>
+<td align="right">0.1585568</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_REGULATION_OF_MITOCHONDRIAL_GENE_EXPRESSION</td>
-<td align="right">0.00042</td>
-<td align="right">0.3171137</td>
+<td align="right">0.0002600</td>
+<td align="right">0.2061239</td>
 </tr>
 <tr class="even">
 <td align="left">GO_TRANSCRIPTION_BY_RNA_POLYMERASE_III</td>
-<td align="right">0.00062</td>
-<td align="right">0.3171137</td>
+<td align="right">0.0004200</td>
+<td align="right">0.2774745</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_EXTRACELLULAR_STRUCTURE_ORGANIZATION</td>
-<td align="right">0.00068</td>
-<td align="right">0.3171137</td>
+<td align="right">0.0006400</td>
+<td align="right">0.3212862</td>
 </tr>
 <tr class="even">
-<td align="left">GO_VASCULATURE_DEVELOPMENT</td>
-<td align="right">0.00068</td>
-<td align="right">0.3171137</td>
+<td align="left">GO_MITOCHONDRIAL_RNA_METABOLIC_PROCESS</td>
+<td align="right">0.0008800</td>
+<td align="right">0.3212862</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_CELL_MORPHOGENESIS_INVOLVED_IN_DIFFERENTIATION</td>
-<td align="right">0.00082</td>
-<td align="right">0.3171137</td>
+<td align="left">GO_VASCULATURE_DEVELOPMENT</td>
+<td align="right">0.0009400</td>
+<td align="right">0.3212862</td>
 </tr>
 <tr class="even">
 <td align="left">GO_CIRCULATORY_SYSTEM_DEVELOPMENT</td>
-<td align="right">0.00086</td>
-<td align="right">0.3171137</td>
+<td align="right">0.0009600</td>
+<td align="right">0.3212862</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_REGULATION_OF_CELL_POPULATION_PROLIFERATION</td>
-<td align="right">0.00090</td>
-<td align="right">0.3171137</td>
+<td align="right">0.0010800</td>
+<td align="right">0.3212862</td>
 </tr>
 <tr class="even">
-<td align="left">GO_CELL_CELL_ADHESION</td>
-<td align="right">0.00118</td>
-<td align="right">0.3171137</td>
+<td align="left">GO_CELL_MORPHOGENESIS_INVOLVED_IN_DIFFERENTIATION</td>
+<td align="right">0.0011000</td>
+<td align="right">0.3212862</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_CELL_MORPHOGENESIS</td>
-<td align="right">0.00120</td>
-<td align="right">0.3171137</td>
-</tr>
-<tr class="even">
 <td align="left">GO_REGULATION_OF_CELLULAR_COMPONENT_MOVEMENT</td>
-<td align="right">0.00122</td>
-<td align="right">0.3171137</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_MITOCHONDRIAL_RNA_METABOLIC_PROCESS</td>
-<td align="right">0.00128</td>
-<td align="right">0.3171137</td>
+<td align="right">0.0011000</td>
+<td align="right">0.3212862</td>
 </tr>
 <tr class="even">
-<td align="left">GO_TAXIS</td>
-<td align="right">0.00142</td>
-<td align="right">0.3171137</td>
+<td align="left">GO_CELL_MORPHOGENESIS</td>
+<td align="right">0.0011800</td>
+<td align="right">0.3212862</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_CELL_PROJECTION_ORGANIZATION</td>
-<td align="right">0.00144</td>
-<td align="right">0.3171137</td>
+<td align="left">GO_TAXIS</td>
+<td align="right">0.0013000</td>
+<td align="right">0.3212862</td>
 </tr>
 <tr class="even">
 <td align="left">GO_N_TERMINAL_PROTEIN_AMINO_ACID_MODIFICATION</td>
-<td align="right">0.00148</td>
-<td align="right">0.3171137</td>
+<td align="right">0.0013600</td>
+<td align="right">0.3212862</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_CELL_CELL_ADHESION</td>
+<td align="right">0.0014600</td>
+<td align="right">0.3212862</td>
+</tr>
+<tr class="even">
+<td align="left">GO_MOTOR_NEURON_AXON_GUIDANCE</td>
+<td align="right">0.0014601</td>
+<td align="right">0.3212862</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_TUBE_DEVELOPMENT</td>
-<td align="right">0.00152</td>
-<td align="right">0.3171137</td>
+<td align="right">0.0015400</td>
+<td align="right">0.3212862</td>
 </tr>
 <tr class="even">
-<td align="left">GO_BLOOD_VESSEL_MORPHOGENESIS</td>
-<td align="right">0.00176</td>
-<td align="right">0.3322475</td>
+<td align="left">GO_CELL_JUNCTION_ASSEMBLY</td>
+<td align="right">0.0017600</td>
+<td align="right">0.3322143</td>
 </tr>
 </tbody>
 </table>
@@ -810,7 +809,7 @@
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] tradeSeq_1.3.24             gridExtra_2.3              
+##  [1] tradeSeq_1.5.0              gridExtra_2.3              
 ##  [3] ggplot2_3.3.2               knitr_1.30                 
 ##  [5] fgsea_1.17.0                msigdbr_7.2.1              
 ##  [7] pheatmap_1.0.12             UpSetR_1.4.0               
@@ -828,29 +827,29 @@
 ##  [3] colorspace_2.0-0              ellipsis_0.3.1               
 ##  [5] rprojroot_2.0.2               XVector_0.31.1               
 ##  [7] fs_1.5.0                      farver_2.0.3                 
-##  [9] ggrepel_0.8.2                 bit64_4.0.5                  
+##  [9] ggrepel_0.9.0                 bit64_4.0.5                  
 ## [11] splines_4.1.0                 docopt_0.7.1                 
 ## [13] cluster_2.1.0                 dbplyr_2.0.0                 
-## [15] bioc2020trajectories_0.0.0.91 HDF5Array_1.19.0             
+## [15] bioc2020trajectories_0.0.0.92 HDF5Array_1.19.0             
 ## [17] compiler_4.1.0                httr_1.4.2                   
 ## [19] assertthat_0.2.1              Matrix_1.2-18                
 ## [21] limma_3.47.1                  htmltools_0.5.0              
 ## [23] tools_4.1.0                   igraph_1.2.6                 
 ## [25] gtable_0.3.0                  glue_1.4.2                   
-## [27] GenomeInfoDbData_1.2.4        reshape2_1.4.4               
-## [29] RANN_2.6.1                    dplyr_1.0.2                  
+## [27] GenomeInfoDbData_1.2.4        RANN_2.6.1                   
+## [29] reshape2_1.4.4                dplyr_1.0.2                  
 ## [31] rappdirs_0.3.1                fastmatch_1.1-0              
 ## [33] Rcpp_1.0.5                    slam_0.1-48                  
 ## [35] DDRTree_0.1.5                 pkgdown_1.6.1                
-## [37] vctrs_0.3.5                   rhdf5filters_1.3.3           
+## [37] rhdf5filters_1.3.3            vctrs_0.3.5                  
 ## [39] ape_5.4-1                     nlme_3.1-151                 
 ## [41] xfun_0.19                     stringr_1.4.0                
 ## [43] lifecycle_0.2.0               irlba_2.3.3                  
 ## [45] edgeR_3.33.0                  zlibbioc_1.37.0              
-## [47] ragg_0.4.0                    monocle_2.19.0               
-## [49] rhdf5_2.35.0                  yaml_2.2.1                   
-## [51] curl_4.3                      pbapply_1.4-3                
-## [53] memoise_1.1.0                 fastICA_1.2-2                
+## [47] ragg_0.4.0                    rhdf5_2.35.0                 
+## [49] monocle_2.19.0                curl_4.3                     
+## [51] yaml_2.2.1                    memoise_1.1.0                
+## [53] pbapply_1.4-3                 fastICA_1.2-2                
 ## [55] stringi_1.5.3                 RSQLite_2.2.1                
 ## [57] highr_0.8                     desc_1.2.0                   
 ## [59] filelock_1.0.2                densityClust_0.3             
@@ -858,12 +857,12 @@
 ## [63] pkgconfig_2.0.3               systemfonts_0.3.2            
 ## [65] bitops_1.0-6                  qlcMatrix_0.9.7              
 ## [67] evaluate_0.14                 lattice_0.20-41              
-## [69] purrr_0.3.4                   Rhdf5lib_1.13.0              
+## [69] Rhdf5lib_1.13.0               purrr_0.3.4                  
 ## [71] labeling_0.4.2                bit_4.0.4                    
 ## [73] tidyselect_1.1.0              plyr_1.8.6                   
 ## [75] magrittr_2.0.1                R6_2.5.0                     
 ## [77] generics_0.1.0                combinat_0.0-8               
-## [79] DelayedArray_0.17.5           DBI_1.1.0                    
+## [79] DelayedArray_0.17.6           DBI_1.1.0                    
 ## [81] pillar_1.4.7                  withr_2.3.0                  
 ## [83] mgcv_1.8-33                   RCurl_1.98-1.2               
 ## [85] tibble_3.0.4                  crayon_1.3.4                 
