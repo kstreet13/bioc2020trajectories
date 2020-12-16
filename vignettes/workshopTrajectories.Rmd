@@ -96,6 +96,7 @@ suppressPackageStartupMessages({
   library(pheatmap); library(msigdbr)
   library(fgsea); library(knitr)
   library(ggplot2); library(gridExtra)
+  library(tradeSeq)
 })
 ```
 
@@ -103,15 +104,15 @@ suppressPackageStartupMessages({
 
 ## Dataset
 
-The dataset we will be working with concerns a single-cell RNA-sequencing dataset consisting of two different experiments, which correspond to two treatments. [McFaline-Figueroa et al.](https://www.nature.com/articles/s41588-019-0489-5) studied the epithelial-to-mesenchymal transition (EMT), where cells spatially migrate from the epithelium to the mesenchyme during development. This process will be described by a trajectory, reflecting the gene expression changes occurring during this migration. The authors furthermore studied both a control (`Mock`) condition, and a condition in the absence of transforming growth factor $\beta$ (TGFB).
+The dataset we will be working with concerns a single-cell RNA-sequencing dataset consisting of two different experiments, which correspond to two treatments. [McFaline-Figueroa et al.](https://www.nature.com/articles/s41588-019-0489-5) studied the epithelial-to-mesenchymal transition (EMT), where cells spatially migrate from the epithelium to the mesenchyme during development. This process will be described by a trajectory, reflecting the gene expression changes occurring during this migration. The authors furthermore studied both a control (`Mock`) condition, and a condition under activation of transforming growth factor $\beta$ (TGFB).
 
-In summary, we will be investigating a trajectory consisting of a single lineage that represents the EMT. This lineage is studied in two different conditions; a control condition and a TGFB-absent condition.
+In summary, we will be investigating a trajectory consisting of a single lineage that represents the EMT. This lineage is studied in two different conditions; a control condition and a TGFB-induced condition.
 
 ## Integration
 
 Our dataset contains cells collected from samples undergoing two different treatment conditions which were necessarily collected separately. Hence, we will start with an integration step to combine these two sets of cells, similar to batch correction. Our goal is to remove the technical effects of the different sample collections while preserving any true, biological differences between the two treatment groups.
 
-Data integration and normalization are complex problems and there are a variety of methods addressing each. Interested participants can explore [the corresponding chapter of the Bioconductor Ebook](https://osca.bioconductor.org/integrating-datasets.html). However, since neither is the main focus of this workshop, we elected to use an existing pipeline for these tasks. The full Seurat data integration workflow with SCTransform normalization is described in [this vignette](https://satijalab.org/seurat/v3.1/integration.html).
+Data integration and normalization are complex problems and there are a variety of methods addressing each. Interested participants can explore [the corresponding chapter of the Bioconductor Ebook](http://bioconductor.org/books/release/OSCA/integrating-datasets.html). However, since neither is the main focus of this workshop, we elected to use an existing pipeline for these tasks. The full Seurat data integration workflow with SCTransform normalization is described in [this vignette](https://satijalab.org/seurat/v3.1/integration.html).
 
 Since this whole step is quite slow, it will not be run during the workshop but the code is provided below, along with a function to download and preprocess the public data from GEO.
 
@@ -277,10 +278,11 @@ As we might expect from the plot, this test is highly significant, so we can con
 
 ## Differential expression
 
-We will now proceed to discover genes whose expression is associated with the inferred trajectory. We will look for genes that (i) change in gene expression along the trajectory, and (ii) are differentially expressed between the two conditions along the trajectory. The differential expression analysis uses the Bioconductor package `tradeSeq`. This analysis relies on a new version of `tradeSeq`, which can be installed from the [conditions branch](https://github.com/statOmics/tradeSeq/tree/conditions) on GitHub.
+We will now proceed to discover genes whose expression is associated with the inferred trajectory. We will look for genes that (i) change in gene expression along the trajectory, and (ii) are differentially expressed between the two conditions along the trajectory. The differential expression analysis uses the Bioconductor package `tradeSeq`. This analysis relies on a new version of `tradeSeq`, which we have recently updated to allow for multiple conditions.
 
 For each condition (i.e., control and TGF-Beta), a smooth average expression profile along pseudotime will be estimated for each gene, using a negative binomial generalized additive model (NB-GAM).
-Each differential expression hypothesis of interest will then be translated into testing specific features (a linear combination of the parameters) of this smoothed expression estimate. 
+Each differential expression hypothesis of interest will then be translated into testing specific features (a linear combination of the parameters) of this smoothed expression estimate.
+See [here](https://www.maths.ed.ac.uk/~swood34/mgcv/) for more information on smoothers and the `mgcv` package which we are using to estimate the smoothers.
 
 The next two paragraphs can be time-consuming so we will not run them during the workshop, however, their output is already present in the data object that was loaded at the start of this workshop. They can be easily parallelized, relying on the `BiocParallel` bioconductor package. See [here](https://statomics.github.io/tradeSeq/articles/fitGAM.html#parallel-computing-1) for more details.
 
@@ -288,10 +290,8 @@ The next two paragraphs can be time-consuming so we will not run them during the
 
 Before we can fit these smoothed expression profiles, we need to get a sense of how complex the expression patterns are in this dataset. This is translated into selecting a number of knots for the NB-GAMs, where a higher number of knots allows for more complex expression patterns. Here, we pick $5$ knots.
 
-See [here](https://people.maths.bris.ac.uk/~sw15190/mgcv/) for more information on smoothers.
 
 ```{r evaluateK, eval=FALSE}
-library(tradeSeq)
 set.seed(3)
 icMat <- evaluateK(counts = as.matrix(assays(sce)$counts),
                    pseudotime = colData(sce)$slingshot$pseudotime,
