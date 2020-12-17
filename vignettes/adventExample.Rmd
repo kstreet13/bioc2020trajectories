@@ -37,8 +37,8 @@ suppressPackageStartupMessages({
   library(knitr)
   library(ggplot2)
 })
-
 ```
+
 # Setting
 
 Late November, I bought an advent calendar with my partner and we realized we were facing a very challenging situation: how to properly partition the daily chocolates? Given the inherent difficulties of cutting a piece of hard chocolate into two equal blocks, we quickly settled on alternate days: I would get the treat on odd days and they’ll be eating the chocolate on even days. 
@@ -138,6 +138,13 @@ ggplot(calendar, aes(x = Day, y = pct_cocoa, col = is_even)) +
 ```
 
 While the percentage of cocoa seems constant across the days, there is a clear difference between the odd and even days. Well, it's all for the best, I prefer the higher cocoa content anyway!!
+
+# How it's going 17 days later....
+
+```{r, out.width = "50%", fig.pos="h", fig.align='center', echo = FALSE}
+knitr::include_graphics("advent2.JPG")
+```
+
 
 # Final notes
 

@@ -62,16 +62,20 @@ The workshop will start with an introduction to the problem and the dataset usin
 | Activity                     | Time |
 |------------------------------|------|
 | Introduction                     | 15m  |
-| Data Integration and Trajectory Inference   | 10m  |
+| Small example                     | 10m  |
+| Data Integration and Trajectory Inference   | 15m  |
 | Differential Progression                    | 15m  |
-| Differential Expression          | 15m  |
-| Wrap-up and Conclusions          | 5m  |
+| Differential Expression          | 20m  |
+| Wrap-up and Conclusions          | 10m  |
 
 
 ## Workshop goals and objectives
 
-Participants will learn how to reason about trajectories in single-cell RNA-seq data and how they may be used for interpretation of complex scRNA-seq datasets.
+Participants will learn how to reason about trajectories in single-cell RNA-seq data and how they may be used for interpretation of complex scRNA-seq datasets. Participants can follow along in the following fashions:
 
++ Run the code online by going to [orchestra](http://app.orchestra.cancerdatasci.org/1) and launching the workshop titled __Trajectory inference across conditions: differential expression and differential progression__
++ Clone the [repository](https://github.com/kstreet13/bioc2020trajectories) from github and run the code locally
++ USe docker and get the container kstreet13/bioc2020trajectories:latest
 
 ## Learning goals
 
