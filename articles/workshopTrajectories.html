@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">bioc2020trajectories</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.92</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.93</span>
       </span>
     </div>
 
@@ -155,20 +155,24 @@
 <td>15m</td>
 </tr>
 <tr class="even">
-<td>Data Integration and Trajectory Inference</td>
+<td>Small example</td>
 <td>10m</td>
 </tr>
 <tr class="odd">
-<td>Differential Progression</td>
+<td>Data Integration and Trajectory Inference</td>
 <td>15m</td>
 </tr>
 <tr class="even">
-<td>Differential Expression</td>
+<td>Differential Progression</td>
 <td>15m</td>
 </tr>
 <tr class="odd">
+<td>Differential Expression</td>
+<td>20m</td>
+</tr>
+<tr class="even">
 <td>Wrap-up and Conclusions</td>
-<td>5m</td>
+<td>10m</td>
 </tr>
 </tbody>
 </table>
@@ -177,7 +181,13 @@
 <div id="workshop-goals-and-objectives" class="section level2">
 <h2 class="hasAnchor">
 <a href="#workshop-goals-and-objectives" class="anchor"></a>Workshop goals and objectives</h2>
-<p>Participants will learn how to reason about trajectories in single-cell RNA-seq data and how they may be used for interpretation of complex scRNA-seq datasets.</p>
+<p>Participants will learn how to reason about trajectories in single-cell RNA-seq data and how they may be used for interpretation of complex scRNA-seq datasets. Participants can follow along in the following fashions:</p>
+<ul>
+<li>Run the code online by going to <a href="http://app.orchestra.cancerdatasci.org/1">orchestra</a> and launching the workshop titled <strong>Trajectory inference across conditions: differential expression and differential progression</strong>
+</li>
+<li>Clone the <a href="https://github.com/kstreet13/bioc2020trajectories">repository</a> from github and run the code locally</li>
+<li>USe docker and get the container kstreet13/bioc2020trajectories:latest</li>
+</ul>
 </div>
 <div id="learning-goals" class="section level2">
 <h2 class="hasAnchor">
@@ -468,104 +478,104 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">GO_CELL_CYCLE</td>
+<td align="left">GO_MITOTIC_CELL_CYCLE</td>
 <td align="right">0.0000600</td>
-<td align="right">0.1029839</td>
+<td align="right">0.0720167</td>
 </tr>
 <tr class="even">
+<td align="left">GO_CELL_CYCLE</td>
+<td align="right">0.0000800</td>
+<td align="right">0.0720167</td>
+</tr>
+<tr class="odd">
 <td align="left">GO_EPIDERMIS_DEVELOPMENT</td>
 <td align="right">0.0000800</td>
-<td align="right">0.1029839</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_MITOTIC_CELL_CYCLE</td>
-<td align="right">0.0000800</td>
-<td align="right">0.1029839</td>
+<td align="right">0.0720167</td>
 </tr>
 <tr class="even">
-<td align="left">GO_SKIN_DEVELOPMENT</td>
-<td align="right">0.0001200</td>
-<td align="right">0.1029839</td>
-</tr>
-<tr class="odd">
 <td align="left">GO_EPITHELIUM_DEVELOPMENT</td>
-<td align="right">0.0001400</td>
-<td align="right">0.1029839</td>
+<td align="right">0.0001000</td>
+<td align="right">0.0720167</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">GO_EPITHELIAL_CELL_DIFFERENTIATION</td>
-<td align="right">0.0001800</td>
-<td align="right">0.1029839</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_REGULATION_OF_MODIFICATION_OF_SYNAPTIC_STRUCTURE</td>
-<td align="right">0.0002003</td>
-<td align="right">0.1029839</td>
-</tr>
-<tr class="even">
-<td align="left">GO_REGULATION_OF_CHROMOSOME_ORGANIZATION</td>
-<td align="right">0.0002200</td>
-<td align="right">0.1029839</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_MITOTIC_NUCLEAR_DIVISION</td>
-<td align="right">0.0002600</td>
-<td align="right">0.1029839</td>
+<td align="right">0.0001200</td>
+<td align="right">0.0720167</td>
 </tr>
 <tr class="even">
 <td align="left">GO_NEGATIVE_REGULATION_OF_CELLULAR_COMPONENT_ORGANIZATION</td>
-<td align="right">0.0002600</td>
-<td align="right">0.1029839</td>
+<td align="right">0.0001400</td>
+<td align="right">0.0720167</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_PROTEOLYSIS</td>
-<td align="right">0.0003000</td>
-<td align="right">0.1056246</td>
+<td align="right">0.0001600</td>
+<td align="right">0.0720167</td>
+</tr>
+<tr class="even">
+<td align="left">GO_MITOTIC_NUCLEAR_DIVISION</td>
+<td align="right">0.0001800</td>
+<td align="right">0.0720167</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_SKIN_DEVELOPMENT</td>
+<td align="right">0.0001800</td>
+<td align="right">0.0720167</td>
 </tr>
 <tr class="even">
 <td align="left">GO_ORGANELLE_FISSION</td>
-<td align="right">0.0003200</td>
-<td align="right">0.1056246</td>
+<td align="right">0.0002000</td>
+<td align="right">0.0720167</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_REGULATION_OF_CHROMOSOME_ORGANIZATION</td>
+<td align="right">0.0002000</td>
+<td align="right">0.0720167</td>
+</tr>
+<tr class="even">
+<td align="left">GO_REGULATION_OF_MODIFICATION_OF_SYNAPTIC_STRUCTURE</td>
+<td align="right">0.0002604</td>
+<td align="right">0.0859575</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_EPIDERMAL_CELL_DIFFERENTIATION</td>
-<td align="right">0.0004400</td>
-<td align="right">0.1340619</td>
-</tr>
-<tr class="even">
-<td align="left">GO_CELL_CYCLE_PROCESS</td>
-<td align="right">0.0005200</td>
-<td align="right">0.1452338</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_REGULATION_OF_NUCLEAR_DIVISION</td>
-<td align="right">0.0005600</td>
-<td align="right">0.1452338</td>
+<td align="right">0.0004000</td>
+<td align="right">0.1188276</td>
 </tr>
 <tr class="even">
 <td align="left">GO_NEGATIVE_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
-<td align="right">0.0006000</td>
-<td align="right">0.1452338</td>
+<td align="right">0.0004200</td>
+<td align="right">0.1188276</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_KERATINOCYTE_DIFFERENTIATION</td>
-<td align="right">0.0006400</td>
-<td align="right">0.1452338</td>
+<td align="left">GO_CELL_CYCLE_PROCESS</td>
+<td align="right">0.0005000</td>
+<td align="right">0.1237788</td>
 </tr>
 <tr class="even">
 <td align="left">GO_CHROMOSOME_ORGANIZATION</td>
-<td align="right">0.0006600</td>
-<td align="right">0.1452338</td>
+<td align="right">0.0005000</td>
+<td align="right">0.1237788</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
-<td align="right">0.0007600</td>
-<td align="right">0.1584368</td>
+<td align="left">GO_REGULATION_OF_NUCLEAR_DIVISION</td>
+<td align="right">0.0005800</td>
+<td align="right">0.1351373</td>
 </tr>
 <tr class="even">
-<td align="left">GO_CHROMOSOME_SEGREGATION</td>
-<td align="right">0.0009000</td>
-<td align="right">0.1782414</td>
+<td align="left">GO_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
+<td align="right">0.0006400</td>
+<td align="right">0.1408327</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_CELLULAR_PROTEIN_CATABOLIC_PROCESS</td>
+<td align="right">0.0007600</td>
+<td align="right">0.1505150</td>
+</tr>
+<tr class="even">
+<td align="left">GO_KERATINOCYTE_DIFFERENTIATION</td>
+<td align="right">0.0007600</td>
+<td align="right">0.1505150</td>
 </tr>
 </tbody>
 </table>
@@ -667,8 +677,8 @@
 <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">eaRes</span><span class="op">[</span><span class="va">ooEA</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, n <span class="op">=</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="75%">
-<col width="12%">
+<col width="76%">
+<col width="10%">
 <col width="12%">
 </colgroup>
 <thead><tr class="header">
@@ -679,103 +689,103 @@
 <tbody>
 <tr class="odd">
 <td align="left">GO_BIOLOGICAL_ADHESION</td>
-<td align="right">0.0000200</td>
-<td align="right">0.0528523</td>
+<td align="right">0.00002</td>
+<td align="right">0.0396392</td>
 </tr>
 <tr class="even">
-<td align="left">GO_ANATOMICAL_STRUCTURE_FORMATION_INVOLVED_IN_MORPHOGENESIS</td>
-<td align="right">0.0000400</td>
-<td align="right">0.0528523</td>
+<td align="left">GO_CELL_MOTILITY</td>
+<td align="right">0.00002</td>
+<td align="right">0.0396392</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_CELL_MOTILITY</td>
-<td align="right">0.0000400</td>
-<td align="right">0.0528523</td>
+<td align="left">GO_ANATOMICAL_STRUCTURE_FORMATION_INVOLVED_IN_MORPHOGENESIS</td>
+<td align="right">0.00008</td>
+<td align="right">0.1057046</td>
 </tr>
 <tr class="even">
 <td align="left">GO_REGULATION_OF_CELL_ADHESION</td>
-<td align="right">0.0001600</td>
+<td align="right">0.00016</td>
 <td align="right">0.1585568</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_REGULATION_OF_MITOCHONDRIAL_GENE_EXPRESSION</td>
-<td align="right">0.0002600</td>
-<td align="right">0.2061239</td>
+<td align="right">0.00022</td>
+<td align="right">0.1744125</td>
 </tr>
 <tr class="even">
 <td align="left">GO_TRANSCRIPTION_BY_RNA_POLYMERASE_III</td>
-<td align="right">0.0004200</td>
-<td align="right">0.2774745</td>
+<td align="right">0.00032</td>
+<td align="right">0.2114091</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_EXTRACELLULAR_STRUCTURE_ORGANIZATION</td>
-<td align="right">0.0006400</td>
-<td align="right">0.3212862</td>
+<td align="right">0.00062</td>
+<td align="right">0.3171137</td>
 </tr>
 <tr class="even">
 <td align="left">GO_MITOCHONDRIAL_RNA_METABOLIC_PROCESS</td>
-<td align="right">0.0008800</td>
-<td align="right">0.3212862</td>
+<td align="right">0.00070</td>
+<td align="right">0.3171137</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_VASCULATURE_DEVELOPMENT</td>
-<td align="right">0.0009400</td>
-<td align="right">0.3212862</td>
-</tr>
-<tr class="even">
 <td align="left">GO_CIRCULATORY_SYSTEM_DEVELOPMENT</td>
-<td align="right">0.0009600</td>
-<td align="right">0.3212862</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_REGULATION_OF_CELL_POPULATION_PROLIFERATION</td>
-<td align="right">0.0010800</td>
-<td align="right">0.3212862</td>
+<td align="right">0.00092</td>
+<td align="right">0.3171137</td>
 </tr>
 <tr class="even">
+<td align="left">GO_VASCULATURE_DEVELOPMENT</td>
+<td align="right">0.00098</td>
+<td align="right">0.3171137</td>
+</tr>
+<tr class="odd">
 <td align="left">GO_CELL_MORPHOGENESIS_INVOLVED_IN_DIFFERENTIATION</td>
-<td align="right">0.0011000</td>
-<td align="right">0.3212862</td>
+<td align="right">0.00110</td>
+<td align="right">0.3171137</td>
+</tr>
+<tr class="even">
+<td align="left">GO_REGULATION_OF_CELL_POPULATION_PROLIFERATION</td>
+<td align="right">0.00120</td>
+<td align="right">0.3171137</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_REGULATION_OF_CELLULAR_COMPONENT_MOVEMENT</td>
-<td align="right">0.0011000</td>
-<td align="right">0.3212862</td>
-</tr>
-<tr class="even">
-<td align="left">GO_CELL_MORPHOGENESIS</td>
-<td align="right">0.0011800</td>
-<td align="right">0.3212862</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_TAXIS</td>
-<td align="right">0.0013000</td>
-<td align="right">0.3212862</td>
+<td align="right">0.00124</td>
+<td align="right">0.3171137</td>
 </tr>
 <tr class="even">
 <td align="left">GO_N_TERMINAL_PROTEIN_AMINO_ACID_MODIFICATION</td>
-<td align="right">0.0013600</td>
-<td align="right">0.3212862</td>
+<td align="right">0.00126</td>
+<td align="right">0.3171137</td>
 </tr>
 <tr class="odd">
+<td align="left">GO_TAXIS</td>
+<td align="right">0.00130</td>
+<td align="right">0.3171137</td>
+</tr>
+<tr class="even">
 <td align="left">GO_CELL_CELL_ADHESION</td>
-<td align="right">0.0014600</td>
-<td align="right">0.3212862</td>
+<td align="right">0.00134</td>
+<td align="right">0.3171137</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_CELL_MORPHOGENESIS</td>
+<td align="right">0.00136</td>
+<td align="right">0.3171137</td>
 </tr>
 <tr class="even">
 <td align="left">GO_MOTOR_NEURON_AXON_GUIDANCE</td>
-<td align="right">0.0014601</td>
-<td align="right">0.3212862</td>
+<td align="right">0.00144</td>
+<td align="right">0.3171263</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_TUBE_DEVELOPMENT</td>
-<td align="right">0.0015400</td>
-<td align="right">0.3212862</td>
+<td align="left">GO_CELL_PROJECTION_ORGANIZATION</td>
+<td align="right">0.00166</td>
+<td align="right">0.3284391</td>
 </tr>
 <tr class="even">
-<td align="left">GO_CELL_JUNCTION_ASSEMBLY</td>
-<td align="right">0.0017600</td>
-<td align="right">0.3322143</td>
+<td align="left">GO_BLOOD_VESSEL_MORPHOGENESIS</td>
+<td align="right">0.00172</td>
+<td align="right">0.3284391</td>
 </tr>
 </tbody>
 </table>
@@ -830,7 +840,7 @@
 ##  [9] ggrepel_0.9.0                 bit64_4.0.5                  
 ## [11] splines_4.1.0                 docopt_0.7.1                 
 ## [13] cluster_2.1.0                 dbplyr_2.0.0                 
-## [15] bioc2020trajectories_0.0.0.92 HDF5Array_1.19.0             
+## [15] bioc2020trajectories_0.0.0.93 HDF5Array_1.19.0             
 ## [17] compiler_4.1.0                httr_1.4.2                   
 ## [19] assertthat_0.2.1              Matrix_1.2-18                
 ## [21] limma_3.47.1                  htmltools_0.5.0              
@@ -841,7 +851,7 @@
 ## [31] rappdirs_0.3.1                fastmatch_1.1-0              
 ## [33] Rcpp_1.0.5                    slam_0.1-48                  
 ## [35] DDRTree_0.1.5                 pkgdown_1.6.1                
-## [37] rhdf5filters_1.3.3            vctrs_0.3.5                  
+## [37] rhdf5filters_1.3.3            vctrs_0.3.6                  
 ## [39] ape_5.4-1                     nlme_3.1-151                 
 ## [41] xfun_0.19                     stringr_1.4.0                
 ## [43] lifecycle_0.2.0               irlba_2.3.3                  
