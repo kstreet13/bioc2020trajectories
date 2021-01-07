@@ -319,10 +319,7 @@ Next, we fit the NB-GAMs using 5 knots, based on the pseudotime and cell-level w
 
 ```{r, eval=FALSE}
 set.seed(3)
-sce <- fitGAM(counts = as.matrix(assays(sce)$counts),
-              pseudotime = colData(sce)$slingshot$pseudotime,
-              cellWeights = colData(sce)$slingshot$cellWeights.V1,
-              conditions = factor(colData(sce)$pheno$treatment_id),
+sce <- fitGAM(sce, conditions = factor(colData(sce)$pheno$treatment_id),
               nknots = 5)
 mean(rowData(sce)$tradeSeq$converged)
 ```
