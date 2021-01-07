@@ -375,10 +375,7 @@
 <p>Next, we fit the NB-GAMs using 5 knots, based on the pseudotime and cell-level weights estimated by Slingshot. We use the <code>conditions</code> argument to fit separate smoothers for each condition.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>
-<span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/fitGAM.html">fitGAM</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="fu">assays</span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">$</span><span class="va">counts</span><span class="op">)</span>,
-              pseudotime <span class="op">=</span> <span class="fu">colData</span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">$</span><span class="va">slingshot</span><span class="op">$</span><span class="va">pseudotime</span>,
-              cellWeights <span class="op">=</span> <span class="fu">colData</span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">$</span><span class="va">slingshot</span><span class="op">$</span><span class="va">cellWeights.V1</span>,
-              conditions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">$</span><span class="va">pheno</span><span class="op">$</span><span class="va">treatment_id</span><span class="op">)</span>,
+<span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/fitGAM.html">fitGAM</a></span><span class="op">(</span><span class="va">sce</span>, conditions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">$</span><span class="va">pheno</span><span class="op">$</span><span class="va">treatment_id</span><span class="op">)</span>,
               nknots <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="fu">rowData</span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">$</span><span class="va">tradeSeq</span><span class="op">$</span><span class="va">converged</span><span class="op">)</span></code></pre></div>
 </div>
@@ -402,7 +399,7 @@
 <span class="op">]</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">mockGenes</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 2398</code></pre>
+<pre><code>## [1] 2399</code></pre>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">tgfbGenes</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 1013</code></pre>
@@ -428,7 +425,7 @@
 <span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">cl</span><span class="op">)</span></code></pre></div>
 <pre><code>## cl
 ##   1   2   3   4   5   6 
-## 269 778 197 740 338  76</code></pre>
+## 269 778 197 741 338  76</code></pre>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">conditions</span> <span class="op">&lt;-</span> <span class="fu">colData</span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">$</span><span class="va">pheno</span><span class="op">$</span><span class="va">treatment_id</span>
 <span class="va">pt1</span> <span class="op">&lt;-</span> <span class="fu">colData</span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">$</span><span class="va">slingshot</span><span class="op">$</span><span class="va">pseudotime</span>
@@ -460,7 +457,7 @@
 ## You are trying to run fgseaSimple. It is recommended to use fgseaMultilevel. To
 ## run fgseaMultilevel, you need to remove the nperm argument in the fgsea function
 ## call.</code></pre>
-<pre><code>## Warning in preparePathwaysAndStats(pathways, stats, minSize, maxSize, gseaParam, : There are ties in the preranked stats (0.02% of the list).
+<pre><code>## Warning in preparePathwaysAndStats(pathways, stats, minSize, maxSize, gseaParam, : There are ties in the preranked stats (0.01% of the list).
 ## The order of those tied genes will be arbitrary, which may produce unexpected results.</code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ooEA</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">eaRes</span><span class="op">$</span><span class="va">pval</span>, decreasing <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
@@ -478,104 +475,104 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">GO_MITOTIC_CELL_CYCLE</td>
-<td align="right">0.0000200</td>
+<td align="left">GO_EPIDERMIS_DEVELOPMENT</td>
+<td align="right">0.0000400</td>
 <td align="right">0.0792184</td>
 </tr>
 <tr class="even">
-<td align="left">GO_EPIDERMIS_DEVELOPMENT</td>
+<td align="left">GO_MITOTIC_CELL_CYCLE</td>
+<td align="right">0.0000400</td>
+<td align="right">0.0792184</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_CELL_CYCLE</td>
 <td align="right">0.0000600</td>
 <td align="right">0.0792184</td>
 </tr>
-<tr class="odd">
-<td align="left">GO_EPITHELIAL_CELL_DIFFERENTIATION</td>
-<td align="right">0.0000800</td>
-<td align="right">0.0792184</td>
-</tr>
 <tr class="even">
-<td align="left">GO_CELL_CYCLE</td>
-<td align="right">0.0001200</td>
-<td align="right">0.0792184</td>
-</tr>
-<tr class="odd">
 <td align="left">GO_EPITHELIUM_DEVELOPMENT</td>
-<td align="right">0.0001200</td>
-<td align="right">0.0792184</td>
-</tr>
-<tr class="even">
-<td align="left">GO_NEGATIVE_REGULATION_OF_CELLULAR_COMPONENT_ORGANIZATION</td>
-<td align="right">0.0001200</td>
-<td align="right">0.0792184</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_REGULATION_OF_MODIFICATION_OF_SYNAPTIC_STRUCTURE</td>
-<td align="right">0.0001603</td>
-<td align="right">0.0864201</td>
-</tr>
-<tr class="even">
-<td align="left">GO_REGULATION_OF_CHROMOSOME_ORGANIZATION</td>
-<td align="right">0.0002000</td>
-<td align="right">0.0864201</td>
+<td align="right">0.0001000</td>
+<td align="right">0.0990230</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_SKIN_DEVELOPMENT</td>
-<td align="right">0.0002000</td>
-<td align="right">0.0864201</td>
-</tr>
-<tr class="even">
-<td align="left">GO_ORGANELLE_FISSION</td>
-<td align="right">0.0002400</td>
-<td align="right">0.0864201</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_PROTEOLYSIS</td>
-<td align="right">0.0002400</td>
-<td align="right">0.0864201</td>
+<td align="right">0.0001600</td>
+<td align="right">0.1009971</td>
 </tr>
 <tr class="even">
 <td align="left">GO_MITOTIC_NUCLEAR_DIVISION</td>
+<td align="right">0.0002000</td>
+<td align="right">0.1009971</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_EPITHELIAL_CELL_DIFFERENTIATION</td>
+<td align="right">0.0002200</td>
+<td align="right">0.1009971</td>
+</tr>
+<tr class="even">
+<td align="left">GO_PROTEOLYSIS</td>
+<td align="right">0.0002400</td>
+<td align="right">0.1009971</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_REGULATION_OF_CHROMOSOME_ORGANIZATION</td>
+<td align="right">0.0002400</td>
+<td align="right">0.1009971</td>
+</tr>
+<tr class="even">
+<td align="left">GO_NEGATIVE_REGULATION_OF_CELLULAR_COMPONENT_ORGANIZATION</td>
 <td align="right">0.0002800</td>
-<td align="right">0.0924215</td>
+<td align="right">0.1009971</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_EPIDERMAL_CELL_DIFFERENTIATION</td>
-<td align="right">0.0003800</td>
-<td align="right">0.1157808</td>
+<td align="left">GO_REGULATION_OF_MODIFICATION_OF_SYNAPTIC_STRUCTURE</td>
+<td align="right">0.0002805</td>
+<td align="right">0.1009971</td>
 </tr>
 <tr class="even">
+<td align="left">GO_ORGANELLE_FISSION</td>
+<td align="right">0.0003200</td>
+<td align="right">0.1035933</td>
+</tr>
+<tr class="odd">
 <td align="left">GO_CHROMOSOME_ORGANIZATION</td>
-<td align="right">0.0004400</td>
-<td align="right">0.1214682</td>
+<td align="right">0.0003400</td>
+<td align="right">0.1035933</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">GO_CELL_CYCLE_PROCESS</td>
-<td align="right">0.0004600</td>
-<td align="right">0.1214682</td>
-</tr>
-<tr class="even">
-<td align="left">GO_NEGATIVE_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
-<td align="right">0.0005200</td>
-<td align="right">0.1287299</td>
+<td align="right">0.0003800</td>
+<td align="right">0.1075107</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_REGULATION_OF_NUCLEAR_DIVISION</td>
-<td align="right">0.0005600</td>
-<td align="right">0.1292511</td>
+<td align="left">GO_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
+<td align="right">0.0004200</td>
+<td align="right">0.1109058</td>
 </tr>
 <tr class="even">
-<td align="left">GO_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
-<td align="right">0.0006000</td>
-<td align="right">0.1292511</td>
+<td align="left">GO_EPIDERMAL_CELL_DIFFERENTIATION</td>
+<td align="right">0.0005000</td>
+<td align="right">0.1164977</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_NEGATIVE_REGULATION_OF_ORGANELLE_ORGANIZATION</td>
+<td align="right">0.0005000</td>
+<td align="right">0.1164977</td>
+</tr>
+<tr class="even">
+<td align="left">GO_REGULATION_OF_NUCLEAR_DIVISION</td>
+<td align="right">0.0006400</td>
+<td align="right">0.1408327</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_KERATINOCYTE_DIFFERENTIATION</td>
-<td align="right">0.0006200</td>
-<td align="right">0.1292511</td>
+<td align="right">0.0007800</td>
+<td align="right">0.1626062</td>
 </tr>
 <tr class="even">
-<td align="left">GO_CELL_DIVISION</td>
-<td align="right">0.0006600</td>
-<td align="right">0.1307104</td>
+<td align="left">GO_CELLULAR_PROTEIN_CATABOLIC_PROCESS</td>
+<td align="right">0.0008800</td>
+<td align="right">0.1656385</td>
 </tr>
 </tbody>
 </table>
@@ -607,7 +604,7 @@
 <code class="sourceCode R"><span class="va">condRes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tradeSeq/man/conditionTest.html">conditionTest</a></span><span class="op">(</span><span class="va">sce</span>, l2fc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log2</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>
 <span class="va">condRes</span><span class="op">$</span><span class="va">padj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/p.adjust.html">p.adjust</a></span><span class="op">(</span><span class="va">condRes</span><span class="op">$</span><span class="va">pvalue</span>, <span class="st">"fdr"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">condRes</span><span class="op">$</span><span class="va">padj</span> <span class="op">&lt;=</span> <span class="fl">0.05</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.1890175</code></pre>
+<pre><code>## [1] 0.1889995</code></pre>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">condRes</span><span class="op">$</span><span class="va">padj</span> <span class="op">&lt;=</span> <span class="fl">0.05</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 1993</code></pre>
@@ -670,7 +667,7 @@
 ## minSize = 10): You are trying to run fgseaSimple. It is recommended to use
 ## fgseaMultilevel. To run fgseaMultilevel, you need to remove the nperm argument
 ## in the fgsea function call.</code></pre>
-<pre><code>## Warning in preparePathwaysAndStats(pathways, stats, minSize, maxSize, gseaParam, : There are ties in the preranked stats (0.04% of the list).
+<pre><code>## Warning in preparePathwaysAndStats(pathways, stats, minSize, maxSize, gseaParam, : There are ties in the preranked stats (0.03% of the list).
 ## The order of those tied genes will be arbitrary, which may produce unexpected results.</code></pre>
 <div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ooEA</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">eaRes</span><span class="op">$</span><span class="va">pval</span>, decreasing <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
@@ -693,99 +690,99 @@
 <td align="right">0.0792784</td>
 </tr>
 <tr class="even">
-<td align="left">GO_CELL_MOTILITY</td>
+<td align="left">GO_ANATOMICAL_STRUCTURE_FORMATION_INVOLVED_IN_MORPHOGENESIS</td>
 <td align="right">0.0000400</td>
 <td align="right">0.0792784</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_ANATOMICAL_STRUCTURE_FORMATION_INVOLVED_IN_MORPHOGENESIS</td>
+<td align="left">GO_CELL_MOTILITY</td>
 <td align="right">0.0000600</td>
 <td align="right">0.0792784</td>
 </tr>
 <tr class="even">
 <td align="left">GO_REGULATION_OF_CELL_ADHESION</td>
-<td align="right">0.0001600</td>
-<td align="right">0.1585568</td>
+<td align="right">0.0001400</td>
+<td align="right">0.1387372</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_REGULATION_OF_MITOCHONDRIAL_GENE_EXPRESSION</td>
-<td align="right">0.0002400</td>
-<td align="right">0.1902682</td>
+<td align="right">0.0003000</td>
+<td align="right">0.2378352</td>
 </tr>
 <tr class="even">
 <td align="left">GO_TRANSCRIPTION_BY_RNA_POLYMERASE_III</td>
-<td align="right">0.0003000</td>
-<td align="right">0.1981960</td>
+<td align="right">0.0005400</td>
+<td align="right">0.3171137</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_EXTRACELLULAR_STRUCTURE_ORGANIZATION</td>
+<td align="right">0.0006400</td>
+<td align="right">0.3171137</td>
+</tr>
+<tr class="even">
+<td align="left">GO_VASCULATURE_DEVELOPMENT</td>
+<td align="right">0.0008800</td>
+<td align="right">0.3171137</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_CIRCULATORY_SYSTEM_DEVELOPMENT</td>
-<td align="right">0.0008200</td>
-<td align="right">0.3448611</td>
+<td align="right">0.0009200</td>
+<td align="right">0.3171137</td>
 </tr>
 <tr class="even">
-<td align="left">GO_EXTRACELLULAR_STRUCTURE_ORGANIZATION</td>
-<td align="right">0.0008400</td>
-<td align="right">0.3448611</td>
-</tr>
-<tr class="odd">
-<td align="left">GO_VASCULATURE_DEVELOPMENT</td>
-<td align="right">0.0008600</td>
-<td align="right">0.3448611</td>
-</tr>
-<tr class="even">
-<td align="left">GO_MITOCHONDRIAL_RNA_METABOLIC_PROCESS</td>
-<td align="right">0.0010000</td>
-<td align="right">0.3448611</td>
-</tr>
-<tr class="odd">
 <td align="left">GO_CELL_MORPHOGENESIS_INVOLVED_IN_DIFFERENTIATION</td>
-<td align="right">0.0010200</td>
-<td align="right">0.3448611</td>
-</tr>
-<tr class="even">
-<td align="left">GO_REGULATION_OF_CELL_POPULATION_PROLIFERATION</td>
-<td align="right">0.0011200</td>
-<td align="right">0.3448611</td>
+<td align="right">0.0010800</td>
+<td align="right">0.3171137</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_REGULATION_OF_CELLULAR_COMPONENT_MOVEMENT</td>
-<td align="right">0.0013000</td>
-<td align="right">0.3448611</td>
+<td align="right">0.0011000</td>
+<td align="right">0.3171137</td>
 </tr>
 <tr class="even">
-<td align="left">GO_N_TERMINAL_PROTEIN_AMINO_ACID_MODIFICATION</td>
-<td align="right">0.0014200</td>
-<td align="right">0.3448611</td>
+<td align="left">GO_MITOCHONDRIAL_RNA_METABOLIC_PROCESS</td>
+<td align="right">0.0011800</td>
+<td align="right">0.3171137</td>
 </tr>
 <tr class="odd">
+<td align="left">GO_REGULATION_OF_CELL_POPULATION_PROLIFERATION</td>
+<td align="right">0.0012000</td>
+<td align="right">0.3171137</td>
+</tr>
+<tr class="even">
 <td align="left">GO_CELL_MORPHOGENESIS</td>
-<td align="right">0.0015000</td>
-<td align="right">0.3448611</td>
-</tr>
-<tr class="even">
-<td align="left">GO_CELL_PROJECTION_ORGANIZATION</td>
-<td align="right">0.0016200</td>
-<td align="right">0.3448611</td>
+<td align="right">0.0013000</td>
+<td align="right">0.3171137</td>
 </tr>
 <tr class="odd">
-<td align="left">GO_TUBE_DEVELOPMENT</td>
-<td align="right">0.0016400</td>
-<td align="right">0.3448611</td>
+<td align="left">GO_TAXIS</td>
+<td align="right">0.0013400</td>
+<td align="right">0.3171137</td>
 </tr>
 <tr class="even">
 <td align="left">GO_CELL_CELL_ADHESION</td>
-<td align="right">0.0016600</td>
-<td align="right">0.3448611</td>
+<td align="right">0.0014200</td>
+<td align="right">0.3171137</td>
 </tr>
 <tr class="odd">
 <td align="left">GO_MOTOR_NEURON_AXON_GUIDANCE</td>
-<td align="right">0.0017001</td>
-<td align="right">0.3448611</td>
+<td align="right">0.0014601</td>
+<td align="right">0.3171137</td>
 </tr>
 <tr class="even">
-<td align="left">GO_TAXIS</td>
-<td align="right">0.0017400</td>
-<td align="right">0.3448611</td>
+<td align="left">GO_N_TERMINAL_PROTEIN_AMINO_ACID_MODIFICATION</td>
+<td align="right">0.0015200</td>
+<td align="right">0.3171137</td>
+</tr>
+<tr class="odd">
+<td align="left">GO_CELL_PROJECTION_ORGANIZATION</td>
+<td align="right">0.0015800</td>
+<td align="right">0.3171137</td>
+</tr>
+<tr class="even">
+<td align="left">GO_TUBE_DEVELOPMENT</td>
+<td align="right">0.0016000</td>
+<td align="right">0.3171137</td>
 </tr>
 </tbody>
 </table>
@@ -819,7 +816,7 @@
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] tradeSeq_1.5.0              gridExtra_2.3              
+##  [1] tradeSeq_1.3.25             gridExtra_2.3              
 ##  [3] ggplot2_3.3.3               knitr_1.30                 
 ##  [5] fgsea_1.17.0                msigdbr_7.2.1              
 ##  [7] pheatmap_1.0.12             UpSetR_1.4.0               
@@ -842,7 +839,7 @@
 ## [13] cluster_2.1.0                 dbplyr_2.0.0                 
 ## [15] bioc2020trajectories_0.0.0.93 HDF5Array_1.19.0             
 ## [17] compiler_4.1.0                httr_1.4.2                   
-## [19] assertthat_0.2.1              Matrix_1.3-0                 
+## [19] assertthat_0.2.1              Matrix_1.3-2                 
 ## [21] limma_3.47.3                  htmltools_0.5.0              
 ## [23] tools_4.1.0                   igraph_1.2.6                 
 ## [25] gtable_0.3.0                  glue_1.4.2                   
@@ -853,7 +850,7 @@
 ## [35] DDRTree_0.1.5                 pkgdown_1.6.1                
 ## [37] rhdf5filters_1.3.3            vctrs_0.3.6                  
 ## [39] ape_5.4-1                     nlme_3.1-151                 
-## [41] xfun_0.19                     stringr_1.4.0                
+## [41] xfun_0.20                     stringr_1.4.0                
 ## [43] lifecycle_0.2.0               irlba_2.3.3                  
 ## [45] edgeR_3.33.0                  zlibbioc_1.37.0              
 ## [47] ragg_0.4.0                    rhdf5_2.35.0                 
