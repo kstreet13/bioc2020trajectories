@@ -41,3 +41,4 @@ Imports:
 VignetteBuilder: knitr
 URL: https://kstreet13.github.io/bioc2020trajectories
 DockerImage: kstreet13/bioc2020trajectories:latest
+Remotes: github::statOmics/tradeSeq
