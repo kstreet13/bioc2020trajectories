@@ -153,7 +153,7 @@ integrated <- RunPCA(integrated)
 integrated <- RunUMAP(integrated, dims = 1:50)
 
 ## convert back to singleCellExperiment
-sce <- as.SingleCellExperiment(integrated, assay="RNA")
+sce <- as.SingleCellExperiment(integrated, assay = "RNA")
 ```
 
 
@@ -325,6 +325,7 @@ sce <- fitGAM(counts = as.matrix(assays(sce)$counts),
               nknots = 5)
 mean(rowData(sce)$tradeSeq$converged)
 ```
+
 
 
 ### Assess DE along pseudotime (or pseudospace)
